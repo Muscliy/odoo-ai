@@ -29,6 +29,4 @@ class AIOkfTag(models.Model):
         'ai.okf.concept', 'ai_okf_concept_tag_rel',
         'tag_id', 'concept_id', string='Concepts')
 
-    _sql_constraints = [
-        ('name_uniq', 'UNIQUE(name)', 'Tag names must be unique.'),
-    ]
+    _name_uniq = models.Constraint('UNIQUE(name)', 'Tag names must be unique.')

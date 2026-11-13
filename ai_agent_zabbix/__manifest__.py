@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'AI: Zabbix Integration',
-    'version': '18.0.1.0.0',
+    'version': '19.0.1.0.0',
     'license': 'AGPL-3',
     'category': 'AI',
     'summary': 'Zabbix integration for AI agent monitoring.',
@@ -30,6 +30,6 @@ AI Agent Zabbix
         'data/zabbix_data.xml',
         'views/ai_zabbix_views.xml',
     ],
-    'installable': True,
+    'installable': False,
     'auto_install': False,
 }

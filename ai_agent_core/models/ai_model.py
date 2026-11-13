@@ -159,10 +159,7 @@ class AIModel(models.Model):
     provider_cost_1M = fields.Float('Provider $/1M tokens',
         help='What the provider actually charges per 1M tokens. For admin insight only.')
 
-    _sql_constraints = [
-        ('name_provider_uniq', 'UNIQUE(name, provider)',
-         'A model (name) can only exist once per provider (channel).'),
-    ]
+    _name_provider_uniq = models.Constraint('UNIQUE(name, provider)', 'A model (name) can only exist once per provider (channel).')
 
     # Status
     status = fields.Selection([

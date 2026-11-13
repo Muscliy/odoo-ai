@@ -181,7 +181,7 @@ and cost-effective AI systems that drive innovation and efficiency across their 
         "demo/ai_agent_demo.xml",
     ],
     "application": True,
-    "installable": True,
+    "installable": False,
     "auto_install": False,
     # "post_init_hook": "post_init_hook",
 }

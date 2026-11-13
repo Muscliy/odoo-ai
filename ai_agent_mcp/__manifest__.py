@@ -46,7 +46,7 @@
         "views/res_mcp_views.xml",
         'views/ai_quest_view.xml',
     ],
-    "installable": True,
+    "installable": False,
     "application": False,
     "auto_install": False,
 }

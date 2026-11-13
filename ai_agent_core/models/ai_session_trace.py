@@ -175,11 +175,7 @@ class AICoworkerSessionToolCall(models.Model):
         help='Runtime in milliseconds. 0 = not measured.')
     started_at = fields.Datetime('Started')
 
-    _sql_constraints = [
-        ('tool_call_dedup',
-         'UNIQUE(session_id, tool_call_id)',
-         'The same tool call is logged once per session.'),
-    ]
+    _tool_call_dedup = models.Constraint('UNIQUE(session_id, tool_call_id)', 'The same tool call is logged once per session.')
 
 
 class AICoworkerSessionCloseEvent(models.Model):

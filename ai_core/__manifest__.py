@@ -4,13 +4,13 @@
 
 {
     "name": "AI: LLM Provider Abstraction",
-    "version": "18.0.1.0.0",
+    "version": "19.0.1.0.0",
     "summary": "Provider abstraction, model discovery, rate limiting, token tracking",
     "category": "AI",
     "author": "Vertel Sverige AB",
     "website": "https://vertel.se/apps/odoo-ai/ai_core",
     "license": "AGPL-3",
-    "depends": ["mail"],
+    "depends": ["mail", "ai_agent_core"],
     "data": [
         "security/ir.model.access.csv",
         "views/llm_provider_views.xml",

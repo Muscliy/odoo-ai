@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'AI: Academic Research Skills',
-    'version': '18.0.1.0.0',
+    'version': '19.0.1.0.0',
     'summary': 'Academic paper writing pipeline — 8-agent team for research to publication.',
     'description': '''
 AI Agent Core — Academic Research Skills
@@ -20,7 +20,7 @@ AI Agent Core — Academic Research Skills
     'depends': ['ai_agent_core'],
     'data': ['security/ir.model.access.csv'],
     'post_init_hook': 'post_init_hook',
-    'installable': True,
+    'installable': False,
     'auto_install': False,
     'application': False,
 }

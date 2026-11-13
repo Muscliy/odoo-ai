@@ -83,11 +83,7 @@ class AIEvalCase(models.Model):
         help='Free category for grouping (e.g. "tool_use", "odoo_write").')
     active = fields.Boolean('Active', default=True)
 
-    _sql_constraints = [
-        ('source_session_uniq',
-         'UNIQUE(source_session_id)',
-         'A session can only be promoted once.'),
-    ]
+    _source_session_uniq = models.Constraint('UNIQUE(source_session_id)', 'A session can only be promoted once.')
 
     @api.constrains('expected_contains', 'expected_not_contains')
     def _check_expected_lists(self):

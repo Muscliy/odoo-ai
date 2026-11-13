@@ -79,7 +79,7 @@ class ResConfigSettings(models.TransientModel):
     ai_google_api_key = fields.Char(
         'Google API Key',
         config_parameter='ai_agent_core.google_api_key',
-        password=True,
+
         help='Google API key (AIza…). Used by YouTube/Google-based AI tools. Empty → falls back to the GOOGLE_API_KEY environment variable.',
         groups='base.group_system',
     )

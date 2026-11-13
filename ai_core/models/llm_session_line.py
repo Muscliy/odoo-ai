@@ -39,9 +39,9 @@ class LLMSessionLine(models.Model):
     error_message = fields.Text()
 
     # References (populated by ai_agent later)
-    session_id = fields.Many2one("ai.quest.session", ondelete="set null")
+    session_id = fields.Many2one("ai.coworker.session", ondelete="set null")
     agent_id = fields.Many2one("ai.agent", ondelete="set null")
-    quest_id = fields.Many2one("ai.quest", ondelete="set null")
+    quest_id = fields.Many2one("ai.coworker", ondelete="set null", string="Coworker")
 
     @api.depends("input_tokens", "output_tokens")
     def _compute_total_tokens(self):

@@ -184,6 +184,8 @@ class AICoworkerHITL(models.Model):
     def _push_notify(self):
         """Web push till godkännaren (via web_pwa_push). Tyst utan enheter/nycklar."""
         self.ensure_one()
+        if 'web.pwa.push' not in self.env:
+            return
         try:
             self.env['web.pwa.push']._push_user_notification(
                 self.user_id,

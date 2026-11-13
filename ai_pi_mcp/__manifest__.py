@@ -2,7 +2,7 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 {
     'name': 'AI: Pi MCP Developer Server',
-    'version': '18.0.1.0.0',
+    'version': '19.0.1.0.0',
     'summary': 'Standalone MCP streamable-HTTP server for Pi system development against this database.',
     'category': 'AI Orchestration',
     'description': '''
@@ -65,7 +65,7 @@ Pi MCP Developer Server
     'data': [
         'security/ir.model.access.csv',
     ],
-    'installable': True,
+    'installable': False,
     'application': False,
     'auto_install': False,
 }

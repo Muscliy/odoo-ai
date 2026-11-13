@@ -17,16 +17,9 @@ class HrEmployee(models.Model):
         help='The matching ai.coworker if this employee is an AI.')
 
     # Överskugga name för att visa 🤖-prefix i vyer
-    def name_get(self):
-        res = []
-        for emp in self:
-            name = emp.name or ''
-            if emp.is_ai:
-                # Check heartbeat status for indicator
-                coworker = emp.ai_coworker_id
-                if coworker and coworker.heartbeat_enabled:
-                    name = f'🤖 {name}'
-                else:
-                    name = f'🤖 {name}'
-            res.append((emp.id, name))
-        return res
+    @api.depends("name", "is_ai")
+    def _compute_display_name(self):
+        super()._compute_display_name()
+        for employee in self:
+            if employee.is_ai:
+                employee.display_name = f"🤖 {employee.display_name}"

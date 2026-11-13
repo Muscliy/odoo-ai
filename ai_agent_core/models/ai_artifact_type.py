@@ -45,9 +45,7 @@ class AIArtifactType(models.Model):
 
     active = fields.Boolean(string='Active', default=True)
 
-    _sql_constraints = [
-        ('name_uniq', 'UNIQUE(name)', 'Artifact type name must be unique.'),
-    ]
+    _name_uniq = models.Constraint('UNIQUE(name)', 'Artifact type name must be unique.')
 
     @api.constrains('okf_contract')
     def _check_okf_contract(self):

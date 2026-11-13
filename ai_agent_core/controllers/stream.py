@@ -878,10 +878,10 @@ class AIStreamController(http.Controller):
         # default. Fångas som plain values (generatorn körs efter teardown).
         gen_tool_ids = list(
             quest._session_tool_ids(
-                access_groups=request.env.user.groups_id.ids)
+                access_groups=request.env.user.all_group_ids.ids)
         ) if quest and quest.exists() else []
         # Användarens grupper för PermissionEngine (defense-in-depth)
-        gen_user_group_ids = tuple(request.env.user.groups_id.ids)
+        gen_user_group_ids = tuple(request.env.user.all_group_ids.ids)
         # NATS executor config (tool-executor-nats)
         nats_api_secret = request.env['ir.config_parameter'].sudo().get_param(
             'ai_agent_core.api_secret', '')
@@ -1739,7 +1739,7 @@ class AIStreamController(http.Controller):
             # gruppbunden skill får inte läcka den till en användare utan
             # gruppen — rutten är publik och gjorde ingen prövning alls.
             if skill.group_ids:
-                user_groups = set(request.env.user.groups_id.ids)
+                user_groups = set(request.env.user.all_group_ids.ids)
                 if not (user_groups & set(skill.group_ids.ids)):
                     _logger.warning(
                         'skill_get denied: uid %s lacks the group for skill %s',
@@ -1851,7 +1851,7 @@ class AIStreamController(http.Controller):
             }
         )
 
-    @http.route('/ai/interrupt/respond', type='json', auth='public',
+    @http.route('/ai/interrupt/respond', type='jsonrpc', auth='public',
                 methods=['POST'], csrf=False, sitemap=False)
     def interrupt_respond(self, session_uuid=None, response=None, **kw):
         """POST endpoint for human response to interrupt."""
@@ -2462,7 +2462,7 @@ class AIStreamController(http.Controller):
     # === Session document API ===
 
     @http.route('/ai/session/<int:session_id>/record_context',
-                type='json', auth='user', methods=['POST'], csrf=False,
+                type='jsonrpc', auth='user', methods=['POST'], csrf=False,
                 sitemap=False)
     def session_record_context(self, session_id, model=None, res_id=None,
                                res_ids=None, **kw):
@@ -4119,7 +4119,7 @@ class PICallbackController(http.Controller):
             },
         }, ensure_ascii=False), content_type='application/json')
 
-    @http.route('/pi/callback/<int:task_id>', type='json', auth='public',
+    @http.route('/pi/callback/<int:task_id>', type='jsonrpc', auth='public',
                 methods=['POST'], csrf=False, sitemap=False)
     def pi_callback(self, task_id, **kw):
         """Receive results from Pi workers/controller.
@@ -4189,7 +4189,7 @@ class PICallbackController(http.Controller):
         _logger.info('Callback received for session %d: state=%s', task_id, state)
         return {'status': 'ok', 'session_id': session.id}
 
-    @http.route('/pi/bifrost/batch/callback', type='json', auth='public',
+    @http.route('/pi/bifrost/batch/callback', type='jsonrpc', auth='public',
                 methods=['POST'], csrf=False, sitemap=False)
     def bifrost_batch_callback(self, **kw):
         """Receive Bifrost batch processing results.
@@ -6192,7 +6192,7 @@ class AIOpenAIAPI(http.Controller):
             # Samma verktygsurval som _run_coworker_chat tidigare hämtade:
             # settings-default + explicita verktyg, access-filtrerat.
             tool_ids = quest._session_tool_ids(
-                access_groups=request.env.user.groups_id.ids)
+                access_groups=request.env.user.all_group_ids.ids)
             tool_env = request.env(context=dict(
                 request.env.context,
                 _ai_context_model='ai.coworker.session',
@@ -6374,7 +6374,7 @@ class AIOpenAIAPI(http.Controller):
                 ai_lineage_session_id=sess.id,
             ))
             tool_ids = quest._session_tool_ids(
-                access_groups=request.env.user.groups_id.ids)
+                access_groups=request.env.user.all_group_ids.ids)
             reg = ToolRegistry()
             if tool_ids:
                 recs = tool_env['ai.tool'].browse(tool_ids).filtered(
@@ -6403,7 +6403,7 @@ class AIOpenAIAPI(http.Controller):
                 PermissionEngine, PermissionMode)
             _permissions = PermissionEngine(
                 mode=PermissionMode.INTERACTIVE,
-                user_group_ids=set(request.env.user.groups_id.ids),
+                user_group_ids=set(request.env.user.all_group_ids.ids),
             )
             # ── Coworkerns stående regler (2026-11-04) ──
             # Grinden byggdes här UTAN att coworkerns regler lästes in, så

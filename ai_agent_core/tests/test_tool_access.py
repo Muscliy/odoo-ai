@@ -32,7 +32,7 @@ class TestToolAccessGroups(TransactionCase):
         # Skapa en res.groups för testerna (ärver base.group_user)
         self.operator_group = self.env['res.groups'].create({
             'name': 'Test Operator Group',
-            'category_id': self.env.ref('base.module_category_hidden').id,
+            'privilege_id': self.env.ref('ai_agent_core.privilege_ai').id,
         })
         self.tool_gated = _make_tool(
             self.env, 'tool_test_gated', groups=[self.operator_group.id])
@@ -58,7 +58,7 @@ class TestToolAccessGroups(TransactionCase):
         """Användare i en annan grupp ser inte det gruppbundna verktyget."""
         other = self.env['res.groups'].create({
             'name': 'Other Group',
-            'category_id': self.env.ref('base.module_category_hidden').id,
+            'privilege_id': self.env.ref('ai_agent_core.privilege_ai').id,
         })
         visible = self.env['ai.tool'].search(
             [('id', 'in', (self.tool_gated.id, self.tool_open.id))]
@@ -73,7 +73,7 @@ class TestToolAccessPermissionEngine(TransactionCase):
         super().setUp()
         self.operator_group = self.env['res.groups'].create({
             'name': 'Test Operator Group (Engine)',
-            'category_id': self.env.ref('base.module_category_hidden').id,
+            'privilege_id': self.env.ref('ai_agent_core.privilege_ai').id,
         })
         self.tool_gated = _make_tool(
             self.env, 'tool_engine_gated', groups=[self.operator_group.id])
@@ -248,7 +248,7 @@ class TestCapabilitySerialization(TransactionCase):
             ToolRegistry, apply_capability_serialization)
         group = self.env['res.groups'].create({
             'name': 'Cap Group',
-            'category_id': self.env.ref('base.module_category_hidden').id,
+            'privilege_id': self.env.ref('ai_agent_core.privilege_ai').id,
         })
         secret = _make_tool(self.env, 't_secret', groups=[group.id])
         open_tool = _make_tool(self.env, 't_open')

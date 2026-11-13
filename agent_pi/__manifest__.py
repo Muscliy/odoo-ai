@@ -4,7 +4,7 @@
 
 {
     'name': 'AI: Pi Agent Infrastructure',
-    'version': '18.0.1.0.0',
+    'version': '19.0.1.0.0',
     'summary': 'Distributed Pi Coding Agent orchestration via NATS.',
     'category': 'AI Orchestration',
     'description': '''
@@ -52,7 +52,7 @@ agent_pi — Pi Agent Infrastructure
         'views/pi_task_views.xml',
         'views/pi_agent_views.xml',
     ],
-    'installable': True,
+    'installable': False,
     'auto_install': False,
     'application': True,
 }

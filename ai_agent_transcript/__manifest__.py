@@ -20,7 +20,7 @@
 ##############################################################################
 {
     'name': 'AI: Powerbox and Transcript',
-    'version': '18.0.1.0.9',
+    'version': '19.0.1.0.9',
     'summary': 'Powerbox-style AI interaction with transcript/context injection',
     'category': 'AI Orchestration',
     'description': """
@@ -59,7 +59,7 @@
             'ai_agent_transcript/static/src/js/quest_powerbox.js',
         ],
     },
-    'installable': True,
+    'installable': False,
     'auto_install': False,
     'application': False,
 }

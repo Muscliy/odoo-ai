@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'AI: Gamification Bridge',
-    'version': '18.0.1.0.0',
+    'version': '19.0.1.0.0',
     'summary': 'Connect gamification (badges, challenges) with AI personal goals.',
     'description': '''
 Gamification AI Bridge
@@ -22,7 +22,7 @@ Gamification AI Bridge
         'data/badge_rules.xml',
         'security/ir.model.access.csv',
     ],
-    'installable': True,
+    'installable': False,
     'auto_install': False,
     'application': False,
 }

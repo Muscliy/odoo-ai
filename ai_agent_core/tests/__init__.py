@@ -285,3 +285,5 @@ from . import test_session_line_preview
 from . import test_session_history_tool_pairing
 from . import test_tool_call_quality
 from . import test_turn_quality_verdict
+
+from . import test_odoo19_port

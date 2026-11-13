@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'AI: Pi Agent Mesh',
-    'version': '18.0.1.6.0',
+    'version': '19.0.1.6.0',
     'license': 'AGPL-3',
     'category': 'AI',
     'summary': 'Historik och överblick för Pi-agenternas mesh',
@@ -35,7 +35,7 @@ Depends on:
         'views/pi_mesh_task_views.xml',
         'views/pi_mesh_menu.xml',
     ],
-    'installable': True,
+    'installable': False,
     'auto_install': False,
     'post_init_hook': 'post_init_hook',
 }

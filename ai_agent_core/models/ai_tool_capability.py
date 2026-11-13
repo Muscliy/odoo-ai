@@ -28,6 +28,4 @@ class AIToolCapability(models.Model):
         help='Tools included in the capability.',
     )
 
-    _sql_constraints = [
-        ('name_unique', 'unique(name)', 'Capability name must be unique!'),
-    ]
+    _name_unique = models.Constraint('unique(name)', 'Capability name must be unique!')

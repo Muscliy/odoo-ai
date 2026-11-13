@@ -272,9 +272,7 @@ class AITool(models.Model):
     sandbox_enabled = fields.Boolean('Sandbox', default=True,
                                       help='Restrict code to safe operations')
 
-    _sql_constraints = [
-        ('name_unique', 'unique(name)', 'Tool name must be unique!'),
-    ]
+    _name_unique = models.Constraint('unique(name)', 'Tool name must be unique!')
 
     @api.model
     def _ensure_builtin_tool_records(self, records=None):

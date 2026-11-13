@@ -59,10 +59,7 @@ class AIAccessResolver(models.Model):
              "[('user_id','=', '{user_id}')]")
     active = fields.Boolean(string='Active', default=True)
 
-    _sql_constraints = [
-        ('model_uniq', 'UNIQUE(model_id)',
-         'One resolver per source model.'),
-    ]
+    _model_uniq = models.Constraint('UNIQUE(model_id)', 'One resolver per source model.')
 
     def _resolve_domain(self, domain_template, user):
         """Ersätt placeholders ({partner_id}, {user_id}) i en domain-template."""

@@ -72,11 +72,7 @@ class GraphNodeDefinition(models.Model):
         'Healthy', compute='_compute_is_healthy',
         help='False when the last sync reported an error — separates a broken write path from a healthy but empty graph.')
 
-    _sql_constraints = [
-        ('unique_model_graph_label',
-         'unique(model_id, graph_label)',
-         'Each model can only have one definition per graph label!'),
-    ]
+    _unique_model_graph_label = models.Constraint('unique(model_id, graph_label)', 'Each model can only have one definition per graph label!')
 
     @api.depends('graph_label')
     def _compute_node_count(self):

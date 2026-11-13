@@ -65,11 +65,7 @@ class AICoworkerSessionLine(models.Model):
     # Migrationen i migrations/18.0.1.334 städar befintliga dubbletter FÖRE
     # denna constraint läggs på — annars faller ALTER TABLE och hela
     # uppgraderingen rullas tillbaka.
-    _sql_constraints = [
-        ('session_sequence_uniq',
-         'UNIQUE(session_id, sequence)',
-         'The sequence must be unique within a session.'),
-    ]
+    _session_sequence_uniq = models.Constraint('UNIQUE(session_id, sequence)', 'The sequence must be unique within a session.')
 
     session_id = fields.Many2one(
         'ai.coworker.session', required=True, ondelete='cascade',

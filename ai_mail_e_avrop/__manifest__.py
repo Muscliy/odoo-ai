@@ -21,7 +21,7 @@
 
 {
     'name': 'AI: Mailbox',
-    'version': '18.0.1.0.1',
+    'version': '19.0.1.0.1',
     # Version ledger: 16.0 = Odoo version. 1 = Major. Non regressionable code. 2 = Minor. New features that are regressionable. 3 = Bug fixes
     'summary': 'Mailbox for AI.',
     # Categories can be used to filter modules in modules listing
@@ -64,7 +64,7 @@ Mailbox for AI
         'data/ai_agent_data.xml'
 
     ],
-    'installable': True,
+    'installable': False,
     'auto_install': False,
     'application': False,
 }

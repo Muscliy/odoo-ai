@@ -45,11 +45,7 @@ class AICoworkerSessionObject(models.Model):
         'Tidpunkt', default=fields.Datetime.now, required=True,
         help='When the operation was last performed for this object in this session (updated on repeated writes).')
 
-    _sql_constraints = [
-        ('session_object_unique',
-         'UNIQUE(session_id, res_model, res_id, operation)',
-         'The same object and operation are logged once per session.'),
-    ]
+    _session_object_unique = models.Constraint('UNIQUE(session_id, res_model, res_id, operation)', 'The same object and operation are logged once per session.')
 
     # ── Navigering till målet (session-object-navigation) ──────────────
     #

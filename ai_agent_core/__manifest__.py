@@ -2,7 +2,7 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 {
     'name': 'AI: Agent Core',
-    'version': '18.0.2.0.88',
+    'version': '19.0.2.0.88',
     'summary': 'AI Agent Core — Org-stomme, heartbeat, onboarding, task-system',
     'category': 'AI Orchestration',
     'description': """
@@ -29,8 +29,8 @@
         'mail',
         'html_editor',
         'hr',
+        'project',
         'base_automation',
-        'web_pwa_push',
         # cron_tick provides the cron.task registry, the scheduling engine
         # and the POST /cron/trigger/<technical_name> route. Since
         # 18.0.2.0.0 EVERY scheduled job in this module is a cron.task —

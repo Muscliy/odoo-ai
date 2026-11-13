@@ -17,14 +17,26 @@ def pre_init_hook_check_conflicts(env):
     """
     cr = env.cr
     cr.execute(
-        "SELECT state FROM ir_module_module WHERE name = 'ai_agent'")
-    row = cr.fetchone()
-    if row and row[0] in ('installed', 'to upgrade', 'to remove'):
+        "SELECT name, state FROM ir_module_module "
+        "WHERE name IN ('ai_agent', 'ai_tool') "
+        "AND state IN ('installed', 'to install', 'to upgrade', 'to remove')")
+    rows = cr.fetchall()
+    if rows:
         _logger.error(
-            'ai_agent_core installation blocked: ai_agent is installed (state=%s). The modules are incompatible — uninstall ai_agent before installing ai_agent_core.', row[0])
+            "ai_agent_core installation blocked by incompatible modules: %s", rows)
         from odoo.exceptions import UserError
         raise UserError(
-            'ai_agent_core cannot be installed alongside ai_agent.\n\nThey define the same models/views (ai.tool, view_ai_tool_*,\naction_ai_tool) and are incompatible. Uninstall ai_agent first (Apps → ai_agent → Uninstall).'
+            "ai_agent_core cannot share a database with the legacy ai_agent or OCA ai_tool. "
+            "They define incompatible ai.tool models. Use a separate test database; "
+            "migrate existing AI data and dependent modules before replacing them."
+        )
+    cr.execute("SELECT 1 FROM pg_extension WHERE extname = 'vector'")
+    if not cr.fetchone():
+        from odoo.exceptions import UserError
+        raise UserError(
+            "ai_agent_core requires the PostgreSQL vector extension. "
+            "Ask the database administrator to enable it in the target database "
+            "before installing this module."
         )
 
 
@@ -929,6 +941,10 @@ def post_init_hook(env):
     # ════════════════════════════════════════════
     try:
         cr = env.cr
+        cr.execute("SELECT 1 FROM pg_extension WHERE extname = 'age'")
+        if not cr.fetchone():
+            _logger.info("Apache AGE is not installed; graph initialization skipped")
+            return
         # 1. AGE extension managed by SaltStack/DBA
         # AGE extension handled by SaltStack/DBA — skipping
         _logger.info('AGE extension skipped — managed by DBA')

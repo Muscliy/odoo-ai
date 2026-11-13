@@ -56,7 +56,7 @@ class IrUiView(models.Model):
             """, (bad, good, bad))
             fixed += self.env.cr.rowcount
         if fixed:
-            self.clear_caches()
+            self.env.registry.clear_cache()
             _logger.info(
                 'Corrected sv_SE field names in %d view(s) (view-translation-guard)', fixed)
         return fixed

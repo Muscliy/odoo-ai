@@ -71,9 +71,15 @@ class AIOkfConcept(models.Model):
                 FROM ir_model_access a
                 WHERE a.model_id = v_model_id
                   AND a.perm_read = TRUE
-                  AND (a.group_id IS NULL OR EXISTS (
-                      SELECT 1 FROM res_groups_users_rel g
-                      WHERE g.gid = a.group_id AND g.uid = p_user_id
+                  AND (a.group_id IS NULL OR a.group_id IN (
+                      WITH RECURSIVE effective_groups(gid) AS (
+                          SELECT gid FROM res_groups_users_rel WHERE uid = p_user_id
+                          UNION
+                          SELECT implied.hid
+                          FROM res_groups_implied_rel implied
+                          JOIN effective_groups parent ON parent.gid = implied.gid
+                      )
+                      SELECT gid FROM effective_groups
                   ));
                 RETURN v_count > 0;
             END;
@@ -328,22 +334,7 @@ class AIOkfConcept(models.Model):
         'Semantisk vikt (hybrid)', default=0.7,
         help='Weight for the vector signal in hybrid search (0-1). 0.7 = semantics dominate; 0 = pure BM25 (for installations without embeddings).')
 
-    _sql_constraints = [
-        # ETT koncept per (scope, AGARE, concept_key).
-        #
-        # AGAREN INGAR (okf-owner-and-access-scoping D6): tva agare kan ha
-        # samma `concept_key` -- t.ex. samma kalenderhandelse for tva
-        # deltagare. Utan agarkolumnerna avvisar villkoret den andra raden,
-        # och hela "en post -> N agare"-formagan faller.
-        #
-        # Ingen `version` i villkoret (beslut 2026-10-26): modellen ar en
-        # spegel av kallan, inte en versionslogg. Migration 18.0.1.338
-        # kollapsar befintliga versioner till en rad per nyckel.
-        ('concept_key_scope_uniq',
-         'UNIQUE(scope, owner_company_id, owner_user_id, '
-         'owner_coworker_id, concept_key)',
-         'Concept key must be unique within scope and owner.'),
-    ]
+    _concept_key_scope_uniq = models.Constraint('UNIQUE(scope, owner_company_id, owner_user_id, owner_coworker_id, concept_key)', 'Concept key must be unique within scope and owner.')
 
     @api.constrains('owner_company_id', 'owner_user_id', 'owner_coworker_id')
     def _check_exactly_one_owner(self):

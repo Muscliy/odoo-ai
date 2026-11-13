@@ -20,7 +20,7 @@ class TestTool(unittest.TestCase):
     """Test Tool dataclass and serialization."""
 
     def setUp(self):
-        from ai_agent_core.core.tools import Tool
+        from odoo.addons.ai_agent_core.core.tools import Tool
         self.Tool = Tool
 
     def test_create_tool(self):
@@ -96,7 +96,7 @@ class TestToolRegistry(unittest.TestCase):
     """Test ToolRegistry."""
 
     def setUp(self):
-        from ai_agent_core.core.tools import Tool, ToolRegistry
+        from odoo.addons.ai_agent_core.core.tools import Tool, ToolRegistry
         self.Tool = Tool
         self.ToolRegistry = ToolRegistry
 
@@ -141,7 +141,7 @@ class TestToolRegistry(unittest.TestCase):
         self.assertEqual(result[0]["function"]["name"], "t1")
 
     def test_builtin_tools(self):
-        from ai_agent_core.core.tools import builtin_tools
+        from odoo.addons.ai_agent_core.core.tools import builtin_tools
         tools = builtin_tools()
         self.assertGreaterEqual(len(tools), 2)
         names = {t.name for t in tools}
@@ -157,7 +157,7 @@ class TestMessage(unittest.TestCase):
     """Test Message serialization."""
 
     def setUp(self):
-        from ai_agent_core.core.provider import Message, Role
+        from odoo.addons.ai_agent_core.core.provider import Message, Role
         self.Message = Message
         self.Role = Role
 
@@ -217,7 +217,7 @@ class TestAutoInterruptHandler(unittest.TestCase):
     """Test AutoInterruptHandler."""
 
     def setUp(self):
-        from ai_agent_core.core.interrupt import AutoInterruptHandler
+        from odoo.addons.ai_agent_core.core.interrupt import AutoInterruptHandler
         self.handler = AutoInterruptHandler()
 
     def test_ask_returns_timeout(self):
@@ -251,7 +251,7 @@ class TestOpenAIInterruptHandler(unittest.TestCase):
     """Test OpenAIInterruptHandler — pausar via AgentLoopPaused."""
 
     def setUp(self):
-        from ai_agent_core.core.interrupt import (
+        from odoo.addons.ai_agent_core.core.interrupt import (
             OpenAIInterruptHandler, AgentLoopPaused)
         self.handler = OpenAIInterruptHandler()
         self.AgentLoopPaused = AgentLoopPaused
@@ -313,9 +313,9 @@ class TestAgentLoop(unittest.TestCase):
     """Test AgentLoop with mock provider."""
 
     def setUp(self):
-        from ai_agent_core.core.provider import AIProvider, ChatResponse, Message, Role
-        from ai_agent_core.core.tools import Tool, ToolRegistry
-        from ai_agent_core.core.loop import AgentLoop, AgentConfig
+        from odoo.addons.ai_agent_core.core.provider import AIProvider, ChatResponse, Message, Role
+        from odoo.addons.ai_agent_core.core.tools import Tool, ToolRegistry
+        from odoo.addons.ai_agent_core.core.loop import AgentLoop, AgentConfig
 
         # Mock provider that returns a fixed response
         class MockProvider(AIProvider):
@@ -332,7 +332,7 @@ class TestAgentLoop(unittest.TestCase):
                 )
 
             async def chat_stream(self, model, messages, tools=None, system_prompt="", temperature=0.7, max_tokens=4096):
-                from ai_agent_core.core.provider import TokenEvent
+                from odoo.addons.ai_agent_core.core.provider import TokenEvent
                 for token in ["Mock", " ", "response"]:
                     yield TokenEvent(type="token", token=token)
                 yield TokenEvent(type="done", finish_reason="stop")
@@ -361,7 +361,7 @@ class TestAgentLoop(unittest.TestCase):
 
     def test_run_without_prompt_does_not_append_user_message(self):
         """run(prompt="", history=...) appendar inte extra user-message."""
-        from ai_agent_core.core.provider import Message, Role
+        from odoo.addons.ai_agent_core.core.provider import Message, Role
         provider = self.MockProvider()
         tools = self.ToolRegistry()
         loop_obj = self.AgentLoop(
@@ -419,7 +419,7 @@ class TestAgentLoop(unittest.TestCase):
         call_phase = [0]
 
         async def chat_with_tool(*args, **kwargs):
-            from ai_agent_core.core.provider import ChatResponse, ToolCall
+            from odoo.addons.ai_agent_core.core.provider import ChatResponse, ToolCall
             call_phase[0] += 1
             if call_phase[0] == 1:
                 return ChatResponse(
@@ -451,7 +451,7 @@ class TestAgentLoop(unittest.TestCase):
 
     def test_parallel_tool_execution(self):
         """Test that multiple tool calls execute in parallel (LOOP-007)."""
-        from ai_agent_core.core.provider import ChatResponse, ToolCall
+        from odoo.addons.ai_agent_core.core.provider import ChatResponse, ToolCall
         execution_order = []
         import time as _time
 
@@ -558,7 +558,7 @@ class TestModelTools(unittest.TestCase):
     """Test de generiska Odoo-modellverktygen (builtin_tools)."""
 
     def _generic_tools(self):
-        from ai_agent_core.core.tools import builtin_tools
+        from odoo.addons.ai_agent_core.core.tools import builtin_tools
         tools = builtin_tools()
         return {t.name: t for t in tools}
 
@@ -595,7 +595,7 @@ class TestModelTools(unittest.TestCase):
 
     def test_permission_classification(self):
         """Riskklassning av de generiska verktygen (task 5.1)."""
-        from ai_agent_core.core.permission import classify, RiskClass
+        from odoo.addons.ai_agent_core.core.permission import classify, RiskClass
         cases = {
             "describe_model": RiskClass.READ,
             "odoo_search": RiskClass.READ,
@@ -612,7 +612,7 @@ class TestModelTools(unittest.TestCase):
 
     def test_write_denylist_membership(self):
         """Denylist-fält ska nekas av odoo_write (task 5.1, enhetstest av regel)."""
-        from ai_agent_core.core.tools import _ODOO_WRITE_DENYLIST
+        from odoo.addons.ai_agent_core.core.tools import _ODOO_WRITE_DENYLIST
         self.assertIn("state", _ODOO_WRITE_DENYLIST)
         self.assertIn("move_type", _ODOO_WRITE_DENYLIST)
         self.assertIn("journal_id", _ODOO_WRITE_DENYLIST)
@@ -628,7 +628,7 @@ class TestImprove(unittest.TestCase):
 
     def test_improve_rule_based(self):
         import asyncio
-        from ai_agent_core.core.improve import ImprovementLoop, ImprovementGuidance
+        from odoo.addons.ai_agent_core.core.improve import ImprovementLoop, ImprovementGuidance
 
         loop = ImprovementLoop(max_iterations=2)
         guidance = ImprovementGuidance(
@@ -648,7 +648,7 @@ class TestImprove(unittest.TestCase):
     def test_improve_score_perfect(self):
         """When no improvement needed, converge immediately."""
         import asyncio
-        from ai_agent_core.core.improve import ImprovementLoop, ImprovementGuidance
+        from odoo.addons.ai_agent_core.core.improve import ImprovementLoop, ImprovementGuidance
 
         loop = ImprovementLoop(max_iterations=1)
         guidance = ImprovementGuidance(
@@ -666,7 +666,7 @@ class TestVerify(unittest.TestCase):
     """Test OutputVerifier (TASK-004)."""
 
     def test_verify_passes(self):
-        from ai_agent_core.core.verify import OutputVerifier
+        from odoo.addons.ai_agent_core.core.verify import OutputVerifier
         verifier = OutputVerifier()
         result = verifier.verify(
             output="Customers: ACME Corp",
@@ -677,7 +677,7 @@ class TestVerify(unittest.TestCase):
         self.assertEqual(result.score, 1.0)
 
     def test_verify_fails_missing(self):
-        from ai_agent_core.core.verify import OutputVerifier
+        from odoo.addons.ai_agent_core.core.verify import OutputVerifier
         verifier = OutputVerifier()
         result = verifier.verify(
             output="No data",
@@ -687,7 +687,7 @@ class TestVerify(unittest.TestCase):
         self.assertTrue(result.needs_fix)
 
     def test_verify_schema_json(self):
-        from ai_agent_core.core.verify import OutputVerifier
+        from odoo.addons.ai_agent_core.core.verify import OutputVerifier
         verifier = OutputVerifier()
         result = verifier.verify(
             output='{"name": "Test", "value": 42}',
@@ -696,7 +696,7 @@ class TestVerify(unittest.TestCase):
         self.assertTrue(result.passed)
 
     def test_verify_schema_missing_field(self):
-        from ai_agent_core.core.verify import OutputVerifier
+        from odoo.addons.ai_agent_core.core.verify import OutputVerifier
         verifier = OutputVerifier()
         result = verifier.verify(
             output='{"value": 42}',
@@ -706,7 +706,7 @@ class TestVerify(unittest.TestCase):
         self.assertTrue(any("Missing" in e.message for e in result.schema_errors))
 
     def test_verify_fix_suggestions(self):
-        from ai_agent_core.core.verify import OutputVerifier
+        from odoo.addons.ai_agent_core.core.verify import OutputVerifier
         verifier = OutputVerifier()
         result = verifier.verify(
             output="Wrong",
@@ -715,7 +715,7 @@ class TestVerify(unittest.TestCase):
         self.assertTrue(len(result.fix_suggestions) > 0)
 
     def test_verify_requirements_count(self):
-        from ai_agent_core.core.verify import OutputVerifier
+        from odoo.addons.ai_agent_core.core.verify import OutputVerifier
         verifier = OutputVerifier()
         result = verifier.verify(
             output="- item1",
@@ -724,7 +724,7 @@ class TestVerify(unittest.TestCase):
         self.assertFalse(result.passed)
 
     def test_verify_requirements_contains(self):
-        from ai_agent_core.core.verify import OutputVerifier
+        from odoo.addons.ai_agent_core.core.verify import OutputVerifier
         verifier = OutputVerifier()
         result = verifier.verify(
             output="Report\nContains important data",
@@ -737,7 +737,7 @@ class TestEval(unittest.TestCase):
     """Test AgentEvaluator (PAPER-006)."""
 
     def test_eval_case(self):
-        from ai_agent_core.core.eval import EvalCase
+        from odoo.addons.ai_agent_core.core.eval import EvalCase
         case = EvalCase(
             input="What is 2+2?",
             expected_output="4",
@@ -749,7 +749,7 @@ class TestEval(unittest.TestCase):
         self.assertIn("4", case.expected_contains)
 
     def test_eval_run_stats(self):
-        from ai_agent_core.core.eval import EvalRun
+        from odoo.addons.ai_agent_core.core.eval import EvalRun
         run = EvalRun(
             agent_name="test",
             total_cases=10,
@@ -762,7 +762,7 @@ class TestEval(unittest.TestCase):
         self.assertIn("0.8", json_str)
 
     def test_analyze_trend(self):
-        from ai_agent_core.core.eval import EvalRun, analyze_trend
+        from odoo.addons.ai_agent_core.core.eval import EvalRun, analyze_trend
         run1 = EvalRun(total_cases=5, passed=3, failed=2, accuracy=0.6, total_cost=0.50)
         run2 = EvalRun(total_cases=5, passed=4, failed=1, accuracy=0.8, total_cost=0.45)
         trend = analyze_trend([run1, run2])

@@ -21,7 +21,7 @@
 
 {
     'name': 'odoo-ai: Agent Orchestration HR',
-    'version': '0.3',
+    'version': '19.0.0.3',
     'summary': 'Agent Orchestration HR',
     'category': 'Productivity / Discuss',
     'description': """
@@ -47,7 +47,7 @@
         'views/ai_quest_session_views.xml',
         'views/ai_quest_session_line_views.xml',
     ],
-    'installable': True,
+    'installable': False,
     'auto_install': False,
     'application': False,
 }

@@ -3166,7 +3166,7 @@ class AICoworkerSession(models.Model):
         skapades för tre minuter sedan betyder att användaren skrev och
         sedan lämnade.
         """
-        if not self:
+        if not self or 'web.pwa.push' not in self.env:
             return
         from odoo.addons.ai_agent_core.core import runtime as _rt
         try:

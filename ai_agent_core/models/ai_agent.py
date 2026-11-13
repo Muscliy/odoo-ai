@@ -541,10 +541,7 @@ class AIAgentMemory(models.Model):
     not_before = fields.Date(help='Valid from.')
     expires_at = fields.Date(help='Valid through. Empty = no limit.')
 
-    _sql_constraints = [
-        ('agent_memory_uniq', 'unique(agent_id, memory_id)',
-         'The same memory can only be linked once per agent.'),
-    ]
+    _agent_memory_uniq = models.Constraint('unique(agent_id, memory_id)', 'The same memory can only be linked once per agent.')
 
     def _is_current(self, today=None):
         """True om kopplingen är giltig idag."""

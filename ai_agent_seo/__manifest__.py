@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'AI Agent — SEO & GEO',
-    'version': '18.0.1.0.0',
+    'version': '19.0.1.0.0',
     'category': 'Marketing',
     'summary': 'SEO & GEO-specialist: agent, skills och verktyg för sökmotor- '
                'och generativ motor-optimering (llms.txt, JSON-LD, SERP).',
@@ -51,7 +51,7 @@ Referensimplementation för GEO i Odoo: modulen arc_open_business
         'data/seo_tools.xml',
         'data/seo_agent.xml',
     ],
-    'installable': True,
+    'installable': False,
     'application': False,
     'auto_install': False,
 }

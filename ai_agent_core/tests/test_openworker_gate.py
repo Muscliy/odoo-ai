@@ -15,9 +15,8 @@ import sys
 import unittest
 from unittest.mock import AsyncMock, MagicMock, patch
 
-sys.path.insert(0, '/usr/share/odoo-ai')
 
-from ai_agent_core.core.permission import (
+from odoo.addons.ai_agent_core.core.permission import (
     PermissionEngine,
     PermissionMode,
     RiskClass,
@@ -114,7 +113,7 @@ class TestPlanBeforeAction(unittest.TestCase):
     """todo_write + propose_plan tools exist and shape behavior (task 1.4)."""
 
     def test_todo_write_tool_exists(self):
-        from ai_agent_core.core.tools import _tool_todo_write
+        from odoo.addons.ai_agent_core.core.tools import _tool_todo_write
         result = asyncio.run(_tool_todo_write(
             todos=[{"content": "Read data", "status": "in_progress"},
                    {"content": "Create report", "status": "pending"}]
@@ -124,7 +123,7 @@ class TestPlanBeforeAction(unittest.TestCase):
         self.assertEqual(data["todos"][0]["content"], "Read data")
 
     def test_todo_write_normalizes_status(self):
-        from ai_agent_core.core.tools import _tool_todo_write
+        from odoo.addons.ai_agent_core.core.tools import _tool_todo_write
         result = asyncio.run(_tool_todo_write(items=[
             {"content": "Done item", "status": "completed"},
             {"content": "Weird status"},
@@ -134,12 +133,12 @@ class TestPlanBeforeAction(unittest.TestCase):
         self.assertEqual(data["todos"][1]["status"], "pending")
 
     def test_propose_plan_tool_exists(self):
-        from ai_agent_core.core.tools import _tool_propose_plan
+        from odoo.addons.ai_agent_core.core.tools import _tool_propose_plan
         result = _tool_propose_plan("Create the report")
         self.assertIn("plan", result.lower())
 
     def test_todolist_progress(self):
-        from ai_agent_core.core.tools import TodoList
+        from odoo.addons.ai_agent_core.core.tools import TodoList
         tl = TodoList(items=[
             {"content": "a", "status": "done"},
             {"content": "b", "status": "pending"},

@@ -1,0 +1,8 @@
+# Additional requirements for the supported Odoo 19 core (install after Odoo).
+# Use a separate environment; the repository-wide requirements.txt also covers
+# legacy and optional integrations and is not the core installation recipe.
+httpx>=0.27,<1
+requests>=2.31,<3
+tenacity>=9,<10
+pgvector>=0.5,<1
+langchain-core>=1.8,<2

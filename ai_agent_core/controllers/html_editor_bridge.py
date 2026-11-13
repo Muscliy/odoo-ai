@@ -21,7 +21,7 @@ class AICoworkerHtmlEditorBridge(HTML_Editor):
     """Override generate_text to route through ai.coworker when configured."""
 
     @http.route(["/web_editor/generate_text", "/html_editor/generate_text"],
-                type="json", auth="user")
+                type="jsonrpc", auth="user")
     def generate_text(self, prompt, conversation_history):
         """Override: route through ai.coworker if bridge is configured.
 

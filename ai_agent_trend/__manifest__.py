@@ -1,6 +1,6 @@
 {
     'name': 'odoo-ai: Agent Trend Analysis',
-    'version': '0.3',
+    'version': '19.0.0.3',
     'summary': 'Agent for analysing trends and create material for blogs and LinkedIn-articles',
     'category': 'Productivity / Discuss',
     'description': """
@@ -29,7 +29,7 @@
         'views/ai_trend_views.xml', 
         'views/res_config_settings_views.xml',
     ],
-    'installable': True,
+    'installable': False,
     'auto_install': False,
     'application': False,
     'support': 'https://github.com/vertelab/odoo-ai/issues',

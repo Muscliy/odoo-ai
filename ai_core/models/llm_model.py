@@ -56,11 +56,10 @@ class LLMModel(models.Model):
             else:
                 rec.context_window_display = str(rec.context_window)
 
-    def name_get(self):
-        result = []
+    @api.depends("name", "provider_type", "active")
+    def _compute_display_name(self):
         for rec in self:
             name = f"{rec.name} ({rec.provider_type})"
             if not rec.active:
                 name += " [inactive]"
-            result.append((rec.id, name))
-        return result
+            rec.display_name = name

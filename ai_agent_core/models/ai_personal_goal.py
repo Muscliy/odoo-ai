@@ -116,10 +116,8 @@ class AIPersonalGoal(models.Model):
         help='How often the AI should check in on this goal. '
              'Default: weekly.')
 
-    _sql_constraints = [
-        ('check_name_not_empty', "CHECK(char_length(name) > 0)", "Goal name required"),
-        ('check_progress_range', "CHECK(progress >= 0 AND progress <= 100)", "Progress 0-100"),
-    ]
+    _check_name_not_empty = models.Constraint('CHECK(char_length(name) > 0)', 'Goal name required')
+    _check_progress_range = models.Constraint('CHECK(progress >= 0 AND progress <= 100)', 'Progress 0-100')
 
     @api.constrains('status', 'progress')
     def _check_completed(self):

@@ -35,9 +35,7 @@ class AiSearchSource(models.Model):
         'Status', readonly=True,
         help='Why the source is or is not wired in. E.g. "the AGE graph odoo_mind has 0 nodes".')
 
-    _sql_constraints = [
-        ('code_uniq', 'unique(code)', 'The search source code must be unique.'),
-    ]
+    _code_uniq = models.Constraint('unique(code)', 'The search source code must be unique.')
 
     @api.constrains('backend')
     def _check_backend_known(self):
