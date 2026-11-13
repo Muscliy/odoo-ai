@@ -1,0 +1,92 @@
+[
+  {
+    "model": "ai.coworker",
+    "field": "agent_creator_prompt",
+    "source": "You are a creative director designing AI agents for a Swedish workplace.\nCreate a memorable, slightly playful agent persona for the role: {topic}\n\nReturn ONLY a JSON object with these keys:\n- name: a catchy Swedish-sounding name (e.g. \"Moms-Magnus\", \"Bokslut-Britta\")\n- alias_name: short lowercase alias for @mentions (no spaces, e.g. \"magnus\")\n- personality: 1-2 sentences describing character traits\n- style: how the agent communicates\n- values: guiding principles\n- boundaries: what the agent must NOT do\n- trigger_words: comma-separated keywords for routing\n- avatar_description: visual description for an avatar\n\nKeep it professional but with personality.",
+    "value": "你负责为中文工作环境设计 AI 员工。\n为以下角色创建专业、有个性且容易记住的人设：{topic}\n\n只返回 JSON 对象，保留以下键名，文字内容使用简体中文：\n- name：容易记住的中文名称\n- alias_name：用于 @提及的小写字母短别名，不含空格\n- personality：一至两句性格说明\n- style：沟通方式\n- values：行为原则\n- boundaries：工作边界和禁止操作\n- trigger_words：用逗号分隔的中文路由关键词，可保留必要的技术术语\n- avatar_description：头像外观说明\n\n保持专业，同时体现角色特点。"
+  },
+  {
+    "model": "ai.company.memory.category",
+    "field": "description",
+    "source": "Customer intelligence",
+    "value": "客户情报"
+  },
+  {
+    "model": "ai.company.memory.category",
+    "field": "description",
+    "source": "Supplier intelligence",
+    "value": "供应商情报"
+  },
+  {
+    "model": "ai.company.memory.category",
+    "field": "description",
+    "source": "Strategy, OKR, BMC, SWOT",
+    "value": "战略管理"
+  },
+  {
+    "model": "ai.company.memory.category",
+    "field": "description",
+    "source": "Marketing campaigns, KPIs",
+    "value": "营销活动"
+  },
+  {
+    "model": "ai.company.memory.category",
+    "field": "description",
+    "source": "Competitor intelligence",
+    "value": "竞争对手情报"
+  },
+  {
+    "model": "ai.company.memory.category",
+    "field": "description",
+    "source": "Market intelligence",
+    "value": "市场情报"
+  },
+  {
+    "model": "ai.company.memory.category",
+    "field": "description",
+    "source": "Management system, ISO",
+    "value": "管理体系"
+  },
+  {
+    "model": "ai.company.memory.category",
+    "field": "description",
+    "source": "Knowledge base articles",
+    "value": "知识库"
+  },
+  {
+    "model": "ai.company.memory.category",
+    "field": "description",
+    "source": "Website content",
+    "value": "网站内容"
+  },
+  {
+    "model": "ai.company.memory.category",
+    "field": "description",
+    "source": "Social media",
+    "value": "社交媒体"
+  },
+  {
+    "model": "ai.company.memory.category",
+    "field": "description",
+    "source": "HR data",
+    "value": "人事资料"
+  },
+  {
+    "model": "ai.company.memory.category",
+    "field": "description",
+    "source": "Financial data",
+    "value": "财务资料"
+  },
+  {
+    "model": "ai.company.memory.category",
+    "field": "description",
+    "source": "Management summary",
+    "value": "管理摘要"
+  },
+  {
+    "model": "ai.company.memory.category",
+    "field": "description",
+    "source": "Operations data",
+    "value": "运营资料"
+  }
+]

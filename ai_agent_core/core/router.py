@@ -85,7 +85,7 @@ class LLMRouter:
             if score > best_score:
                 best_score = score
                 best = a['name']
-        return {"agent": best, "reason": "keyword match"}
+        return {"agent": best, "reason": '关键词匹配'}
 
     async def route(
         self,

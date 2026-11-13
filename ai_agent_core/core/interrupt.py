@@ -165,7 +165,7 @@ class AutoInterruptHandler(InterruptHandler):
         self.hitl_request = hitl_request
 
     async def ask(self, question: str, approval_type: str = "", context: str = "", timeout: float = 300) -> dict:
-        return {"action": "timeout", "reason": "unattended execution"}
+        return {"action": "timeout", "reason": '无人值守执行'}
 
     async def approve_tool(self, tool_name: str, risk_level: str, arguments: dict) -> bool:
         if risk_level in ('safe', 'read_only'):

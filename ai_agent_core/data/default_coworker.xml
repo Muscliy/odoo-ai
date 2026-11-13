@@ -27,8 +27,8 @@
     <data noupdate="1">
 
         <record id="coworker_default_assistent" model="ai.coworker">
-            <field name="name">Allmän assistent</field>
-            <field name="description">Allmän AI-assistent. Hjälper med frågor, styr upp organisationen, och tipsar om förbättringar via kaizen.</field>
+            <field name="name">通用助手</field>
+            <field name="description">通用 AI 助手，帮助回答问题、协调组织工作，并通过持续改进提出优化建议。</field>
             <!-- Legacy-fältet init_type behålls för bakåtkompatibilitet
                  (migrationskod läser det). Sanningen om vilka kanaler som
                  är aktiva är init_*-booleskorna nedan. -->
@@ -44,9 +44,9 @@
         </record>
 
         <record id="agent_default_core" model="ai.agent">
-            <field name="name">Allmän kärna</field>
-            <field name="ai_role">General purpose AI assistant</field>
-            <field name="description">Kärnagent för den allmänna assistenten — svarar på frågor, styr upp organisationen och delegerar till specialister.</field>
+            <field name="name">通用核心助手</field>
+            <field name="ai_role">通用 AI 助手</field>
+            <field name="description">通用助手的核心智能体，回答问题、协调组织工作，并将任务委派给领域专员。</field>
             <field name="status">active</field>
         </record>
 
@@ -59,9 +59,9 @@
 
         <!-- Odoo-specialist (affärsverktyg + odoo-core-skill) -->
         <record id="agent_odoo_business" model="ai.agent">
-            <field name="name">Odoo-specialist</field>
-            <field name="ai_role">Odoo Specialist</field>
-            <field name="description">Affärsexpert på Odoo-modeller: söker, skapar och kör affärsflöden via generiska modellverktyg och följer odoo-core-skillen.</field>
+            <field name="name">Odoo 业务专员</field>
+            <field name="ai_role">Odoo 业务专家</field>
+            <field name="description">熟悉 Odoo 模型的业务专家，使用通用模型工具查询、创建记录和执行业务流程，并遵循 odoo-core 技能。</field>
             <field name="status">active</field>
             <field name="skill_ids" eval="[(6, 0, [ref('skill_odoo_core')])]"/>
             <!-- explicit-agent-tools: odoo-verktyg anges EXPLICIT här — de
@@ -103,9 +103,9 @@
              med bash, så den kan anropa python-pptx/soffice direkt.
              Skillen är metodiken; odoo_attach är kanalen för filbytes. -->
         <record id="agent_office_dokument" model="ai.agent">
-            <field name="name">Office-dokument</field>
-            <field name="ai_role">Office Document Specialist</field>
-            <field name="description">Dokumentexpert: läser, skapar och ändrar Office-dokument (docx, xlsx, pptx, odt, ods, odp) och PDF, inklusive OCR av skannade PDF:er. Hämtar och lämnar dokument via odoo_attach — modellagnostiskt (ir.attachment, dms.file eller vilken modell som helst med ett binärfält).</field>
+            <field name="name">办公文档专员</field>
+            <field name="ai_role">办公文档专家</field>
+            <field name="description">读取、创建和修改 Office 文档（docx、xlsx、pptx、odt、ods、odp）及 PDF，支持扫描 PDF 的 OCR。通过 odoo_attach 获取和交付文件，适用于 ir.attachment、dms.file 及其他包含二进制字段的模型。</field>
             <field name="status">active</field>
             <field name="runtime">external</field>
             <field name="skill_ids" eval="[(6, 0, [ref('skill_office_dokument')])]"/>
@@ -131,9 +131,9 @@
              skillen news-sources; personliga källor och intressen i
              användarens personliga minne. -->
         <record id="agent_news_watcher" model="ai.agent">
-            <field name="name">Nyhetsbevakare</field>
-            <field name="ai_role">News Watcher</field>
-            <field name="description">Omvärldsbevakare: svarar på vad som hänt i nyheterna — en cachad dygnsdigest med 7-10 rangordnade nyheter, ämnesfiltrering och inlärda intressen (källor, ämnen, antal).</field>
+            <field name="name">新闻观察员</field>
+            <field name="ai_role">新闻观察员</field>
+            <field name="description">回答新闻动态问题，使用每日缓存生成 7–10 条按重要程度排序的简报，支持主题筛选和记录来源、主题、数量偏好。</field>
             <field name="status">active</field>
             <field name="skill_ids" eval="[(6, 0, [
                 ref('skill_news_briefing'),

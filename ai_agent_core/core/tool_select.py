@@ -356,11 +356,35 @@ _BRIDGE = {
 }
 
 
+_ZH_TERMS = {
+    "查询": {"search", "find"}, "查找": {"search", "find"},
+    "搜索": {"search"}, "列出": {"list"}, "读取": {"read", "fetch"},
+    "创建": {"create", "new"}, "新增": {"create", "new"},
+    "更新": {"write", "update"}, "修改": {"write", "update"},
+    "删除": {"delete", "unlink"}, "确认": {"confirm"},
+    "员工": {"employee", "hr.employee"}, "部门": {"department"},
+    "岗位": {"job"}, "联系人": {"partner", "contact"},
+    "客户": {"partner", "customer"}, "公司": {"company"},
+    "产品": {"product"}, "订单": {"order"}, "发票": {"invoice"},
+    "记录": {"record"}, "模型": {"model"}, "字段": {"field"},
+    "技能": {"skill"}, "智能体": {"agent"}, "工具": {"tool"},
+    "网页": {"web", "url"}, "网络": {"web"}, "网址": {"url"},
+    "新闻": {"news"}, "邮件": {"mail"}, "视频": {"youtube"},
+    "记忆": {"memory"}, "文档": {"document", "attachment"},
+    "文件": {"file", "attachment"}, "通知": {"push", "notification"},
+    "委派": {"delegate", "task"}, "任务": {"task"},
+}
+
+
 def _tokens_of(text: str) -> set:
     words = re.findall(r"[\w.]+", (text or "").lower())
     out = {w for w in words if w not in _STOP and len(w) > 1}
     for w in list(out):
         out |= _BRIDGE.get(w, set())
+    # Chinese has no word separators; expand known business phrases directly.
+    for phrase, aliases in _ZH_TERMS.items():
+        if phrase in (text or ""):
+            out |= aliases
     return out
 
 
@@ -369,6 +393,7 @@ def _tokens_of(text: str) -> set:
 # a common Odoo noun, the generic ORM tools are almost always the answer —
 # not a domain-specific tool that merely happens to mention the word.
 _ODOO_MODEL_HINTS = {
+    "employee", "hr.employee", "department", "job",
     "partner", "partners", "res.partner", "kund", "kunder", "leverantör",
     "order", "sale.order", "säljorder", "faktura", "invoice", "account.move",
     "produkt", "product", "artikel", "artiklar", "uppgift", "task",

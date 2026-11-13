@@ -12,86 +12,46 @@
             <field name="name">push-notification</field>
             <field name="category">general</field>
             <field name="source_type">odoo</field>
-            <field name="description">Avisera användaren när ett arbete är klart: push direkt under en tur, eller schemalägg jobbet och låt heartbeat köra det. Beslutstabell för när en notis är rätt och när den är spam.</field>
-            <field name="trigger_keywords">push, notis, notifikation, avisera, meddela, påminn, när det är klart, när du är klar, hör av dig, säg till, i bakgrunden, senare, schemalägg, meddela mig, underrätta, ping</field>
-            <field name="recipe_text"><![CDATA[
-# Skill: push-notification
+            <field name="description">任务完成通知：判断何时应立即发送推送，何时应安排后台任务；避免重复提醒或发送打扰用户的消息。</field>
+            <field name="trigger_keywords">推送, 通知, 提醒, 完成后通知, 好了告诉我, 稍后, 后台处理, 定时, ping, push</field>
+            <field name="recipe_text"><![CDATA[# 技能：任务通知
 
-## Scope
+## 范围
+模块：web_pwa_push、ai_agent_core。工具：push_notification(title, body, url)。
 
-Moduler: web_pwa_push (alltid installerad), ai_agent_core.
+## 通知原则
+推送主要服务于已经离开聊天的用户。用户仍在阅读时，直接在聊天中回复。避免频繁推送，以免用户关闭包括人工审批在内的重要通知。
 
-Verktyg: `push_notification(title, body, url)`.
+## 决策
+| 情况 | 操作 |
+|---|---|
+| 用户要求通知，工作预计需要几分钟 | 开始前调用 push_notification，说明正在处理 |
+| 用户要求一小时后、今晚等稍后处理 | 创建带 scheduled_at 的 ai.org.task |
+| 几秒即可完成的简短回复 | 直接聊天回复 |
+| 用户仍在聊天中跟进 | 直接回复，离开后由活动检测决定通知 |
+| 只是确认已理解 | 聊天回复即可 |
 
-## Grundregeln
+## 当前轮通知
+1. 开始前调用 push_notification(title="正在分析 400 张订单", body="报告完成后会通知你。")。
+2. 执行任务。
+3. 在聊天中返回结果。
+系统在本轮结束时，仅当用户离开时间超过阈值才自动通知。开始通知用于告知等待，无需再手动发送完成通知。
 
-En notis finns för den som **lämnat** chatten. Sitter användaren kvar och
-tittar är notisen i vägen — den avbryter läsningen av svaret som just kom.
+## 定时任务
+创建 ai.org.task：
+- name：简短标题。
+- description：明确说明要做什么，作为后续运行提示；为空将无法执行。
+- coworker_id：执行员工，通常是当前员工。
+- scheduled_at：最早执行时间，Heartbeat 到时才领取。
+- beställare_ref：请求人的 res.users,<id> 引用；缺少该值，完成时不会通知请求人。
+任务完成后，系统自动用任务名与结果摘要通知请求人。
 
-Notiströtthet är den verkliga risken. En användare som får en notis för
-varje fråga stänger av push, och då dör även godkännande-notiserna (HITL)
-— som är de som faktiskt spelar roll.
-
-## Beslutstabell
-
-| Situation | Gör | Varför |
-|---|---|---|
-| Användaren ber om att bli aviserad, och arbetet tar **minuter** | `push_notification` **innan** du börjar | Användaren kan lämna chatten medan du arbetar |
-| Användaren vill ha besked **senare** ("om en timme", "i natt") | Skapa `ai.org.task` med `scheduled_at` | Heartbeat kör den; du behöver inte hålla tråden |
-| Svaret är **kort** (sekunder) | Låt bli | Användaren väntar redan; notisen är brus |
-| Användaren sitter i chatten och följer med | Låt bli | Turen aviserar ändå om hen lämnar (aktivitetsgrinden) |
-| Du ska bara bekräfta att du förstått | Låt bli | Ett svar i chatten räcker |
-
-## Direkt notis — under turen
-
-Anropa `push_notification` **först**, sedan arbetet:
-
-1. `push_notification(title="Analyserar 400 ordrar", body="Hör av mig när
-   rapporten är klar.")`
-2. Gör arbetet.
-3. Svara i chatten som vanligt.
-
-Turen aviserar dessutom **automatiskt** när den avslutas — men bara om
-användaren varit borta längre än gränsen. Den manuella notisen i steg 1
-täcker väntetiden; du behöver inte skicka en till i slutet.
-
-## Schemalagt jobb — när användaren vill ha besked senare
-
-Skapa en `ai.org.task` med:
-
-- `name` — kort rubrik
-- `description` — **vad som ska göras**, i klartext. Det här blir prompten
-  som körs senare; en tom beskrivning gör uppgiften okörbar.
-- `coworker_id` — vem som ska utföra den (oftast du själv)
-- `scheduled_at` — tidigaste tidpunkt. Heartbeat plockar den inte förrän då.
-- `beställare_ref` — `res.users,<id>` för den som beställde. **Utan den
-  aviseras ingen när jobbet är klart.**
-
-När uppgiften checkas in aviseras beställaren automatiskt med uppgiftens
-namn och resultatsammanfattningen. Du behöver inte pusha själv.
-
-## Verktygshintar
-
-- `push_notification(title, body, url)` — mottagaren är **alltid**
-  sessionens användare. Det finns ingen parameter för att välja någon
-  annan, och det är avsiktligt: en agent ska inte kunna skicka notiser som
-  ser ut att komma från någon annan.
-- `odoo_create('ai.org.task', {...})` — för det schemalagda jobbet. Kräver
-  godkännande (HITL) som alla skrivningar.
-- `odoo_search('ai.org.task', [...])` — för att se status på ett jobb du
-  lagt.
-
-## Vad du INTE ska göra
-
-- **Kompensera inte för en misslyckad notis.** Svaret
-  `{"queued": false, "reason": "..."}` betyder att användaren saknar
-  registrerade enheter eller att servern saknar push-nycklar. Att försöka
-  igen, skicka flera, eller hitta på en annan mottagare hjälper inte —
-  säg det till användaren i chatten i stället.
-- **Skicka inte en notis för att du är klar med ett kort svar.** Det är
-  det vanligaste misstaget: agenten vill "vara hjälpsam" och aviserar allt.
-- **Skapa inte en `ai.org.task` för något du kan göra på tio sekunder.**
-  En schemalagd uppgift är för arbete som ska ske senare eller ta tid.
+## 工具与限制
+- push_notification 的收件人固定为会话用户，没有其他收件人参数。
+- odoo_create('ai.org.task', {...}) 创建任务，与其他写入一样需要人工审批。
+- odoo_search('ai.org.task', [...]) 查询任务状态。
+- 返回 {"queued": false, "reason": "..."} 表示无注册设备或缺少推送密钥。向用户说明原因，保留聊天结果；重试、重复发送或更换收件人不能解决此类问题。
+- 短任务直接执行；定时任务用于稍后执行或明显耗时的工作。
 ]]></field>
         </record>
     </data>

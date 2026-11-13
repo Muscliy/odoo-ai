@@ -179,6 +179,7 @@
         'views/menu.xml',
         'data/cron_eval.xml',
         'views/ai_eval_views.xml',
+        'data/localize_builtin_content.xml',
     ],
     'assets': {
         'web.assets_backend': [

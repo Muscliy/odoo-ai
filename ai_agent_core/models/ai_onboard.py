@@ -163,15 +163,15 @@ class AIOnboardCandidate(models.Model):
         integrations = {
             'helpdesk': {
                 'model': 'helpdesk.ticket',
-                'description': 'Recurring helpdesk topics → coworker candidates',
+                'description': '重复出现的服务台问题 → AI 员工候选任务',
             },
             'project': {
                 'model': 'project.task',
-                'description': 'Projekt-uppgifter utan automation → quest-kandidater',
+                'description': '尚未自动化的项目任务 → AI 员工候选任务',
             },
             'mgmtsystem': {
                 'model': 'mgmtsystem.nonconformity',
-                'description': 'Avvikelser som kan automatgranskas → quest-kandidater',
+                'description': '可以自动审核的异常 → AI 员工候选任务',
             },
         }
 

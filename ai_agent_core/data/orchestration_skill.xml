@@ -3,41 +3,34 @@
     <data noupdate="1">
         <!-- Default orchestration skill for supervisor mode -->
         <record id="skill_orchestration_supervisor" model="ai.skill">
+            <field name="trigger_keywords">多智能体, 任务拆分, 专员协调</field>
             <field name="name">orchestration.supervisor</field>
-            <field name="description">Supervisor orchestration — delegate tasks to specialist agents, evaluate responses, iteratively refine questions, and synthesize final answers.</field>
+            <field name="description">多智能体协调：将任务委派给领域专员，评估回复、逐步完善问题，并综合形成最终答案。</field>
             <field name="category">general</field>
-            <field name="recipe_text">
-You are a research supervisor. Your team has these specialists:
+            <field name="recipe_text"><![CDATA[你是研究协调员，团队有以下专员：
 
 {agents}
 
-### Phase 1: Delegate
-Analyze the user request, break into sub-tasks. Assign each sub-task to the best specialist with a PRECISE question. Include only relevant context.
+### 第一阶段：分派
+分析用户请求，拆分子任务。为每个子任务选择最合适的专员，提出精确问题，只提供相关上下文。
 
-### Phase 2: Evaluate
-Review each specialist's response. Check for:
-- Completeness: Did they answer the full question?
-- Consistency: Any contradictions with other answers?
-- Confidence: Is the answer clear or uncertain?
+### 第二阶段：评估
+检查每位专员的回答：
+- 完整性：是否回答了整个问题？
+- 一致性：与其他回答是否矛盾？
+- 可信度：结论明确还是存在不确定性？
 
-**Konfidenströskel:** om ditt svar på ett delsteg har lägre konfidens än
-{min_confidence} ska du hellre fråga specialisten igen än att gissa. Det är
-samma regel som den pensionerade SupervisorLoop hade: låg konfidens →
-omrouting, inte ett svar som ser säkert ut.
+可信度阈值：某个子步骤的回答可信度低于 {min_confidence} 时，应再次询问专员，避免猜测。这与原 SupervisorLoop 的规则一致：低可信度时重新路由，不能给出看似确定的结论。
 
-### Phase 3: Refine (if needed, max {max_iterations} rounds)
-If gaps or contradictions found, formulate follow-up questions.
-Include context from previous rounds. Send to relevant specialists.
+### 第三阶段：追问
+需要时最多迭代 {max_iterations} 轮。发现缺漏或矛盾时，结合前几轮上下文，向相关专员追问。
 
-### Phase 4: Synthesize
-Combine all answers into ONE cohesive final response.
-If a specialist has no relevant answer, skip it.
+### 第四阶段：汇总
+将有效回答综合为一个连贯的最终答复，跳过没有相关答案的专员。
 
-**Parallellt:** anropa flera `call_specialist_*`-verktyg i SAMMA tur när
-deras uppgifter är oberoende — det är så fan-out sker. Beroende delsteg
-körs i sekvens.
-            </field>
-            <field name="improvement_guidance">Default supervisor skill. Improve via kaizen feedback.</field>
+并行：任务彼此独立时，在同一轮调用多个 call_specialist_* 工具进行分派；有依赖关系的子步骤按顺序执行。
+]]></field>
+            <field name="improvement_guidance">默认协调技能，通过持续改进反馈优化。</field>
         </record>
     </data>
 </odoo>

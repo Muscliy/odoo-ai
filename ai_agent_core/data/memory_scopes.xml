@@ -3,22 +3,22 @@
 <odoo>
     <data noupdate="1">
         <record id="memory_scope_company" model="ai.memory.scope">
-            <field name="name">Company Memory</field>
+            <field name="name">公司记忆</field>
             <field name="code">company</field>
             <field name="sequence" eval="10"/>
-            <field name="description">OKF company scope — company knowledge</field>
+            <field name="description">公司范围的 OKF 知识与记忆。</field>
         </record>
         <record id="memory_scope_personal" model="ai.memory.scope">
-            <field name="name">Personligt minne</field>
+            <field name="name">个人记忆</field>
             <field name="code">personal</field>
             <field name="sequence" eval="20"/>
-            <field name="description">OKF personal scope — the user knowledge</field>
+            <field name="description">当前用户范围的 OKF 知识与记忆。</field>
         </record>
         <record id="memory_scope_coworker" model="ai.memory.scope">
-            <field name="name">Medarbetarens minne</field>
+            <field name="name">AI 员工记忆</field>
             <field name="code">coworker</field>
             <field name="sequence" eval="30"/>
-            <field name="description">OKF coworker-scope — medarbetarens eget minne</field>
+            <field name="description">AI 员工自身范围的 OKF 知识与记忆。</field>
         </record>
     </data>
 </odoo>

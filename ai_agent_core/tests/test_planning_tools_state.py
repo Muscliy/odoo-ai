@@ -12,6 +12,7 @@ och bevisar att de inte delar lista.
 """
 
 import asyncio
+import json
 
 from odoo.tests.common import TransactionCase, tagged
 
@@ -88,7 +89,7 @@ class TestPlanningToolsOwnTheirState(TransactionCase):
         """En loop utan källa ska säga det — inte låna en annan loops källa."""
         load = {t.name: t for t in skill_tools(None)}['load_skill'].handler
         result = asyncio.run(load(name='saltstack'))
-        self.assertIn('no skill source configured', result)
+        self.assertEqual(json.loads(result)['error'], '尚未配置技能来源。')
 
 
 @tagged('ai_core', 'post_install', '-at_install')

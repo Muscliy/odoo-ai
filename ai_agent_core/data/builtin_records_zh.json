@@ -1,0 +1,497 @@
+[
+  {
+    "xmlid": "ai_agent_core.coworker_invoice_assistant",
+    "fields": {
+      "name": {
+        "value": "发票助手",
+        "source_sha256": "ec7050b7ce9f05b9dfc76cbc0a2a2c4963e8185f5fcf321e2636d5793199526f"
+      },
+      "description": {
+        "value": "你是财务部门的发票助手。接收邮件中的供应商发票，识别发件人（res.partner），读取发票及 OCR 内容，并在 Odoo 创建供应商账单（account.move）。仔细核对金额、日期、税额和参考号。",
+        "source_sha256": "9e468b9f4ec431d979376f7737e2745065b134dc7c462085762da2e1a8287b3a"
+      }
+    }
+  },
+  {
+    "xmlid": "ai_agent_core.agent_invoice_partner",
+    "fields": {
+      "name": {
+        "value": "邮件联系人识别",
+        "source_sha256": "aebca54f07a07c774f2650a2757555e4a7e6f92371f3347bbef4ed00b63904b5"
+      },
+      "ai_role": {
+        "value": "邮件发件人分析员",
+        "source_sha256": "64795f8d37d11e73d934529fbd2029cad65296f51597848cfde3163305a1fbf2"
+      },
+      "description": {
+        "value": "分析来信发件人，按“邮件：查找或创建联系人”技能查询或创建正确的 res.partner。",
+        "source_sha256": "86cf3833649bb6220d12879990c9f015fe65f339e1309a1822d1b6fff2773d67"
+      },
+      "ai_goal": {
+        "value": "根据邮件发件人查找或创建正确的 res.partner 联系人。",
+        "source_sha256": "dd147c7b9ba44901258c1f7314ef550c4a517091dc926de7b54befb8395376fe"
+      }
+    }
+  },
+  {
+    "xmlid": "ai_agent_core.agent_invoice_analyser",
+    "fields": {
+      "name": {
+        "value": "发票分析",
+        "source_sha256": "25071f42b05e83ff07850878192f36d907e8611c62a51a0a4333880b874c8f9c"
+      },
+      "ai_role": {
+        "value": "发票分析员",
+        "source_sha256": "14b9425bdd941cbf74c710c6e712787724f0ca4928259dddf77529f4c6b47090"
+      },
+      "description": {
+        "value": "分析发票 OCR 文字和附件，按“邮件：供应商发票处理”技能创建正确的 account.move。",
+        "source_sha256": "aad5cf00dc25e6319c57c838852bc16d28d2fd5f5c225070acdd857e60cb5af8"
+      },
+      "ai_goal": {
+        "value": "根据发票正文创建正确的 account.move，move_type=in_invoice。",
+        "source_sha256": "6cc7d7aefdfce678c8eb6382d6d6d56ce1497fc70cf4ecce16813be8b59a8973"
+      }
+    }
+  },
+  {
+    "xmlid": "ai_agent_core.tool_browser_navigate",
+    "fields": {
+      "description": {
+        "value": "打开指定网址并检查页面，返回标题、可见文字和内容摘要。用于验证网站可用性、检查页面或提取信息。",
+        "source_sha256": "a8872c0d3970570e97f393197c7dcf982deabe00016f189f38f3a3f2fc7f9bb7"
+      },
+      "parameters": {
+        "value": "{\"type\": \"object\", \"properties\": {\"url\": {\"type\": \"string\", \"description\": \"要打开的网址，例如 https://example.com。\"}, \"action\": {\"type\": \"string\", \"enum\": [\"snapshot\", \"screenshot\", \"check_uptime\"], \"description\": \"页面操作：snapshot 读取正文，screenshot 截图，check_uptime 检查页面能否加载。\"}}, \"required\": [\"url\"]}",
+        "source_sha256": "d11a463c0902d879bfe60504aa8d8c7788d52fe8a481476738e3e6c8a38d8496"
+      }
+    }
+  },
+  {
+    "xmlid": "ai_agent_core.tool_youtube_get_transcript",
+    "fields": {
+      "description": {
+        "value": "提取 YouTube 视频字幕，接收视频链接或 ID，返回带时间戳的文字片段和元数据，无需 API 密钥。",
+        "source_sha256": "e4f4a09f8a96b40b76a81c863559c9961b5c681dc6973628b381ba545050b693"
+      },
+      "parameters": {
+        "value": "{\"type\": \"object\", \"properties\": {\"video_id\": {\"type\": \"string\", \"description\": \"YouTube 链接（youtube.com/watch?v=ID、youtu.be/ID）或 11 位视频 ID。\"}, \"language\": {\"type\": \"string\", \"description\": \"语言代码，默认 en；例如 en、sv、es、de。\"}}, \"required\": [\"video_id\"]}",
+        "source_sha256": "911595930a8bb1e9ce1f974765e36b775fbe43364a2947ade339c9f33dbacbd4"
+      },
+      "code": {
+        "value": "async def execute(video_id=\"\", language=\"en\"):\n    \"\"\"Get transcript from a YouTube video.\n\n    Args:\n        video_id: YouTube URL or 11-char video ID\n        language: Language code (default: 'en')\n\n    Returns:\n        JSON with transcript segments and metadata\n    \"\"\"\n    import json\n    import re\n    from youtube_transcript_api import YouTubeTranscriptApi\n\n    def _tool_error(message, parameter=\"\", expected=\"\", actual=\"\",\n                    retryable=True, tool_name=\"\"):\n        \"\"\"Åtgärdbart fel i samma struktur som ToolError.to_json().\"\"\"\n        return json.dumps({\n            \"error\": message,\n            \"parameter\": parameter,\n            \"expected\": expected,\n            \"actual\": actual,\n            \"valid_fields\": [],\n            \"retryable\": retryable,\n            \"tool_name\": tool_name,\n        }, ensure_ascii=False)\n\n    if not video_id or not str(video_id).strip():\n        return _tool_error(\n            '缺少必填参数 video_id，请提供 YouTube 视频链接或 11 位视频 ID。',\n            parameter=\"video_id\",\n            expected='YouTube 链接或 11 位视频 ID。',\n            actual='（空）',\n            retryable=True,\n            tool_name=\"youtube_get_transcript\")\n\n    # Extract video ID from URL\n    url_patterns = [\n        r'(?:youtube\\\\.com/watch\\\\?v=|youtu\\\\.be/|youtube\\\\.com/shorts/)([a-zA-Z0-9_-]{11})',\n        r'^([a-zA-Z0-9_-]{11})$',\n    ]\n    vid = None\n    for pattern in url_patterns:\n        m = re.search(pattern, video_id.strip())\n        if m:\n            vid = m.group(1)\n            break\n\n    if not vid:\n        return json.dumps({\"error\": f\"无法从以下内容提取视频 ID：'{video_id}'\"})\n\n    try:\n        api = YouTubeTranscriptApi()\n        transcript = api.fetch(vid, languages=[language])\n        segments = [\n            {\"text\": seg.text, \"start\": seg.start, \"duration\": seg.duration}\n            for seg in transcript\n        ]\n        return json.dumps({\n            \"video_id\": vid,\n            \"language\": language,\n            \"segment_count\": len(segments),\n            \"segments\": segments,\n        }, indent=2, ensure_ascii=False)\n    except Exception as e:\n        return json.dumps({\"error\": str(e), \"video_id\": vid})",
+        "source_sha256": "6bd703f67da4ebf461ce9de7818cf01e0af79423329ebbdb2cf24b2393bb5f06"
+      }
+    }
+  },
+  {
+    "xmlid": "ai_agent_core.tool_youtube_search",
+    "fields": {
+      "description": {
+        "value": "使用 Google Data API v3 搜索 YouTube 视频或频道。需要在 Odoo 设置的 AI 配置中填写 Google API Key，或设置 GOOGLE_API_KEY 环境变量。",
+        "source_sha256": "59aff24cc50092934b3c8a90cade6734e7dc3072c64630b4f128f68cf765d5ff"
+      },
+      "parameters": {
+        "value": "{\"type\": \"object\", \"properties\": {\"query\": {\"type\": \"string\", \"description\": \"搜索词，长度 1–200 字符。\"}, \"max_results\": {\"type\": \"integer\", \"description\": \"最多结果数，范围 1–50，默认 10。\"}, \"search_type\": {\"type\": \"string\", \"enum\": [\"video\", \"channel\"], \"description\": \"搜索类型：video 视频或 channel 频道。\"}}, \"required\": [\"query\"]}",
+        "source_sha256": "67dfb75964cd4c4305bcf8b3f2c78d9497468c68db2345e1c8b9d4b6d26f5f62"
+      },
+      "code": {
+        "value": "async def execute(query=\"\", max_results=10, search_type=\"video\"):\n    \"\"\"Search YouTube for videos or channels.\n\n    Args:\n        query: Search query (1-200 chars)\n        max_results: Max results (1-50, default 10)\n        search_type: \"video\" or \"channel\" (default: \"video\")\n\n    Returns:\n        JSON with matching videos/channels and metadata\n    \"\"\"\n    import json\n    import os\n    from googleapiclient.discovery import build\n\n    def _tool_error(message, parameter=\"\", expected=\"\", actual=\"\",\n                    retryable=True, tool_name=\"\"):\n        \"\"\"Åtgärdbart fel i samma struktur som ToolError.to_json().\"\"\"\n        return json.dumps({\n            \"error\": message,\n            \"parameter\": parameter,\n            \"expected\": expected,\n            \"actual\": actual,\n            \"valid_fields\": [],\n            \"retryable\": retryable,\n            \"tool_name\": tool_name,\n        }, ensure_ascii=False)\n\n    if not query or not str(query).strip():\n        return _tool_error(\n            '缺少必填参数 query，例如“智能电视评测”。',\n            parameter=\"query\",\n            expected='长度为 1–200 字符的搜索词。',\n            actual='（空）',\n            retryable=True,\n            tool_name=\"youtube_search\")\n\n    api_key = (env['ir.config_parameter'].sudo()\n                   .get_param('ai_agent_core.google_api_key', '')\n                   or os.environ.get('GOOGLE_API_KEY', ''))\n    if not api_key:\n        return _tool_error(\n            '尚未配置 Google API 密钥。请在 Odoo 的“设置 → AI → Google API Key”中填写，或设置 GOOGLE_API_KEY 环境变量。按频道 ID 查询时，也可直接提供 UC... 频道 ID。',\n            parameter=\"api_key\",\n            expected='在“设置 → AI → Google API Key”或 GOOGLE_API_KEY 环境变量中配置的 Google API 密钥。',\n            actual='（未配置）',\n            retryable=False)\n\n    try:\n        youtube = build('youtube', 'v3', developerKey=api_key, cache_discovery=False)\n        request = youtube.search().list(\n            q=query,\n            part='snippet',\n            type=search_type,\n            maxResults=min(max_results, 50)\n        )\n        response = request.execute()\n        results = []\n        for item in response.get('items', []):\n            entry = {'type': 'video' if 'videoId' in item['id'] else 'channel'}\n            if 'videoId' in item['id']:\n                entry['videoId'] = item['id']['videoId']\n            if 'channelId' in item['id']:\n                entry['channelId'] = item['id']['channelId']\n            entry['title'] = item['snippet']['title']\n            entry['channelId'] = item['snippet']['channelId']\n            entry['channelTitle'] = item['snippet']['channelTitle']\n            entry['publishedAt'] = item['snippet']['publishedAt']\n            entry['description'] = item['snippet']['description'][:300]\n            thumb = item['snippet'].get('thumbnails', {})\n            if thumb:\n                entry['thumbnail'] = thumb.get('default', {}).get('url', '')\n            results.append(entry)\n\n        return json.dumps({\n            \"query\": query,\n            \"type\": search_type,\n            \"result_count\": len(results),\n            \"results\": results,\n        }, indent=2, ensure_ascii=False)\n    except Exception as e:\n        return json.dumps({\"error\": f\"搜索失败：{e}\"})",
+        "source_sha256": "3e82d3e62d38b4ffc1f729e3c6f64c5b44051869af493d00bedfa6a988ec1c6b"
+      }
+    }
+  },
+  {
+    "xmlid": "ai_agent_core.tool_youtube_channel",
+    "fields": {
+      "description": {
+        "value": "浏览 YouTube 频道：通过 RSS 获取最新上传无需密钥；分页列出全部视频需要 Google API 密钥；支持将 @账号解析为频道 ID。",
+        "source_sha256": "8967b097e0d6302b41afe081658feeae1f1d72fca6bb499543ef820f2c9f5bc8"
+      },
+      "parameters": {
+        "value": "{\"type\": \"object\", \"properties\": {\"channel\": {\"type\": \"string\", \"description\": \"@账号、频道链接或 UC... 频道 ID。\"}, \"action\": {\"type\": \"string\", \"enum\": [\"latest\", \"videos\", \"resolve\"], \"description\": \"latest 通过 RSS 免费读取最多 15 个视频；videos 分页列出视频，需要 Google API 密钥；resolve 将 @账号解析为 UC... ID。\"}, \"limit\": {\"type\": \"integer\", \"description\": \"videos 操作的最多结果数，范围 1–50。\"}, \"continuation\": {\"type\": \"string\", \"description\": \"视频分页的下一页令牌。\"}}, \"required\": [\"channel\", \"action\"]}",
+        "source_sha256": "33bd4c05b573acc3c4f204bf592d3f07e35605a477d02bc03c1005f49912579a"
+      },
+      "code": {
+        "value": "async def execute(channel=\"\", action=\"latest\", limit=10, continuation=\"\"):\n    \"\"\"YouTube channel operations.\n\n    Args:\n        channel: @handle, channel URL, or UC... channel ID\n        action: \"latest\" (free, 15 videos via RSS), \"videos\" (paginated, needs a Google API key), \"resolve\" (free, @handle to UC... ID)\n        limit: Max results for \"videos\" action (1-50)\n        continuation: Next page token for paginated \"videos\"\n\n    Returns:\n        JSON with channel info and videos\n    \"\"\"\n    import json\n    import os\n    import re\n\n    def _tool_error(message, parameter=\"\", expected=\"\", actual=\"\",\n                    retryable=True, tool_name=\"\"):\n        \"\"\"Åtgärdbart fel i samma struktur som ToolError.to_json().\"\"\"\n        return json.dumps({\n            \"error\": message,\n            \"parameter\": parameter,\n            \"expected\": expected,\n            \"actual\": actual,\n            \"valid_fields\": [],\n            \"retryable\": retryable,\n            \"tool_name\": tool_name,\n        }, ensure_ascii=False)\n\n    if not channel or not str(channel).strip():\n        return _tool_error(\n            '缺少必填参数 channel，例如 @GamersNexus。',\n            parameter=\"channel\",\n            expected=\"@handle, channel URL, or UC... channel ID\",\n            actual='（空）',\n            retryable=True,\n            tool_name=\"youtube_channel\")\n    if action not in (\"latest\", \"videos\", \"resolve\"):\n        return _tool_error(\n            'action 参数值无效。',\n            parameter=\"action\",\n            expected='可选操作：latest、videos、resolve。',\n            actual=str(action),\n            retryable=True,\n            tool_name=\"youtube_channel\")\n\n    if action == \"resolve\":\n        api_key = (env['ir.config_parameter'].sudo()\n                   .get_param('ai_agent_core.google_api_key', '')\n                   or os.environ.get('GOOGLE_API_KEY', ''))\n        if not api_key:\n            return _tool_error(\n                '尚未配置 Google API 密钥。请在 Odoo 的“设置 → AI → Google API Key”中填写，或设置 GOOGLE_API_KEY 环境变量。按频道 ID 查询时，也可直接提供 UC... 频道 ID。',\n                parameter=\"api_key\",\n                expected='在“设置 → AI → Google API Key”或 GOOGLE_API_KEY 环境变量中配置的 Google API 密钥。',\n                actual='（未配置）',\n                retryable=False)\n        from googleapiclient.discovery import build\n        youtube = build('youtube', 'v3', developerKey=api_key, cache_discovery=False)\n        handle = channel.lstrip('@')\n        request = youtube.search().list(\n            q=f\"@{handle}\", part='snippet', type='channel', maxResults=1\n        )\n        response = request.execute()\n        items = response.get('items', [])\n        if items:\n            cid = items[0]['snippet']['channelId']\n            return json.dumps({\n                \"channel_id\": cid,\n                \"title\": items[0]['snippet']['title'],\n                \"resolved_from\": channel\n            })\n        return json.dumps({\"error\": f\"Channel not found: {channel}\"})\n\n    if action == \"latest\":\n        import urllib.request\n        import xml.etree.ElementTree as ET\n        cid = channel\n        m = re.search(r'UC[a-zA-Z0-9_-]{22}', channel)\n        if m:\n            cid = m.group(0)\n        else:\n            api_key = (env['ir.config_parameter'].sudo()\n                   .get_param('ai_agent_core.google_api_key', '')\n                   or os.environ.get('GOOGLE_API_KEY', ''))\n            if not api_key:\n                return _tool_error(\n                    '尚未配置 Google API 密钥。请在 Odoo 的“设置 → AI → Google API Key”中填写，或设置 GOOGLE_API_KEY 环境变量。按频道 ID 查询时，也可直接提供 UC... 频道 ID。',\n                    parameter=\"api_key\",\n                    expected='UC... 频道 ID，或在“设置 → AI → Google API Key”中配置的密钥。',\n                    actual='（未配置）',\n                    retryable=False)\n            from googleapiclient.discovery import build\n            youtube = build('youtube', 'v3', developerKey=api_key, cache_discovery=False)\n            handle = channel.lstrip('@')\n            req = youtube.search().list(q=f\"@{handle}\", part='snippet', type='channel', maxResults=1)\n            resp = req.execute()\n            items = resp.get('items', [])\n            if not items:\n                return json.dumps({\"error\": f\"Channel not found: {channel}\"})\n            cid = items[0]['snippet']['channelId']\n        rss_url = f\"https://www.youtube.com/feeds/videos.xml?channel_id={cid}\"\n        try:\n            req = urllib.request.Request(rss_url, headers={'User-Agent': 'Odoo-AI/1.0'})\n            with urllib.request.urlopen(req, timeout=10) as resp:\n                tree = ET.parse(resp)\n            root = tree.getroot()\n            ns = {'atom': 'http://www.w3.org/2005/Atom'}\n            entries = root.findall('atom:entry', ns)\n            videos = []\n            for entry in entries[:limit]:\n                vid = entry.find('yt:videoId', {'yt': 'http://www.youtube.com/xml/schemas/2015'})\n                title = entry.find('atom:title', ns)\n                published = entry.find('atom:published', ns)\n                author = entry.find('atom:author', ns)\n                author_name = author.find('atom:name', ns) if author is not None else None\n                link = entry.find('atom:link', ns)\n                videos.append({\n                    \"videoId\": vid.text if vid is not None else \"\",\n                    \"title\": title.text if title is not None else \"\",\n                    \"published\": published.text if published is not None else \"\",\n                    \"author\": author_name.text if author_name is not None else \"\",\n                    \"link\": link.get('href') if link is not None else \"\",\n                })\n            return json.dumps({\n                \"channel_id\": cid,\n                \"result_count\": len(videos),\n                \"results\": videos,\n            }, indent=2, ensure_ascii=False)\n        except Exception as e:\n            return json.dumps({\"error\": f\"订阅源读取失败：{e}\"})\n\n    if action == \"videos\":\n        api_key = (env['ir.config_parameter'].sudo()\n                   .get_param('ai_agent_core.google_api_key', '')\n                   or os.environ.get('GOOGLE_API_KEY', ''))\n        if not api_key:\n            return _tool_error(\n                '尚未配置 Google API 密钥。请在 Odoo 的“设置 → AI → Google API Key”中填写，或设置 GOOGLE_API_KEY 环境变量。按频道 ID 查询时，也可直接提供 UC... 频道 ID。',\n                parameter=\"api_key\",\n                expected='在“设置 → AI → Google API Key”或 GOOGLE_API_KEY 环境变量中配置的 Google API 密钥。',\n                actual='（未配置）',\n                retryable=False)\n        from googleapiclient.discovery import build\n        youtube = build('youtube', 'v3', developerKey=api_key, cache_discovery=False)\n        if continuation:\n            request = youtube.search().list(\n                part='snippet', type='video', maxResults=min(limit, 50), pageToken=continuation\n            )\n        else:\n            cid = channel\n            m = re.search(r'UC[a-zA-Z0-9_-]{22}', channel)\n            if m:\n                cid = m.group(0)\n            else:\n                handle = channel.lstrip('@')\n                req = youtube.search().list(\n                    q=f\"@{handle}\", part='snippet', type='channel', maxResults=1\n                )\n                resp = req.execute()\n                items = resp.get('items', [])\n                if not items:\n                    return json.dumps({\"error\": f\"Channel not found: {channel}\"})\n                cid = items[0]['snippet']['channelId']\n            request = youtube.search().list(\n                channelId=cid, part='snippet', type='video', order='date', maxResults=min(limit, 50)\n            )\n        response = request.execute()\n        results = []\n        for item in response.get('items', []):\n            results.append({\n                \"videoId\": item['id']['videoId'],\n                \"title\": item['snippet']['title'],\n                \"publishedAt\": item['snippet']['publishedAt'],\n                \"description\": item['snippet']['description'][:200],\n                \"thumbnail\": item['snippet'].get('thumbnails', {}).get('default', {}).get('url', ''),\n            })\n        return json.dumps({\n            \"result_count\": len(results),\n            \"has_more\": 'nextPageToken' in response,\n            \"next_page_token\": response.get('nextPageToken', ''),\n            \"results\": results,\n        }, indent=2, ensure_ascii=False)\n\n    return json.dumps({\"error\": f\"未知操作：{action}。可选操作：latest、videos、resolve。\"})",
+        "source_sha256": "9ace35f6a326961b8e67fc0233864cc1b4d15e3e4a93a4f305295aa73207cef1"
+      }
+    }
+  },
+  {
+    "xmlid": "ai_agent_core.tool_youtube_playlist",
+    "fields": {
+      "description": {
+        "value": "获取 YouTube 播放列表中的视频，接收链接或 ID，支持分页。需要在 Odoo 设置中配置 Google API 密钥。",
+        "source_sha256": "a663f1ea5fdacd750363f9f9d48224f550413f8e85c946736f86f3cc0684e839"
+      },
+      "parameters": {
+        "value": "{\"type\": \"object\", \"properties\": {\"playlist_id\": {\"type\": \"string\", \"description\": \"播放列表链接或 ID，前缀为 PL、UU、LL、FL、OL。\"}, \"max_results\": {\"type\": \"integer\", \"description\": \"每页视频数量，范围 1–50，默认 10。\"}, \"continuation\": {\"type\": \"string\", \"description\": \"分页结果的下一页令牌。\"}}, \"required\": [\"playlist_id\"]}",
+        "source_sha256": "c57c2e7cab6171dc2770e5d1ba842e3ef78ad9017cee37a9c23e31f416d5802a"
+      },
+      "code": {
+        "value": "async def execute(playlist_id=\"\", max_results=10, continuation=\"\"):\n    \"\"\"Fetch videos from a YouTube playlist.\n\n    Args:\n        playlist_id: YouTube playlist URL or ID (PL/UU/LL/FL/OL prefix)\n        max_results: Max videos per page (1-50, default 10)\n        continuation: Next page token for pagination\n\n    Returns:\n        JSON with playlist info and videos\n    \"\"\"\n    import json\n    import os\n    import re\n\n    def _tool_error(message, parameter=\"\", expected=\"\", actual=\"\",\n                    retryable=True, tool_name=\"\"):\n        \"\"\"Åtgärdbart fel i samma struktur som ToolError.to_json().\"\"\"\n        return json.dumps({\n            \"error\": message,\n            \"parameter\": parameter,\n            \"expected\": expected,\n            \"actual\": actual,\n            \"valid_fields\": [],\n            \"retryable\": retryable,\n            \"tool_name\": tool_name,\n        }, ensure_ascii=False)\n\n    api_key = (env['ir.config_parameter'].sudo()\n                   .get_param('ai_agent_core.google_api_key', '')\n                   or os.environ.get('GOOGLE_API_KEY', ''))\n    if not api_key:\n        return _tool_error(\n            '尚未配置 Google API 密钥。请在 Odoo 的“设置 → AI → Google API Key”中填写，或设置 GOOGLE_API_KEY 环境变量。按频道 ID 查询时，也可直接提供 UC... 频道 ID。',\n            parameter=\"api_key\",\n            expected='在“设置 → AI → Google API Key”或 GOOGLE_API_KEY 环境变量中配置的 Google API 密钥。',\n            actual='（未配置）',\n            retryable=False)\n\n    if not playlist_id and not continuation:\n        return _tool_error(\n            \"Missing required argument 'playlist_id' \\u2014 example: \"\n            \"https://www.youtube.com/playlist?list=PLabc123\",\n            parameter=\"playlist_id\",\n            expected='播放列表链接、ID 或继续分页令牌。',\n            actual='（空）',\n            retryable=True,\n            tool_name=\"youtube_playlist\")\n\n    from googleapiclient.discovery import build\n    youtube = build('youtube', 'v3', developerKey=api_key, cache_discovery=False)\n\n    pid = playlist_id\n    m = re.search(r'(?:list=|/playlist\\\\?list=)([a-zA-Z0-9_-]+)', playlist_id)\n    if m:\n        pid = m.group(1)\n\n    try:\n        kwargs = {'part': 'snippet', 'maxResults': min(max_results, 50)}\n        if pid:\n            kwargs['playlistId'] = pid\n        if continuation:\n            kwargs['pageToken'] = continuation\n\n        request = youtube.playlistItems().list(**kwargs)\n        response = request.execute()\n\n        results = []\n        for item in response.get('items', []):\n            snippet = item['snippet']\n            results.append({\n                \"videoId\": snippet['resourceId']['videoId'],\n                \"title\": snippet['title'],\n                \"position\": snippet.get('position', 0),\n                \"channelId\": snippet.get('channelId', ''),\n                \"channelTitle\": snippet.get('channelTitle', ''),\n                \"publishedAt\": snippet.get('publishedAt', ''),\n                \"description\": snippet.get('description', '')[:200],\n                \"thumbnail\": snippet.get('thumbnails', {}).get('default', {}).get('url', ''),\n            })\n\n        return json.dumps({\n            \"playlist_id\": pid or '（继续分页）',\n            \"result_count\": len(results),\n            \"has_more\": 'nextPageToken' in response,\n            \"next_page_token\": response.get('nextPageToken', ''),\n            \"results\": results,\n        }, indent=2, ensure_ascii=False)\n    except Exception as e:\n        return json.dumps({\"error\": f\"播放列表读取失败：{e}\"})",
+        "source_sha256": "855c49dfdeb243bbab5ccca19ffcd50a730390fbb9f251c5bd5c36d9a014e76a"
+      }
+    }
+  },
+  {
+    "xmlid": "ai_agent_core.cron_task_cron_company_memory_nightly",
+    "fields": {
+      "name": {
+        "value": "每晚整理公司记忆",
+        "source_sha256": "9975d561e9f139b641829e2f684d5a9aa654d564ca2acc048835dcf4939345ee"
+      }
+    }
+  },
+  {
+    "xmlid": "ai_agent_core.cron_task_cron_company_memory_partners",
+    "fields": {
+      "name": {
+        "value": "建立客户记忆索引",
+        "source_sha256": "e163c581fa7f806e40a34441050b03cc90ac39c32d334a173c021fe8a81b07de"
+      }
+    }
+  },
+  {
+    "xmlid": "ai_agent_core.cron_task_cron_company_memory_suppliers",
+    "fields": {
+      "name": {
+        "value": "建立供应商记忆索引",
+        "source_sha256": "8e3643072d27f69ae686cc2ec6126500dc6190fa6ba483f57d3acfa1bbe790fc"
+      }
+    }
+  },
+  {
+    "xmlid": "ai_agent_core.cron_task_cron_company_memory_knowledge",
+    "fields": {
+      "name": {
+        "value": "建立知识文章索引",
+        "source_sha256": "53bcd5bfb85a339822fad8e0ee5142ba52e732608c9ed11490e5dcffc9508d66"
+      }
+    }
+  },
+  {
+    "xmlid": "ai_agent_core.cron_task_cron_company_memory_dms",
+    "fields": {
+      "name": {
+        "value": "建立文档索引",
+        "source_sha256": "ff2603cfdb256bb1a8d5bd7c910ddd431950662f3f7ff6b39d2337821b9a0170"
+      }
+    }
+  },
+  {
+    "xmlid": "ai_agent_core.cron_task_cron_company_memory_website",
+    "fields": {
+      "name": {
+        "value": "建立公司网站知识索引",
+        "source_sha256": "ad3481469a255e5db0d28d6047bb8ef930dda7ff972ee9a44d6429523b7d9f11"
+      }
+    }
+  },
+  {
+    "xmlid": "ai_agent_core.cron_task_cron_company_memory_strategy",
+    "fields": {
+      "name": {
+        "value": "建立公司战略索引",
+        "source_sha256": "bbe97f46290997362b2041f0e1f82f90209ca3afb3ec5aa21c28efec56bbfcf8"
+      }
+    }
+  },
+  {
+    "xmlid": "ai_agent_core.cron_task_cron_company_memory_mgmt_summary",
+    "fields": {
+      "name": {
+        "value": "生成经营管理摘要",
+        "source_sha256": "276fa93f1b86a3e7e961b247cfeb64c5018d610658ba79ca13526ff22396f748"
+      }
+    }
+  },
+  {
+    "xmlid": "ai_agent_core.coworker_default_assistent",
+    "fields": {
+      "name": {
+        "value": "通用助手",
+        "source_sha256": "ee2db03322fa994c05fade8136eed656d35bba8c41c9fb1fb318509d86bae5ca"
+      },
+      "description": {
+        "value": "通用 AI 助手，帮助回答问题、协调组织工作，并通过持续改进提出优化建议。",
+        "source_sha256": "e598a83a3458868179939ce8159bb2a8eb29b7281304b046ff0117687e6c7d25"
+      }
+    }
+  },
+  {
+    "xmlid": "ai_agent_core.agent_default_core",
+    "fields": {
+      "name": {
+        "value": "通用核心助手",
+        "source_sha256": "2d20245605675a0fefea1a746663b78fae26800a5df7372246591f6733700d38"
+      },
+      "ai_role": {
+        "value": "通用 AI 助手",
+        "source_sha256": "91d7f228bc63b090a74c0b0cbc5d9e2ce95b9bdc0d76ab728cda77e76c4e384e"
+      },
+      "description": {
+        "value": "通用助手的核心智能体，回答问题、协调组织工作，并将任务委派给领域专员。",
+        "source_sha256": "446581daff4f029ba3f22ecb209d28468dd808e3afc1ed61c14e8bcbb59150f9"
+      }
+    }
+  },
+  {
+    "xmlid": "ai_agent_core.agent_odoo_business",
+    "fields": {
+      "name": {
+        "value": "Odoo 业务专员",
+        "source_sha256": "51550ffaf3b75b5fffce26e7d30cc043181c3808a84974fe6ce5edf3c783854c"
+      },
+      "ai_role": {
+        "value": "Odoo 业务专家",
+        "source_sha256": "66c7024b78870319f9f130533b0f7407b6839ad7019be5a8051568a1b5a57dec"
+      },
+      "description": {
+        "value": "熟悉 Odoo 模型的业务专家，使用通用模型工具查询、创建记录和执行业务流程，并遵循 odoo-core 技能。",
+        "source_sha256": "f8b4294697958d291c11d91f123d3011e792baab81eb0a8c4a1b288076b27a21"
+      }
+    }
+  },
+  {
+    "xmlid": "ai_agent_core.agent_office_dokument",
+    "fields": {
+      "name": {
+        "value": "办公文档专员",
+        "source_sha256": "991cef0d9fb64271ec4200cf9af1935acb0fe99921709d4d2b56cff98c3c6d4a"
+      },
+      "ai_role": {
+        "value": "办公文档专家",
+        "source_sha256": "efcbb2d15413c088ddf6f942b05efee001279695bed7c1686464f94e19e16699"
+      },
+      "description": {
+        "value": "读取、创建和修改 Office 文档（docx、xlsx、pptx、odt、ods、odp）及 PDF，支持扫描 PDF 的 OCR。通过 odoo_attach 获取和交付文件，适用于 ir.attachment、dms.file 及其他包含二进制字段的模型。",
+        "source_sha256": "791b88ce2428db701fe855e0336bb96430cc561c323668e1e9c132a28183d5a5"
+      }
+    }
+  },
+  {
+    "xmlid": "ai_agent_core.agent_news_watcher",
+    "fields": {
+      "name": {
+        "value": "新闻观察员",
+        "source_sha256": "13ca096f43df4c376859e84879a4285bdc46f737d3dceff1334432e4a15ae164"
+      },
+      "ai_role": {
+        "value": "新闻观察员",
+        "source_sha256": "a16c584f0797edef0850cea623f632060ed5afdb1499d5dba796f95fe4735ee6"
+      },
+      "description": {
+        "value": "回答新闻动态问题，使用每日缓存生成 7–10 条按重要程度排序的简报，支持主题筛选和记录来源、主题、数量偏好。",
+        "source_sha256": "ea36c55b7092b083376516300c4bbfe13f8f321d7a825e4f80bdd8386244fd6f"
+      }
+    }
+  },
+  {
+    "xmlid": "ai_agent_core.cron_task_cron_website_rag_refresh",
+    "fields": {
+      "name": {
+        "value": "更新网站知识库",
+        "source_sha256": "af89d35dd18f3068fe975d254e80f0cc0c0c33f68275ea2cb2088df7155b9572"
+      }
+    }
+  },
+  {
+    "xmlid": "ai_agent_core.cron_task_graph_sync",
+    "fields": {
+      "name": {
+        "value": "同步知识图谱",
+        "source_sha256": "b228198ab75826f1787b8395ef4c75e22ec120f7c0337fae9c5394a6a32b087b"
+      }
+    }
+  },
+  {
+    "xmlid": "ai_agent_core.memory_scope_company",
+    "fields": {
+      "name": {
+        "value": "公司记忆",
+        "source_sha256": "7e8eb75aeb8e85e16d66f68529021eda9dc7c29166c7b59500b70b56dd890bd9"
+      },
+      "description": {
+        "value": "公司范围的 OKF 知识与记忆。",
+        "source_sha256": "570aacaf2976f2995bddeae1f496891132d20272786985e93dcfda6fbfff542b"
+      }
+    }
+  },
+  {
+    "xmlid": "ai_agent_core.memory_scope_personal",
+    "fields": {
+      "name": {
+        "value": "个人记忆",
+        "source_sha256": "8cb4066f63f9b7e6832b4e73e3cacb99023fcecffa82420fc6baed6fac7bd5ae"
+      },
+      "description": {
+        "value": "当前用户范围的 OKF 知识与记忆。",
+        "source_sha256": "10b4a1e1038b9f000495225bcc488caca543de3288387e7ffdc4a803f85b9424"
+      }
+    }
+  },
+  {
+    "xmlid": "ai_agent_core.memory_scope_coworker",
+    "fields": {
+      "name": {
+        "value": "AI 员工记忆",
+        "source_sha256": "d88a06c4d9e67e1d4474b8883789711b39c9a0603b8462c70108689b3ab3d4cb"
+      },
+      "description": {
+        "value": "AI 员工自身范围的 OKF 知识与记忆。",
+        "source_sha256": "7eb6a4dcc5f51151b4cc9efc7b1e77683122fe6ec5e47a6581464edb7be86f4e"
+      }
+    }
+  },
+  {
+    "xmlid": "ai_agent_core.cron_task_cron_kaizen_weekly",
+    "fields": {
+      "name": {
+        "value": "AI：每周持续改进报告",
+        "source_sha256": "4f8482ef3ca65509a614f44a59ce35836b33301fbdb7733651db99b49a037fa1"
+      }
+    }
+  },
+  {
+    "xmlid": "ai_agent_core.company_memory_cat_customer",
+    "fields": {
+      "description": {
+        "value": "客户情报",
+        "source_sha256": "54d0f5f17ac229816a64b28b68e1b1e06c381e6176d65a33d3266ec1ff5ccbea"
+      }
+    }
+  },
+  {
+    "xmlid": "ai_agent_core.company_memory_cat_supplier",
+    "fields": {
+      "description": {
+        "value": "供应商情报",
+        "source_sha256": "dd019b3ffa3ca3944d7958290c69cffab8056a0a472d8a23ec029339db69b880"
+      }
+    }
+  },
+  {
+    "xmlid": "ai_agent_core.company_memory_cat_strategy",
+    "fields": {
+      "description": {
+        "value": "战略、目标与关键结果、商业模式画布、优势劣势分析",
+        "source_sha256": "f2011eb4fb27a296bde704920204c883ce39c2781093da33d7a8389b2bebe9a5"
+      }
+    }
+  },
+  {
+    "xmlid": "ai_agent_core.company_memory_cat_marketing",
+    "fields": {
+      "description": {
+        "value": "营销活动与关键绩效指标",
+        "source_sha256": "569d96a3cf35c4b1ef172a0fbb156890d2c0905d176f404e7b205379045312bb"
+      }
+    }
+  },
+  {
+    "xmlid": "ai_agent_core.company_memory_cat_competitor",
+    "fields": {
+      "description": {
+        "value": "竞争对手情报",
+        "source_sha256": "dc1c0086e9b7178fddba868eba1abae31dae515dbc0a27b69783f2d56dbff238"
+      }
+    }
+  },
+  {
+    "xmlid": "ai_agent_core.company_memory_cat_knowledge",
+    "fields": {
+      "description": {
+        "value": "知识库文章",
+        "source_sha256": "927966d7bbc0b30f59e3f4bb0dda396862a45f44a0e0325238434eef2897e969"
+      }
+    }
+  },
+  {
+    "xmlid": "ai_agent_core.company_memory_cat_website",
+    "fields": {
+      "description": {
+        "value": "网站内容",
+        "source_sha256": "ce04cfe501fbde6baa069443144a7bbabfb4281a10561e16932959f6909db7b5"
+      }
+    }
+  },
+  {
+    "xmlid": "ai_agent_core.company_memory_cat_mgmt_summary",
+    "fields": {
+      "description": {
+        "value": "管理摘要",
+        "source_sha256": "f0edf10ca7629d615d95cf902a030abb5b6c89b6ffe571f97e5a31e2aa0d744f"
+      }
+    }
+  },
+  {
+    "xmlid": "ai_agent_core.coworker_partner_enrichment",
+    "fields": {
+      "name": {
+        "value": "企业资料助手",
+        "source_sha256": "853ce9c435764e19522d27cb3d849b6873883b3d347267e34e19f4187e7e732e"
+      },
+      "description": {
+        "value": "你帮助用户补全 res.partner 的企业网站、行业、介绍和联系方式。每个建议值都要提供简短依据，用户逐字段批准后才写入。信息应有可靠来源，宁可保留空值也不猜测。",
+        "source_sha256": "ffcd2f7d30cd7d20044cb547aebbbfd4f4fb10a425d3d7663de5f9634e9c5723"
+      }
+    }
+  },
+  {
+    "xmlid": "ai_agent_core.agent_partner_enrichment",
+    "fields": {
+      "name": {
+        "value": "企业资料补全",
+        "source_sha256": "12c57c988949ea9cc8e5a907c2daf8dcb146d97d0dcf892425911f85adb7e24d"
+      },
+      "ai_role": {
+        "value": "企业资料补全专家",
+        "source_sha256": "b265493d696604a2c673b59318ee78e888b6d78d18203f154249867e3af96959"
+      },
+      "description": {
+        "value": "读取联系人资料，通过网络查证并提出补全建议，用户逐字段批准后再写入。",
+        "source_sha256": "54092fc8fcbf8b46d250758d728938170bb24f5ccaecd7993d2c7a3224cfcfd6"
+      },
+      "ai_goal": {
+        "value": "为联系人提出准确、有依据的字段建议，保持写入操作符合用户意愿。",
+        "source_sha256": "d7dd29bcf5d076d2b293f4a01307a754631897bf1a0d64aab0a481f9f63c1860"
+      }
+    }
+  },
+  {
+    "xmlid": "ai_agent_core.tool_partner_propose_enrichment",
+    "fields": {
+      "description": {
+        "value": "读取 res.partner 并提出字段补全建议，仅提供审批依据，不写入记录。适用于补全网站、行业、介绍、电话或地址。示例：partner_propose_enrichment(partner_id=42, fields=[\"website\",\"phone\"])。返回当前字段与建议所需信息；用户批准后，再使用 partner_apply_enrichment 执行写入。",
+        "source_sha256": "61efd7de5f38e97a7f654b5bc92dc4d1ef779804dcecd3c8ce82884b3fdd085d"
+      },
+      "parameters": {
+        "value": "{\"type\": \"object\", \"properties\": {\"partner_id\": {\"type\": \"integer\", \"description\": \"要补全资料的 res.partner 记录 ID。\"}, \"fields\": {\"type\": \"array\", \"items\": {\"type\": \"string\"}, \"description\": \"要提出补全建议的字段：website、industry、description、phone、email、street、city、zip、country。留空时采用默认字段。\"}, \"context\": {\"type\": \"string\", \"description\": \"可选的联系人背景资料，例如用户已知的信息。\"}}, \"required\": [\"partner_id\"]}",
+        "source_sha256": "f3053e4f1580ea0ef6bd0d5e2f8feb33b0ac4aad608c2bc417535043fa947e85"
+      },
+      "code": {
+        "value": "async def execute(partner_id=0, fields=None, context=\"\"):\n    \"\"\"Läs partnern och returnera ett underlag för berikning. Skriver inget.\"\"\"\n    ALLOWED = ['website', 'industry_id', 'description', 'phone', 'email',\n               'street', 'city', 'zip']\n    if not partner_id:\n        return '错误：必须提供 partner_id。'\n    partner = env['res.partner'].browse(int(partner_id))\n    if not partner.exists():\n        return '错误：未找到 ID 为 %s 的联系人。' % partner_id\n\n    wanted = [f for f in (fields or ['website', 'industry_id', 'description'])\n              if f in ALLOWED]\n    if not wanted:\n        return ('错误：未提供允许的字段。允许的字段：%s'\n                % \", \".join(ALLOWED))\n\n    lines = ['%s（ID %s）的资料补全依据：'\n             % (partner.display_name, partner.id), \"\"]\n    for f in wanted:\n        current = partner[f]\n        # m2o/selection ger en tuple (id, namn) — sandboxen saknar `tuple`,\n        # så vi känner igen formen på längd + indexering istället.\n        if not isinstance(current, (int, float, str, bool)) and current:\n            try:\n                current = current[1]\n            except (IndexError, TypeError, KeyError):\n                pass\n        current = current or '（空）'\n        lines.append('- %s：当前值：%s' % (f, current))\n    if context:\n        lines.append(\"\")\n        lines.append('用户提供的背景：%s' % context)\n    lines.append(\"\")\n    lines.append('为上述每个字段提出一个建议值并简要说明依据，需要核实事实时使用 web_search。已有合理值的字段保持原值。先提交建议，等待逐字段批准后再写入。')\n    return \"\\n\".join(lines)",
+        "source_sha256": "571446556e7771b6fc3d5fb599639b21c259ff916ae8b47ff48189a23dfdb4dd"
+      }
+    }
+  },
+  {
+    "xmlid": "ai_agent_core.tool_partner_apply_enrichment",
+    "fields": {
+      "description": {
+        "value": "将已经人工批准的字段值写入 res.partner。先使用 partner_propose_enrichment 提出建议，经 HITL 批准后执行。示例：partner_apply_enrichment(partner_id=42, field=\"website\", value=\"https://example.com\")。返回新值确认，risk_level=write，不能绕过审批。",
+        "source_sha256": "34d0140bb29b9edf34588138a0137c9f1bbca9351c057b6b5467f88dcd3b91d1"
+      },
+      "parameters": {
+        "value": "{\"type\": \"object\", \"properties\": {\"partner_id\": {\"type\": \"integer\", \"description\": \"res.partner 记录 ID。\"}, \"field\": {\"type\": \"string\", \"description\": \"要写入的字段：website、industry、description、phone、email、street、city、zip。\"}, \"value\": {\"type\": \"string\", \"description\": \"已经批准的字段值。\"}}, \"required\": [\"partner_id\", \"field\", \"value\"]}",
+        "source_sha256": "b9d29c7da0c4591e7ad064246fef128ce35ec1f5686dd413dc898980878ca6cf"
+      },
+      "code": {
+        "value": "async def execute(partner_id=0, field=\"\", value=\"\"):\n    \"\"\"Skriv ett godkänt värde. Kräver HITL (risk_level=write).\"\"\"\n    WRITABLE = ['website', 'industry_id', 'description', 'phone', 'email',\n                'street', 'city', 'zip']\n    if not partner_id:\n        return '错误：必须提供 partner_id。'\n    if field not in WRITABLE:\n        return ('错误：不允许写入字段 %r。允许的字段：%s'\n                % (field, \", \".join(WRITABLE)))\n    partner = env['res.partner'].browse(int(partner_id))\n    if not partner.exists():\n        return '错误：未找到 ID 为 %s 的联系人。' % partner_id\n    old = partner[field]\n    if not isinstance(old, (int, float, str, bool)) and old:\n        try:\n            old = old[1]\n        except (IndexError, TypeError, KeyError):\n            pass\n    partner.write({field: value})\n    return ('已更新 %s（%s）：%r → %r'\n            % (field, partner.display_name, old or \"\", value))",
+        "source_sha256": "fe652e9b27641ad305394182e06b4504c842f4f9ca38c5dc8d6f99416b450f9b"
+      }
+    }
+  }
+]

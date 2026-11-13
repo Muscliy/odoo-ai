@@ -47,6 +47,14 @@ class AIArtifactType(models.Model):
 
     _name_uniq = models.Constraint('UNIQUE(name)', 'Artifact type name must be unique.')
 
+    @api.depends('name')
+    @api.depends_context('lang')
+    def _compute_display_name(self):
+        from .chinese_labels import ARTIFACT_TYPES
+        for record in self:
+            record.display_name = (ARTIFACT_TYPES.get(record.name, record.name)
+                                   if (self.env.lang or '').startswith('zh') else record.name)
+
     @api.constrains('okf_contract')
     def _check_okf_contract(self):
         """okf_contract must be a dict (Json field enforces JSON already,

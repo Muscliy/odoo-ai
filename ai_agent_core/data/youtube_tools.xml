@@ -4,10 +4,10 @@
     <!-- ── Tool: youtube_get_transcript ── -->
     <record id="tool_youtube_get_transcript" model="ai.tool">
         <field name="name">youtube_get_transcript</field>
-        <field name="description">Get transcript from a YouTube video. Accepts YouTube URL or video ID. Returns transcript segments with timestamps and metadata. No API key needed.</field>
+        <field name="description">提取 YouTube 视频字幕，接收视频链接或 ID，返回带时间戳的文字片段和元数据，无需 API 密钥。</field>
         <field name="risk_level">safe</field>
         <field name="active">True</field>
-        <field name="parameters">{"type": "object", "properties": {"video_id": {"type": "string", "description": "YouTube URL (youtube.com/watch?v=ID, youtu.be/ID) or 11-char video ID"}, "language": {"type": "string", "description": "Language code (default: en). Examples: en, sv, es, de"}}, "required": ["video_id"]}</field>
+        <field name="parameters">{"type": "object", "properties": {"video_id": {"type": "string", "description": "YouTube 链接（youtube.com/watch?v=ID、youtu.be/ID）或 11 位视频 ID。"}, "language": {"type": "string", "description": "语言代码，默认 en；例如 en、sv、es、de。"}}, "required": ["video_id"]}</field>
         <field name="code">async def execute(video_id="", language="en"):
     """Get transcript from a YouTube video.
 
@@ -37,11 +37,10 @@
 
     if not video_id or not str(video_id).strip():
         return _tool_error(
-            "Missing required argument 'video_id' \u2014 example: "
-            "https://youtu.be/6IFVTcM28KA",
+            '缺少必填参数 video_id，请提供 YouTube 视频链接或 11 位视频 ID。',
             parameter="video_id",
-            expected="a YouTube URL or an 11-character video ID",
-            actual="(empty)",
+            expected='YouTube 链接或 11 位视频 ID。',
+            actual='（空）',
             retryable=True,
             tool_name="youtube_get_transcript")
 
@@ -58,7 +57,7 @@
             break
 
     if not vid:
-        return json.dumps({"error": f"Could not extract video ID from '{video_id}'"})
+        return json.dumps({"error": f"无法从以下内容提取视频 ID：'{video_id}'"})
 
     try:
         api = YouTubeTranscriptApi()
@@ -80,10 +79,10 @@
     <!-- ── Tool: youtube_search ── -->
     <record id="tool_youtube_search" model="ai.tool">
         <field name="name">youtube_search</field>
-        <field name="description">Search YouTube for videos or channels. Uses Google Data API v3. Requires a Google API key — set it in Odoo Settings (AI → Google API Key) or in the GOOGLE_API_KEY environment variable.</field>
+        <field name="description">使用 Google Data API v3 搜索 YouTube 视频或频道。需要在 Odoo 设置的 AI 配置中填写 Google API Key，或设置 GOOGLE_API_KEY 环境变量。</field>
         <field name="risk_level">read_only</field>
         <field name="active">True</field>
-        <field name="parameters">{"type": "object", "properties": {"query": {"type": "string", "description": "Search query (1-200 characters)"}, "max_results": {"type": "integer", "description": "Maximum results (1-50, default 10)"}, "search_type": {"type": "string", "enum": ["video", "channel"], "description": "Search type: video or channel"}}, "required": ["query"]}</field>
+        <field name="parameters">{"type": "object", "properties": {"query": {"type": "string", "description": "搜索词，长度 1–200 字符。"}, "max_results": {"type": "integer", "description": "最多结果数，范围 1–50，默认 10。"}, "search_type": {"type": "string", "enum": ["video", "channel"], "description": "搜索类型：video 视频或 channel 频道。"}}, "required": ["query"]}</field>
         <field name="code">async def execute(query="", max_results=10, search_type="video"):
     """Search YouTube for videos or channels.
 
@@ -114,11 +113,10 @@
 
     if not query or not str(query).strip():
         return _tool_error(
-            "Missing required argument 'query' \u2014 example: "
-            "gamers nexus smart tv",
+            '缺少必填参数 query，例如“智能电视评测”。',
             parameter="query",
-            expected="a search query (1-200 characters)",
-            actual="(empty)",
+            expected='长度为 1–200 字符的搜索词。',
+            actual='（空）',
             retryable=True,
             tool_name="youtube_search")
 
@@ -127,13 +125,10 @@
                    or os.environ.get('GOOGLE_API_KEY', ''))
     if not api_key:
         return _tool_error(
-            "No Google API key configured — YouTube search needs one. "
-            "Set it in Odoo Settings (AI → Google API Key) or in the "
-            "GOOGLE_API_KEY environment variable.",
+            '尚未配置 Google API 密钥。请在 Odoo 的“设置 → AI → Google API Key”中填写，或设置 GOOGLE_API_KEY 环境变量。按频道 ID 查询时，也可直接提供 UC... 频道 ID。',
             parameter="api_key",
-            expected="a Google API key in Settings (AI → Google API Key) "
-                     "or the GOOGLE_API_KEY environment variable",
-            actual="(not configured)",
+            expected='在“设置 → AI → Google API Key”或 GOOGLE_API_KEY 环境变量中配置的 Google API 密钥。',
+            actual='（未配置）',
             retryable=False)
 
     try:
@@ -169,16 +164,16 @@
             "results": results,
         }, indent=2, ensure_ascii=False)
     except Exception as e:
-        return json.dumps({"error": f"Search failed: {e}"})</field>
+        return json.dumps({"error": f"搜索失败：{e}"})</field>
     </record>
 
     <!-- ── Tool: youtube_channel ── -->
     <record id="tool_youtube_channel" model="ai.tool">
         <field name="name">youtube_channel</field>
-        <field name="description">YouTube channel operations: get latest uploads (free, no key needed via RSS), list all videos (paginated, needs a Google API key), or resolve @handle to channel ID.</field>
+        <field name="description">浏览 YouTube 频道：通过 RSS 获取最新上传无需密钥；分页列出全部视频需要 Google API 密钥；支持将 @账号解析为频道 ID。</field>
         <field name="risk_level">read_only</field>
         <field name="active">True</field>
-        <field name="parameters">{"type": "object", "properties": {"channel": {"type": "string", "description": "@handle, channel URL, or UC... channel ID"}, "action": {"type": "string", "enum": ["latest", "videos", "resolve"], "description": "latest (free, 15 videos via RSS), videos (paginated, needs a Google API key), resolve (@handle to UC... ID)"}, "limit": {"type": "integer", "description": "Max results for videos action (1-50)"}, "continuation": {"type": "string", "description": "Next page token for videos pagination"}}, "required": ["channel", "action"]}</field>
+        <field name="parameters">{"type": "object", "properties": {"channel": {"type": "string", "description": "@账号、频道链接或 UC... 频道 ID。"}, "action": {"type": "string", "enum": ["latest", "videos", "resolve"], "description": "latest 通过 RSS 免费读取最多 15 个视频；videos 分页列出视频，需要 Google API 密钥；resolve 将 @账号解析为 UC... ID。"}, "limit": {"type": "integer", "description": "videos 操作的最多结果数，范围 1–50。"}, "continuation": {"type": "string", "description": "视频分页的下一页令牌。"}}, "required": ["channel", "action"]}</field>
         <field name="code">async def execute(channel="", action="latest", limit=10, continuation=""):
     """YouTube channel operations.
 
@@ -210,17 +205,17 @@
 
     if not channel or not str(channel).strip():
         return _tool_error(
-            "Missing required argument 'channel' \u2014 example: @GamersNexus",
+            '缺少必填参数 channel，例如 @GamersNexus。',
             parameter="channel",
             expected="@handle, channel URL, or UC... channel ID",
-            actual="(empty)",
+            actual='（空）',
             retryable=True,
             tool_name="youtube_channel")
     if action not in ("latest", "videos", "resolve"):
         return _tool_error(
-            "Invalid value for 'action'",
+            'action 参数值无效。',
             parameter="action",
-            expected="one of: latest, videos, resolve",
+            expected='可选操作：latest、videos、resolve。',
             actual=str(action),
             retryable=True,
             tool_name="youtube_channel")
@@ -231,13 +226,10 @@
                    or os.environ.get('GOOGLE_API_KEY', ''))
         if not api_key:
             return _tool_error(
-                "No Google API key configured \u2014 channel resolve needs "
-                "one. Set it in Odoo Settings (AI \\u2192 Google API Key) or "
-                "in the GOOGLE_API_KEY environment variable.",
+                '尚未配置 Google API 密钥。请在 Odoo 的“设置 → AI → Google API Key”中填写，或设置 GOOGLE_API_KEY 环境变量。按频道 ID 查询时，也可直接提供 UC... 频道 ID。',
                 parameter="api_key",
-                expected="a Google API key in Settings (AI \\u2192 Google API "
-                         "Key) or the GOOGLE_API_KEY environment variable",
-                actual="(not configured)",
+                expected='在“设置 → AI → Google API Key”或 GOOGLE_API_KEY 环境变量中配置的 Google API 密钥。',
+                actual='（未配置）',
                 retryable=False)
         from googleapiclient.discovery import build
         youtube = build('youtube', 'v3', developerKey=api_key, cache_discovery=False)
@@ -269,14 +261,10 @@
                    or os.environ.get('GOOGLE_API_KEY', ''))
             if not api_key:
                 return _tool_error(
-                    "No Google API key configured \u2014 pass a UC... "
-                    "channel ID directly, or set the key. Set it in Odoo "
-                    "Settings (AI \\u2192 Google API Key) or in the "
-                    "GOOGLE_API_KEY environment variable.",
+                    '尚未配置 Google API 密钥。请在 Odoo 的“设置 → AI → Google API Key”中填写，或设置 GOOGLE_API_KEY 环境变量。按频道 ID 查询时，也可直接提供 UC... 频道 ID。',
                     parameter="api_key",
-                    expected="a UC... channel ID, or a Google API key in "
-                             "Settings (AI \\u2192 Google API Key)",
-                    actual="(not configured)",
+                    expected='UC... 频道 ID，或在“设置 → AI → Google API Key”中配置的密钥。',
+                    actual='（未配置）',
                     retryable=False)
             from googleapiclient.discovery import build
             youtube = build('youtube', 'v3', developerKey=api_key, cache_discovery=False)
@@ -316,7 +304,7 @@
                 "results": videos,
             }, indent=2, ensure_ascii=False)
         except Exception as e:
-            return json.dumps({"error": f"RSS fetch failed: {e}"})
+            return json.dumps({"error": f"订阅源读取失败：{e}"})
 
     if action == "videos":
         api_key = (env['ir.config_parameter'].sudo()
@@ -324,13 +312,10 @@
                    or os.environ.get('GOOGLE_API_KEY', ''))
         if not api_key:
             return _tool_error(
-                "No Google API key configured \u2014 channel video listing "
-                "needs one. Set it in Odoo Settings (AI \\u2192 Google API "
-                "Key) or in the GOOGLE_API_KEY environment variable.",
+                '尚未配置 Google API 密钥。请在 Odoo 的“设置 → AI → Google API Key”中填写，或设置 GOOGLE_API_KEY 环境变量。按频道 ID 查询时，也可直接提供 UC... 频道 ID。',
                 parameter="api_key",
-                expected="a Google API key in Settings (AI \\u2192 Google API "
-                         "Key) or the GOOGLE_API_KEY environment variable",
-                actual="(not configured)",
+                expected='在“设置 → AI → Google API Key”或 GOOGLE_API_KEY 环境变量中配置的 Google API 密钥。',
+                actual='（未配置）',
                 retryable=False)
         from googleapiclient.discovery import build
         youtube = build('youtube', 'v3', developerKey=api_key, cache_discovery=False)
@@ -373,16 +358,16 @@
             "results": results,
         }, indent=2, ensure_ascii=False)
 
-    return json.dumps({"error": f"Unknown action: {action}. Use: latest, videos, resolve"})</field>
+    return json.dumps({"error": f"未知操作：{action}。可选操作：latest、videos、resolve。"})</field>
     </record>
 
     <!-- ── Tool: youtube_playlist ── -->
     <record id="tool_youtube_playlist" model="ai.tool">
         <field name="name">youtube_playlist</field>
-        <field name="description">Fetch videos from a YouTube playlist. Accepts playlist URL or ID. Supports pagination. Requires a Google API key (Odoo Settings → AI → Google API Key).</field>
+        <field name="description">获取 YouTube 播放列表中的视频，接收链接或 ID，支持分页。需要在 Odoo 设置中配置 Google API 密钥。</field>
         <field name="risk_level">read_only</field>
         <field name="active">True</field>
-        <field name="parameters">{"type": "object", "properties": {"playlist_id": {"type": "string", "description": "Playlist URL or ID (PL/UU/LL/FL/OL prefix)"}, "max_results": {"type": "integer", "description": "Max videos per page (1-50, default 10)"}, "continuation": {"type": "string", "description": "Next page token for paginated results"}}, "required": ["playlist_id"]}</field>
+        <field name="parameters">{"type": "object", "properties": {"playlist_id": {"type": "string", "description": "播放列表链接或 ID，前缀为 PL、UU、LL、FL、OL。"}, "max_results": {"type": "integer", "description": "每页视频数量，范围 1–50，默认 10。"}, "continuation": {"type": "string", "description": "分页结果的下一页令牌。"}}, "required": ["playlist_id"]}</field>
         <field name="code">async def execute(playlist_id="", max_results=10, continuation=""):
     """Fetch videos from a YouTube playlist.
 
@@ -416,13 +401,10 @@
                    or os.environ.get('GOOGLE_API_KEY', ''))
     if not api_key:
         return _tool_error(
-            "No Google API key configured \u2014 playlist access needs one. "
-            "Set it in Odoo Settings (AI \\u2192 Google API Key) or in the "
-            "GOOGLE_API_KEY environment variable.",
+            '尚未配置 Google API 密钥。请在 Odoo 的“设置 → AI → Google API Key”中填写，或设置 GOOGLE_API_KEY 环境变量。按频道 ID 查询时，也可直接提供 UC... 频道 ID。',
             parameter="api_key",
-            expected="a Google API key in Settings (AI \\u2192 Google API Key) "
-                     "or the GOOGLE_API_KEY environment variable",
-            actual="(not configured)",
+            expected='在“设置 → AI → Google API Key”或 GOOGLE_API_KEY 环境变量中配置的 Google API 密钥。',
+            actual='（未配置）',
             retryable=False)
 
     if not playlist_id and not continuation:
@@ -430,8 +412,8 @@
             "Missing required argument 'playlist_id' \u2014 example: "
             "https://www.youtube.com/playlist?list=PLabc123",
             parameter="playlist_id",
-            expected="a playlist URL or ID (or a continuation token)",
-            actual="(empty)",
+            expected='播放列表链接、ID 或继续分页令牌。',
+            actual='（空）',
             retryable=True,
             tool_name="youtube_playlist")
 
@@ -468,234 +450,155 @@
             })
 
         return json.dumps({
-            "playlist_id": pid or "(continuation mode)",
+            "playlist_id": pid or '（继续分页）',
             "result_count": len(results),
             "has_more": 'nextPageToken' in response,
             "next_page_token": response.get('nextPageToken', ''),
             "results": results,
         }, indent=2, ensure_ascii=False)
     except Exception as e:
-        return json.dumps({"error": f"Playlist fetch failed: {e}"})</field>
+        return json.dumps({"error": f"播放列表读取失败：{e}"})</field>
     </record>
 
     <!-- ── Skill: youtube-transcript ── -->
     <record id="skill_youtube_transcript" model="ai.skill">
         <field name="name">youtube-transcript</field>
-        <field name="description">Hämta text-transkript från YouTube-videor. Använd när användaren delar en YouTube-länk och vill ha texten utskriven, sammanfattad, översatt eller analyserad.</field>
+        <field name="description">YouTube 视频文字提取：用户提供视频链接后，提取字幕并根据需要整理、总结、翻译或分析。</field>
         <field name="category">research</field>
-        <field name="trigger_keywords">youtube transcript, video transcript, captions, text from video, summarize video, undertext, video text, transkribera</field>
+        <field name="trigger_keywords">视频字幕, 视频文字, 视频摘要, 视频翻译, 提取字幕, youtube transcript, captions</field>
         <field name="compatibility">any</field>
         <field name="active">True</field>
-        <field name="recipe_text"># youtube-transcript
+        <field name="recipe_text"><![CDATA[# 技能：YouTube 视频文字提取
 
-## När du ska använda denna skill
+## 适用情况
+用户提供视频链接并要求提取文字、总结、翻译、引用，或询问视频中的具体信息时，使用 youtube_get_transcript。
 
-Anropa `youtube_get_transcript` tool när användaren:
-- Delar en YouTube-länk och vill ha textinnehållet
-- Ber om en sammanfattning av en video
-- Vill översätta eller citera från en video
-- Frågar om specifika detaljer som nämns i en video
+## 步骤
+1. 从链接提取 11 位视频 ID，例如 dQw4w9WgXcQ。
+2. 调用 youtube_get_transcript，传入 video_url 或 video_id。
+3. 按需指定语言；默认 en，sv 表示瑞典语。
+4. 使用结果中的时间戳和文字片段。
 
-## Hur du använder
+## 工作流程
+- 总结：获取字幕，分析内容，给出关键要点。
+- 引用：用时间戳指向视频中的具体位置。
+- 翻译：获取原语言字幕，再翻译为用户语言。
 
-1. Extrahera video-ID från URL:en (11 tecken, t.ex. dQw4w9WgXcQ)
-2. Anropa `youtube_get_transcript` med video_url eller video_id
-3. Valfritt: ange språk (default: en, använd sv för svenska)
-4. Resultatet innehåller segment med tidsstämplar och text
-
-## Arbetsflöden
-
-### Sammanfatta en video
-- Hämta transkript → analysera innehållet → presentera sammanfattning med nyckelpunkter
-
-### Citat från video
-- Använd tidsstämplarna för att referera till specifika ögonblick i videon
-
-### Översättning
-- Hämta transkript på originalspråk → översätt till användarens språk
-
-## Felhantering
-
-| Fel | Åtgärd |
-|-----|--------|
-| "No transcript available" | Videon har inga captions. Försök med annat språk eller informera användaren. |
-| "Video not found" | Kontrollera att URL:en är korrekt. |
-| Ogiltigt video-ID | Extrahera ID från URL:en, inte hela URL:en. |
-
-OBS: Ingen API-nyckel krävs! Fungerar med alla YouTube-videor som har captions aktiverade.</field>
+## 错误处理
+- No transcript available：视频缺少字幕，尝试其他语言或向用户说明。
+- Video not found：检查链接。
+- 视频 ID 无效：传入提取后的 ID，不要误将整个链接当作 ID。
+此工具无需 API 密钥，适用于已启用字幕的视频。
+]]></field>
     </record>
 
     <!-- ── Skill: youtube-search ── -->
     <record id="skill_youtube_search" model="ai.skill">
         <field name="name">youtube-search</field>
-        <field name="description">Sök efter videor och kanaler på YouTube. Använd när användaren vill hitta innehåll om ett ämne, upptäcka tutorials, eller leta efter specifika kanaler.</field>
+        <field name="description">YouTube 内容搜索：按主题查找视频、教程和频道，帮助用户发现需要的内容。</field>
         <field name="category">research</field>
-        <field name="trigger_keywords">youtube search, find videos, search youtube, hitta video, sök youtube, youtube sökning</field>
+        <field name="trigger_keywords">搜索视频, 查找视频, 搜索频道, 视频教程, youtube search, find videos, search youtube</field>
         <field name="compatibility">any</field>
         <field name="active">True</field>
-        <field name="recipe_text"># youtube-search
+        <field name="recipe_text"><![CDATA[# 技能：YouTube 内容搜索
 
-## När du ska använda denna skill
+## 适用情况
+按主题找视频、查找频道、收集研究资料或发现热门内容时，使用 youtube_search。
 
-Anropa `youtube_search` tool när användaren:
-- Vill hitta videor om ett specifikt ämne
-- Söker efter en kanal
-- Behöver forskningsmaterial från YouTube
-- Vill upptäcka populära videor inom ett ämne
+## 参数
+1. query：搜索词。
+2. search_type：可选 video 或 channel。
+3. max_results：1–50，默认 10。
 
-## Hur du använder
+## 结果字段
+视频：videoId、title、channelTitle、publishedAt、description、thumbnail。
+频道：channelId、title、description、thumbnail。
 
-1. Anropa `youtube_search` med en sökfråga (query)
-2. Valfritt: ange `search_type` (video eller channel)
-3. Valfritt: ange `max_results` (1-50, standard 10)
-
-## Sökresultat
-
-Varje videoresultat innehåller:
-- videoId, title, channelTitle, publishedAt
-- description, thumbnail
-
-Varje kanalresultat innehåller:
-- channelId, title, description, thumbnail
-
-## Arbetsflöden
-
-### Forskningsflöde
-Sök → välj relevanta videor → hämta transkript från varje → sammanfatta insikter
-
-### Kanalupptäckt
-Sök med `search_type=channel` för att hitta kanaler, inte enskilda videor
-
-## Viktigt
-- Kräver Google API-nyckel (Odoo-inställningar → AI → Google API Key)
-- Om nyckel saknas, informera användaren</field>
+## 工作流程
+研究主题时，先搜索并选取相关视频，再逐个提取字幕，综合结论。查找频道时使用 search_type=channel。
+需要在 Odoo 设置的 AI 配置中填写 Google API Key；缺少密钥时明确说明。
+]]></field>
     </record>
 
     <!-- ── Skill: youtube-channels ── -->
     <record id="skill_youtube_channels" model="ai.skill">
         <field name="name">youtube-channels</field>
-        <field name="description">Utforska YouTube-kanaler — hämta senaste uploads, lista alla videos, sök inom kanal. Använd när användaren nämner en kanal eller @handle och vill se deras innehåll.</field>
+        <field name="description">YouTube 频道浏览：查看最新上传、列出频道视频或在指定频道内搜索；支持频道名称和 @账号。</field>
         <field name="category">research</field>
-        <field name="trigger_keywords">youtube channel, channel uploads, latest videos, @handle, kanal, senaste videos, channel videos</field>
+        <field name="trigger_keywords">视频频道, 最新视频, 频道视频, 频道搜索, youtube channel, channel uploads, latest videos, @handle</field>
         <field name="compatibility">any</field>
         <field name="active">True</field>
-        <field name="recipe_text"># youtube-channels
+        <field name="recipe_text"><![CDATA[# 技能：YouTube 频道浏览
 
-## När du ska använda denna skill
+## 适用情况
+用户提供 @账号、频道链接，要求最新上传、全部视频、频道内搜索，或将账号解析为频道 ID 时，使用 youtube_channel。
 
-Anropa `youtube_channel` tool när användaren:
-- Nämner en @handle eller kanal-URL
-- Vill se senaste uploads från en kanal
-- Vill lista alla videos från en kanal
-- Vill söka inom en specifik kanal
-- Behöver resolve:a ett @handle till kanal-ID
+## 调用方式
+- 最新上传：channel 为 @账号、链接或 UC... ID，action="latest"，limit 默认 10、最多 15；无需 API 密钥。
+- 全部视频：action="videos"，limit 每页最多 50，continuation 首次为空，后续使用下一页令牌；需要 API 密钥。
+- 解析账号：action="resolve"，channel 例如 @TED。
 
-## Hur du använder
-
-### Senaste uploads (gratis, ingen API-nyckel)
-Anropa `youtube_channel` med:
-- channel: @handle, URL eller UC...-ID
-- action: "latest"
-- limit: antal videos (max 15, standard 10)
-
-### Alla videos (paginering, kräver API-nyckel)
-Anropa `youtube_channel` med:
-- channel: @handle, URL eller UC...-ID
-- action: "videos"
-- limit: per sida (max 50)
-- continuation: (tom för första sidan, nästa sidas token för fortsättning)
-
-### Resolve handle
-Anropa `youtube_channel` med:
-- channel: @handle (t.ex. @TED)
-- action: "resolve"
-
-## Arbetsflöden
-
-### Monitorera en kanal
-Latest (gratis) → om intressant video → hämta transcript
-
-### Forskning på en kanal
-Resolve handle → list all videos → filtrera på ämne → hämta transcript från relevanta</field>
+## 工作流程
+跟进频道：读取最新视频，选择感兴趣的视频，再获取字幕。
+研究频道：解析账号，分页列出视频，按主题筛选，再读取相关视频字幕。
+]]></field>
     </record>
 
     <!-- ── Skill: youtube-playlist ── -->
     <record id="skill_youtube_playlist" model="ai.skill">
         <field name="name">youtube-playlist</field>
-        <field name="description">Hämta videos från YouTube-spellistor. Använd när användaren delar en spellänk eller vill analysera en hel spellista.</field>
+        <field name="description">YouTube 播放列表：获取播放列表中的视频，适用于整理或分析整套视频内容。</field>
         <field name="category">research</field>
-        <field name="trigger_keywords">youtube playlist, spellista, playlist videos, playlist analysis, kurs, kursmaterial</field>
+        <field name="trigger_keywords">播放列表, 视频合集, 课程视频, 课程分析, youtube playlist, playlist videos, playlist analysis</field>
         <field name="compatibility">any</field>
         <field name="active">True</field>
-        <field name="recipe_text"># youtube-playlist
+        <field name="recipe_text"><![CDATA[# 技能：YouTube 播放列表
 
-## När du ska använda denna skill
+## 适用情况
+用户提供播放列表，要求查看全部视频、分析整套课程或询问列表内容时，使用 youtube_playlist。
 
-Anropa `youtube_playlist` tool när användaren:
-- Delar en YouTube-spellista
-- Vill se alla videos i en spellista
-- Vill analysera en hel kurs/playlist
-- Frågar om innehållet i en spellista
+## 参数
+- playlist_id：播放列表链接或 ID，前缀为 PL、UU、LL、FL、OL。
+- max_results：每页 1–50，默认 10。
+- continuation：下一页令牌。
 
-## Hur du använder
-
-Anropa `youtube_playlist` med:
-- playlist_id: spelliste-URL eller ID (prefix: PL, UU, LL, FL, OL)
-- max_results: per sida (1-50, standard 10)
-- continuation: nästa sidas token (för paginering)
-
-## Arbetsflöden
-
-### Lista spellista
-Hämta första sidan → visa videos med titel och position
-
-### Full analys av kurs/spellista
-1. Hämta spellistans videos (första sidan)
-2. Om fler sidor finns, fortsätt med continuation tokens
-3. För varje video: hämta transcript med youtube_get_transcript
-4. Sammanställ en strukturerad analys
-
-### Kombinerat flöde (max 5 videos)
-För att undvika för många API-anrop, begränsa transcript-hämtning till de första 5 videorna i spellistan som standard.
-
-## Viktigt
-- Kräver Google API-nyckel för playlist-åtkomst
-- Spelliste-ID börjar med PL, UU, LL, FL eller OL</field>
+## 工作流程
+列出视频时，获取第一页并展示标题与位置。
+完整分析时，分页读取视频，用 continuation 继续；再调用 youtube_get_transcript 提取字幕并生成结构化分析。
+组合分析默认只读取前 5 个视频的字幕，控制 API 调用数量。
+播放列表访问需要 Google API 密钥。
+]]></field>
     </record>
 
     <!-- ── Skill: youtube-full ── -->
     <record id="skill_youtube_full" model="ai.skill">
         <field name="name">youtube-full</field>
-        <field name="description">Komplett YouTube-verktygslåda — transkript, sökning, kanaler och spellistor i en skill. Använd för agenter som behöver full YouTube-tillgång.</field>
+        <field name="description">YouTube 综合工具：将字幕提取、视频搜索、频道浏览和播放列表查询整合为一项技能。</field>
         <field name="category">research</field>
-        <field name="trigger_keywords">youtube, video, transkript, sökning, kanal, spellista, youtube full</field>
+        <field name="trigger_keywords">视频, 字幕, 视频搜索, 频道, 播放列表, 视频合集, youtube, youtube full</field>
         <field name="compatibility">any</field>
         <field name="active">True</field>
-        <field name="recipe_text"># youtube-full
+        <field name="recipe_text"><![CDATA[# 技能：YouTube 综合工具
 
-Komplett YouTube-verktygslåda. Innehåller alla fyra individuella YouTube-skills.
+整合字幕、搜索、频道和播放列表四类操作。
 
-## Tillgängliga verktyg
+| 工具 | 用途 | 密钥要求 |
+|---|---|---|
+| youtube_get_transcript | 提取视频字幕 | 无需密钥 |
+| youtube_search | 搜索视频和频道 | Google API 密钥 |
+| youtube_channel | 浏览频道 | latest 无需密钥，videos 需要密钥 |
+| youtube_playlist | 获取列表视频 | Google API 密钥 |
 
-| Tool | Beskrivning | API-nyckel? |
-|------|-------------|-------------|
-| `youtube_get_transcript` | Hämta transkript från video | ❌ Nej |
-| `youtube_search` | Sök efter videor/kanaler | ✅ Google API-nyckel |
-| `youtube_channel` | Kanal-operationer | Delvis (latest: nej, videos: ja) |
-| `youtube_playlist` | Hämta spelliste-videos | ✅ Google API-nyckel |
+## 工具选择
+- 视频链接：youtube_get_transcript。
+- 查找内容：youtube_search。
+- 频道或 @账号：youtube_channel，action=latest。
+- 频道全部视频：youtube_channel，action=videos。
+- 播放列表链接：youtube_playlist。
+- 主题研究：搜索、选取相关视频、逐个提取字幕。
 
-## När du ska använda vilket verktyg
-
-- **Användaren delar en videolänk** → `youtube_get_transcript`
-- **Användaren vill hitta innehåll** → `youtube_search`
-- **Användaren nämner en kanal/@handle** → `youtube_channel` med action=latest
-- **Användaren vill lista alla videos från en kanal** → `youtube_channel` med action=videos
-- **Användaren delar en spellänk** → `youtube_playlist`
-- **Användaren vill forska/researcha** → Sök → välj → transcript på varje
-
-## Aktivering
-
-Använd `/youtube-full` för att aktivera denna skill explicit, eller låt trigger keywords aktivera den automatiskt.</field>
+输入 /youtube-full 可显式启用，也可由触发关键词自动启用。
+]]></field>
     </record>
 
 </odoo>

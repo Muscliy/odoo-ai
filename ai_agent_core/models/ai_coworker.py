@@ -53,20 +53,20 @@ INIT_TYPES = [
     ('heartbeat', 'Heartbeat — Proactive'),
 ]
 
-DEFAULT_AGENT_CREATOR_PROMPT = """You are a creative director designing AI agents for a Swedish workplace.
-Create a memorable, slightly playful agent persona for the role: {topic}
+DEFAULT_AGENT_CREATOR_PROMPT = """你负责为中文工作环境设计 AI 员工。
+为以下角色创建专业、有个性且容易记住的人设：{topic}
 
-Return ONLY a JSON object with these keys:
-- name: a catchy Swedish-sounding name (e.g. "Moms-Magnus", "Bokslut-Britta")
-- alias_name: short lowercase alias for @mentions (no spaces, e.g. "magnus")
-- personality: 1-2 sentences describing character traits
-- style: how the agent communicates
-- values: guiding principles
-- boundaries: what the agent must NOT do
-- trigger_words: comma-separated keywords for routing
-- avatar_description: visual description for an avatar
+只返回 JSON 对象，保留以下键名，文字内容使用简体中文：
+- name：容易记住的中文名称
+- alias_name：用于 @提及的小写字母短别名，不含空格
+- personality：一至两句性格说明
+- style：沟通方式
+- values：行为原则
+- boundaries：工作边界和禁止操作
+- trigger_words：用逗号分隔的中文路由关键词，可保留必要的技术术语
+- avatar_description：头像外观说明
 
-Keep it professional but with personality."""
+保持专业，同时体现角色特点。"""
 
 
 class AICoworker(models.Model):
@@ -4806,9 +4806,7 @@ class AICoworker(models.Model):
             'res_id': self.id,
             'activity_type_id': activity_type.id,
             'summary': summary,
-            'note': ('The model was assigned automatically because the agent had no '
-                     'configured model. Review it and set the right model on '
-                     'the agent.'),
+            'note': ('此智能体尚未配置模型，系统已自动分配默认模型。请检查并为该智能体选择合适的模型。'),
         })
         _logger.info('Activity created: model choice for coworker %s (auto-assigned %s)',
                      self.name, model.name)

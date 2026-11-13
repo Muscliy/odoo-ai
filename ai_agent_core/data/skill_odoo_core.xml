@@ -10,213 +10,125 @@
             <field name="name">odoo-core</field>
             <field name="category">general</field>
             <field name="source_type">odoo</field>
-            <field name="description">Odoo basappar — affärsprocesser (CRM, försäljning, redovisning, lager, inköp, tillverkning, projekt m.fl.) med verktygshintar och HITL-policy per operation.</field>
-            <field name="trigger_keywords">crm, lead, opportunity, offert, försäljning, sale, faktura, bokföring, lager, inköp, inköpsorder, produktion, tillverkning, projekt, task, anställd, kontakt, kalender, möte, produkt, underhåll, fleet, event, enkät, utskick, helpdesk, ärende, field service, planering, kassa, reparation, leverans</field>
-            <field name="recipe_text"><![CDATA[
-# Skill: odoo-core — Odoo basappar
+            <field name="description">Odoo 业务操作：覆盖客户关系、销售、财务、库存、采购、制造和项目等核心流程，说明各项操作应使用的工具及人工审批要求。</field>
+            <field name="trigger_keywords">员工, 员工信息, 部门, 岗位, 联系人, 客户, 线索, 商机, 报价, 销售, 发票, 财务, 库存, 采购, 生产, 制造, 项目, 任务, 日历, 会议, 产品, 维护, 车队, 活动, 问卷, 群发, 服务台, 现场服务, 排班, 收银, 维修, 配送, crm, hr, sale, account, stock, purchase, mrp, project</field>
+            <field name="recipe_text"><![CDATA[# 技能：Odoo 核心业务操作
 
-## Scope
+## 范围与安装检查
+覆盖 crm、hr、contacts、calendar、product、mail、portal、digest、sale、account、stock、purchase、mrp、project、hr_expense、hr_holidays、fleet、maintenance、event、survey、mass_mailing、website、website_sale、helpdesk、fieldservice、planning、point_of_sale、repair、delivery、loyalty。
+先调用 odoo_search("ir.module.module", [("name","=","<module>")])，仅使用 state=installed 的模块对应步骤。
 
-Moduler: crm, hr, contacts, calendar, product, mail, portal, digest,
-         sale, account, stock, purchase, mrp, project, hr_expense,
-         hr_holidays, fleet, maintenance, event, survey, mass_mailing,
-         website, website_sale, helpdesk, fieldservice, planning,
-         point_of_sale, repair, delivery, loyalty
+## 通用规则
+- 状态通过 action_* 或 button_* 业务方法改变，不能直接写 state。
+- 写入前用 describe_model 检查字段；计算字段由系统计算。
+- odoo_call_method 始终需要人工审批（HITL）；删除 odoo_unlink 始终需要明确批准，作为硬性门禁。
+- 以下各节列出原有业务审批要求；即使某节允许自动操作，仍须服从工具实际审批门禁。
 
-⚠ INSTALL-CHECK: Uteslut alla sektioner vars modul inte är installerad.
-Kolla `odoo_search("ir.module.module", [("name","=","<modul>")])` →
-state=installed. Endast installerade moduler är relevanta.
+## 客户关系（crm）
+模型：crm.lead（type 区分 lead 与 opportunity）、crm.stage（is_won、sequence、team_id）、crm.team（sales_team）、crm.tag、crm.lost.reason。
+1. 创建线索：odoo_create("crm.lead", {name, expected_revenue?, priority?, team_id?})。初始 type=lead，使用默认阶段；转换时才创建联系人。创建本身无需额外审批。
+2. 补充资料：odoo_write 更新 email、phone、tag_ids、priority、description、user_id、team_id。普通字段无需额外审批；更改销售员 user_id 或团队 team_id 需要审批。
+3. 创建客户前查重：odoo_search("crm.lead", [("email_normalized","=",<email>)])。有有效匹配时关联或复用，只读查询无需审批。
+4. 转为商机：odoo_call_method("crm.lead", id, "convert_opportunity", {partner: <res.partner-id>})。创建或关联 res.partner，设置 type=opportunity 与 date_conversion；可指定 user_ids、team_id 并轮转分配。跳过归档或已赢单（probability=100）的线索。此操作始终需要审批。
+5. 阶段移动：odoo_write 更新 stage_id，优先选所属团队的 crm.stage。is_won=True 的阶段会触发赢单逻辑。probability 是计算字段，保持系统计算。正常移动无需额外审批。
+6. 赢单：odoo_call_method("crm.lead", id, "action_set_won")，设置赢单阶段及 probability=100，需要审批。
+7. 丢单：调用 action_set_lost，归档线索并设置 active=False、probability=0，始终需要审批。
 
-Regler som gäller alla appar:
-- Skriv ALDRIG `state` direkt — anropa affärsmetoderna (action_*/button_*)
-- Fält som är beräknade (computed) skrivs aldrig — kontrollera med
-  describe_model innan write
-- odoo_call_method kräver alltid HITL-godkännande
-- odoo_unlink kräver alltid godkännande (hårt stopp)
+| 方法 | 适用对象 | 业务审批 |
+|---|---|---|
+| convert_opportunity(partner, user_ids?, team_id?) | 线索转商机 | 始终需要 |
+| action_set_won() | 有效商机 | 需要 |
+| action_set_lost() | 线索或商机 | 始终需要 |
+| action_schedule_meeting() | 线索或商机 | 无额外审批 |
+| action_snooze() | 线索或商机 | 无额外审批 |
+| action_show_potential_duplicates() | 线索或商机 | 无额外审批 |
 
----
+## 联系人（contacts）
+模型：res.partner、res.partner.title、res.country。
+创建：odoo_create("res.partner", {name, email, phone, company_type, is_company, street, city, zip, country_id, vat, lang})。
+公司设置 company_type=company、is_company=True，联系人通过 parent_id 关联公司。创建无需额外审批，删除始终需要审批。
 
-## CRM (modul: crm)
+## 人力资源（hr）
+模型：hr.employee、hr.department、hr.job、hr.contract。
+创建员工：odoo_create("hr.employee", {name, work_email, department_id, job_id, company_id, gender?, birthday?, work_phone?, address_id?})，必须填写 company_id。涉及敏感人事资料，创建员工需要审批。
+创建部门：odoo_create("hr.department", {name, manager_id?, parent_id?})。
 
-Modeller: crm.lead (lead/opportunity via `type`), crm.stage (pipeline,
-`is_won`, `sequence`, `team_id`), crm.team (sales_team), crm.tag,
-crm.lost.reason
+## 日历（calendar）
+模型：calendar.event、calendar.alarm、calendar.attendee。
+创建会议：odoo_create("calendar.event", {name, start, stop, duration?, partner_ids, user_id, location?, description?})。start、stop 使用 ISO 格式。邀请其他用户需要审批；仅自己的会议无需额外审批。
 
-### 1. Skapa lead
-- odoo_create("crm.lead", {name, expected_revenue?, priority?, team_id?})
-- → type=lead, stage=default, INGEN partner ännu (partner skapas vid konvertering)
-- HITL: nej
+## 产品（product）
+模型：product.product、product.template、product.category。
+创建：odoo_create("product.product", {name, list_price, categ_id, type, uom_id?, default_code?, sale_ok?, purchase_ok?})。
+更新价格：odoo_write 修改 list_price。创建或改价无需额外审批，删除需要审批。
 
-### 2. Kvalificera / uppdatera
-- odoo_write → email, phone, tag_ids, priority, description, user_id, team_id
-- HITL: nej för fält; JA för att byta user_id (säljare) eller team_id
+## 销售（sale、sale_management，按安装情况启用）
+模型：sale.order、sale.order.line。
+状态：draft → sent → sale → done / cancel。
+1. 创建报价：odoo_create("sale.order", {partner_id, order_line})，保留 draft。
+2. 发送报价：action_quotation_send，始终需要审批。
+3. 确认订单：action_confirm，需要审批。
+4. 解锁：action_unlock；取消：action_cancel，需要审批。
 
-### 3. Kontrollera duplikat (innan ny kund)
-- odoo_search("crm.lead", [("email_normalized","=",<email>)])
-- Finns aktiva träffar → koppla/återanvänd istället för att skapa ny
-- HITL: nej (read-only)
+## 财务（account，按安装情况启用）
+模型：account.move、account.move.line、account.journal。
+状态：draft → posted → cancel。
+1. 创建发票：odoo_create("account.move", {move_type, partner_id, invoice_line_ids})，保留 draft。
+2. 过账：action_post，始终需要审批。
+3. 重置草稿：button_draft；登记付款：action_register_payment。
 
-### 4. Konvertera till opportunity
-- odoo_call_method("crm.lead", id, "convert_opportunity", {partner: <res.partner-id>})
-- → skapar/kopplar res.partner, type=opportunity, date_conversion sätts
-- Säljare/team kan anges samtidigt (user_ids/team_id, round-robin)
-- ⚠ Hoppar över inaktiva eller vunna (probability=100) leads
-- HITL: JA — alltid (skapar partner + byter typ)
+## 库存（stock，按安装情况启用）
+模型：stock.picking、stock.move、stock.quant。
+状态：draft → confirmed → assigned → done / cancel。
+1. 确认和预留：action_confirm。
+2. 验证或交付：button_validate，影响库存，始终需要审批。
+3. 取消：action_cancel，需要审批。
 
-### 5. Flytta i pipeline
-- odoo_write → stage_id (välj bland crm.stage, gärna teamets stages)
-- ⚠ Att skriva en stage med is_won=True = VUNNEN (triggar won-logik)
-- ⚠ probability är beräknad — skriv den inte direkt
-- HITL: nej vid normal förflyttning
+## 采购（purchase，按安装情况启用）
+模型：purchase.order、purchase.order.line。
+状态：draft（询价）→ sent → to approve → purchase → done / cancel。
+1. 创建询价：odoo_create("purchase.order", {partner_id, order_line})。
+2. 确认：button_confirm，构成采购承诺，需要审批。
+3. 需要先审批时调用 button_approve。
 
-### 6. Markera vunnen
-- odoo_call_method("crm.lead", id, "action_set_won")
-- → sätter rätt won-stage (sequence) + probability=100
-- HITL: JA
+## 制造（mrp，按安装情况启用）
+模型：mrp.production、mrp.bom。
+状态：draft → confirmed → progress → to_close → done / cancel。
+1. 创建：odoo_create("mrp.production", {product_id, product_qty, bom_id?})。
+2. 确认：action_confirm，需要审批。
+3. 排产：button_plan；完成：button_mark_done，始终需要审批。
 
-### 7. Markera förlorad
-- odoo_call_method("crm.lead", id, "action_set_lost")
-- → ARKIVERAR leaden (active=False, probability=0)
-- HITL: JA — alltid
+## 项目（project，按安装情况启用）
+模型：project.project、project.task。
+任务状态：01_in_progress → 02_changes_requested → 03_approved → closed。
+创建项目：odoo_create("project.project", {name, user_id?})。
+创建任务：odoo_create("project.task", {name, project_id, user_ids?, date_deadline?, description?})。
+创建和更新无需额外审批，删除需要审批。
 
-### Metodtabell CRM
-| Metod | När | HITL |
-|-------|-----|------|
-| convert_opportunity(partner, user_ids?, team_id?) | lead → opp | alltid |
-| action_set_won() | aktiv opportunity | ja |
-| action_set_lost() | lead/opp | alltid |
-| action_schedule_meeting() | lead/opp | nej |
-| action_snooze() | lead/opp | nej |
-| action_show_potential_duplicates() | lead/opp | nej |
+## 其他应用（按安装情况启用）
+- 报销 hr_expense：创建 → action_submit_sheet → action_approve，审批需要确认。
+- 请假 hr_holidays：创建 → action_validate，需要审批。
+- 车队 fleet：创建 fleet.vehicle，无额外审批。
+- 维护 maintenance：maintenance.request → action_start / action_done。
+- 活动 event：event.event → confirm，处理报名 registration。
+- 问卷 survey：survey.survey → action_open。
+- 群发邮件 mass_mailing：创建 → action_put_in_queue，始终需要审批。
+- 网站和电商 website / website_sale：发布页面立即生效，需要审批。
+- 服务台 helpdesk：helpdesk.ticket，解决或关闭需要审批。
+- 现场服务 fieldservice：fieldservice.order，分配需要审批。
+- 排班 planning：planning.slot，重复预订需要审批。
+- 收银 point_of_sale：pos.session，关闭并生成结算报告需要审批。
+- 维修 repair：repair.order，改变状态需要审批。
+- 配送 delivery：报价选择 carrier，提供跟踪信息。
+- 忠诚度 loyalty：积分手工调整需要审批。
 
----
-
-## Kontakter (modul: contacts)
-
-Modeller: res.partner, res.partner.title, res.country
-
-- Skapa kontakt: odoo_create("res.partner", {name, email, phone, company_type,
-  is_company, street, city, zip, country_id, vat, lang})
-- HITL: nej för skapande; JA vid radering (hårt stopp)
-- Företag: company_type=company, is_company=True; kontaktpersoner via parent_id
-
----
-
-## HR (modul: hr)
-
-Modeller: hr.employee, hr.department, hr.job, hr.contract
-
-- Skapa anställd: odoo_create("hr.employee", {name, work_email, department_id,
-  job_id, company_id, gender?, birthday?, work_phone?, address_id?})
-- → kräver company_id
-- HITL: JA vid skapande av anställd (känslig personaldata)
-- Avdelningar: odoo_create("hr.department", {name, manager_id?, parent_id?})
-
----
-
-## Kalender (modul: calendar)
-
-Modeller: calendar.event, calendar.alarm, calendar.attendee
-
-- Skapa möte: odoo_create("calendar.event", {name, start, stop, duration?,
-  partner_ids, user_id, location?, description?})
-- start/stop i ISO-format
-- HITL: JA vid inbjudan av andra användare; nej för eget möte
-
----
-
-## Produkter (modul: product)
-
-Modeller: product.product, product.template, product.category
-
-- Skapa produkt: odoo_create("product.product", {name, list_price, categ_id,
-  type, uom_id?, default_code?, sale_ok?, purchase_ok?})
-- Uppdatera pris: odoo_write → list_price
-- HITL: nej för skapande/pris; JA vid radering
-
----
-
-## Försäljning (modul: sale, sale_management) — VILANDE
-
-Modeller: sale.order, sale.order.line
-State: draft → sent → sale → done / cancel
-1. Skapa offert: odoo_create("sale.order", {partner_id, order_line}) → draft
-2. Skicka: odoo_call_method("sale.order", id, "action_quotation_send") → HITL: alltid
-3. Bekräfta: odoo_call_method("sale.order", id, "action_confirm") → HITL: ja
-4. Lås upp: action_unlock; Annullera: action_cancel → HITL: ja
-
-## Redovisning (modul: account) — VILANDE
-
-Modeller: account.move, account.move.line, account.journal
-State: draft → posted → cancel
-1. Skapa faktura: odoo_create("account.move", {move_type, partner_id,
-   invoice_line_ids}) → draft
-2. Bokför: odoo_call_method("account.move", id, "action_post") → HITL: alltid
-3. Återställ: button_draft; Registrera betalning: action_register_payment
-
-## Lager (modul: stock) — VILANDE
-
-Modeller: stock.picking, stock.move, stock.quant
-State: draft → confirmed → assigned → done / cancel
-1. Bekräfta: action_confirm (reserverar)
-2. Validera/leverera: button_validate → HITL: alltid (påverkar lager)
-3. Annullera: action_cancel → HITL: ja
-
-## Inköp (modul: purchase) — VILANDE
-
-Modeller: purchase.order, purchase.order.line
-State: draft(RFQ) → sent → to approve → purchase → done / cancel
-1. Skapa RFQ: odoo_create("purchase.order", {partner_id, order_line})
-2. Bekräfta: button_confirm → HITL: JA (bindande inköp)
-3. Godkänn först vid behov: button_approve
-
-## Tillverkning (modul: mrp) — VILANDE
-
-Modeller: mrp.production, mrp.bom
-State: draft → confirmed → progress → to_close → done / cancel
-1. Skapa: odoo_create("mrp.production", {product_id, product_qty, bom_id?})
-2. Bekräfta: action_confirm → HITL: ja
-3. Planera: button_plan; Klar: button_mark_done → HITL: alltid
-
-## Projekt (modul: project) — VILANDE
-
-Modeller: project.project, project.task
-Task-state: 01_in_progress → 02_changes_requested → 03_approved → closed
-1. Skapa projekt: odoo_create("project.project", {name, user_id?})
-2. Skapa task: odoo_create("project.task", {name, project_id, user_ids?,
-   date_deadline?, description?})
-- HITL: nej för skapande/uppdatering; ja vid radering
-
----
-
-## Övriga appar (VILANDE — kortfattade)
-
-- Expenser (hr_expense): skapa → action_submit_sheet → action_approve (HITL ja)
-- Ledighet (hr_holidays): skapa → action_validate (HITL ja)
-- Fleet (fleet): fleet.vehicle skapande; HITL nej
-- Underhåll (maintenance): maintenance.request → action_start/action_done
-- Events (event): event.event → confirm; registration
-- Enkäter (survey): survey.survey → action_open
-- Utskick (mass_mailing): skapa → action_put_in_queue (HITL alltid)
-- Webbplats/eHandel (website/website_sale): sidor publiceras direkt (HITL ja)
-- Helpdesk: helpdesk.ticket; HITL ja vid lösning/stängning
-- Field Service: fieldservice.order; HITL ja vid tilldelning
-- Planering: planning.slot; HITL ja vid dubbelbokning
-- POS: pos.session; HITL ja vid stängning (Z-rapport)
-- Reparation (repair): repair.order; HITL ja vid statusändring
-- Leverans (delivery): carrier vid offert; spårning
-- Lojalitet (loyalty): poäng; HITL ja vid manuell justering
-
----
-
-## Verktygshintar (generellt)
-
-- describe_model("<modell>") → fält, relationer, action-metoder, kapaciteter
-- odoo_search("<modell>", [("fält","=",värde)]) → hitta poster
-- odoo_create / odoo_write / odoo_call_method → utföra (HITL per tabell ovan)
-- okf_search → kunskap om processer/kontext (när OKF finns)
-- graph_query → relationer mellan poster (när graf finns)
-            ]]></field>
+## 工具参考
+- describe_model("<model>")：字段、关系、业务方法和能力。
+- odoo_search("<model>", [("field","=",value)])：查找记录。
+- odoo_create、odoo_write、odoo_call_method：执行操作，遵循上述审批要求。
+- okf_search：在已配置 OKF 时查找流程与上下文。
+- graph_query：在已配置图谱时查找记录关系。
+]]></field>
         </record>
     </data>
 </odoo>

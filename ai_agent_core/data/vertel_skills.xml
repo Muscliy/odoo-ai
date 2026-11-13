@@ -26,31 +26,25 @@
             <field name="name">vertel-skills</field>
             <field name="category">general</field>
             <field name="source_type">odoo</field>
-            <field name="description">Skills-systemet i denna AI-plattform — vad skills är, hur de aktiveras, vilka som finns och hur man föreslår nya. Använd när användaren frågar om skills, kunskap eller "kan du det här?".</field>
-            <field name="trigger_keywords">skill, skills, kunskap, ladda skill, aktivera skill, /skill</field>
-            <field name="recipe_text"><![CDATA[
-# Skill: vertel-skills — hur skills fungerar hos oss
+            <field name="description">技能使用说明：解释本 AI 平台的技能是什么、如何启用、有哪些可用技能，以及如何提出新技能需求。</field>
+            <field name="trigger_keywords">技能, 知识, 加载技能, 启用技能, skill, skills, /skill</field>
+            <field name="recipe_text"><![CDATA[# 技能：平台技能使用说明
 
-## Vad skills är
-Skills (ai.skill) är Vertels funktion för att spara kunskap. Varje skill har
-ett recipe_text som beskriver HUR en uppgift görs — processer, verktygshintar,
-sökvägar och regler. Skills ersätter inte träning — de är instruktioner som
-injiceras i din systemprompt. En modell vet bara det den tränats på; allt
-Vertel-specifikt lever i skills.
+## 技能是什么
+技能（ai.skill）用于保存平台专有知识。每项技能的 recipe_text 描述任务的操作步骤、工具、路径和规则。技能会作为指令加入系统提示，补充模型训练知识之外的平台信息。
 
-## Hur de aktiveras
-- I chat-UI:t: skriv `/skill-namn` följt av frågan → recipen laddas in.
-- Automatiskt: om användarens meddelande matchar skillens trigger_keywords.
-- Här (API): kopplade skills ligger i "## Skills"-blocket i systemprompten —
-  läs och följ relevanta skills innan du svarar.
+## 启用方式
+- 聊天界面：输入 `/技能名称` 后附上问题，加载相应操作说明。
+- 自动匹配：用户消息命中 trigger_keywords 时启用。
+- API：关联技能位于系统提示的“## Skills”部分，回答前读取并遵循相关技能。
 
-## Regler
-- Känner du igen en uppgift från en skill → följ recipen, gissa inte.
-- Vet du inte var något ligger → vertel-infra-skillen.
-- Ska något planeras (större ändring) → vertel-openspec-skillen.
-- Ska klicktester köras/analyseras → vertel-clicktest-skillen.
-- Saknas kunskap → säg det tydligt OCH föreslå en ny skill (kaizen).
-            ]]></field>
+## 使用规则
+- 任务已有对应技能时，按技能步骤执行。
+- 查询基础设施或文档位置时，读取 vertel-infra。
+- 规划较大变更时，读取 vertel-openspec。
+- 运行或分析自动点击测试时，读取 vertel-clicktest。
+- 缺少知识时明确说明，并通过持续改进流程提出新增技能建议。
+]]></field>
         </record>
 
         <!-- ── 2. vertel-infra ─────────────────────────────────────────── -->
@@ -58,37 +52,27 @@ Vertel-specifikt lever i skills.
             <field name="name">vertel-infra</field>
             <field name="category">infrastructure</field>
             <field name="source_type">odoo</field>
-            <field name="description">Vertels infrastruktur — SaltStack-repot /srv/salt, var dokumentationen ligger (README.md, docs/), pillar/secrets, HA-par (ska/sto), LXD-containrar. Använd när användaren frågar om infrastruktur, sökvägar eller dokumentation.</field>
-            <field name="trigger_keywords">infrastruktur, salt, srv/salt, dokumentation, docs, README, minion, container, pillar, driftslogg, sökväg, ha, failover</field>
-            <field name="recipe_text"><![CDATA[
-# Skill: vertel-infra — infrastruktur & dokumentation
+            <field name="description">Vertel 基础设施说明：介绍其 SaltStack 仓库、文档、配置、凭据管理、高可用节点和 LXD 容器。仅在处理该环境的基础设施问题时使用。</field>
+            <field name="trigger_keywords">基础设施, 文档, 路径, 运维日志, 容器, 高可用, 故障切换, salt, srv/salt, docs, README, minion, container, pillar, ha, failover</field>
+            <field name="recipe_text"><![CDATA[# 技能：Vertel 基础设施与文档
 
-## Var allt ligger
-- Salt states-repo: /srv/salt (kataloger: caddy/, lxd/, odoo/, postgres/,
-  pillar/, docs/, openspec/, odoosa/, storage/, zabbix/ m.fl.)
-- Huvuddokumentation: /srv/salt/README.md — DRIFTSLOGGEN med alla ändringar,
-  arkitektur och kommandon. Kolla här först!
-- Strukturöversikt: /srv/salt/STRUCTURE.md
-- Övriga docs: /srv/salt/docs/ (infrastruktur.drawio, zabbix.md m.m.)
-- Odoo-dokumentation: /srv/salt/odoo/docs/ (klicktest, deployment)
-- Klicktest: /srv/salt/odoo/docs/clicktest/README.md — ENDA källan för
-  klicktest/canary-kunskap.
+## 目录入口
+- Salt 状态仓库：/srv/salt，包含 caddy/、lxd/、odoo/、postgres/、pillar/、docs/、openspec/、odoosa/、storage/、zabbix/ 等目录。
+- 主文档：/srv/salt/README.md，记录变更、架构、命令和运维日志，优先查阅。
+- 目录结构：/srv/salt/STRUCTURE.md。
+- 其他文档：/srv/salt/docs/，包含 infrastruktur.drawio、zabbix.md 等文件。
+- Odoo 文档：/srv/salt/odoo/docs/，包含点击测试和部署说明。
+- 点击测试唯一入口：/srv/salt/odoo/docs/clicktest/README.md。
 
-## Arkitektur i korthet
-- Ubuntu 24.04 + SaltStack (states i /srv/salt); hemligheter i pillar —
-  aldrig i kod/README.
-- HA-par: ska (primary) / sto (secondary).
-- LXD-containrar: lxd-<typ>-<kund>; klicktest: ct-<kund>-<ååååmmddhhmm>.
-- Kritiska tjänster: PostgreSQL (streaming replikering), Odoo 18-20,
-  Postfix/Dovecot (virtual users i PG), Caddy (reverse proxy), LDAP
-  (FusionDirectory), Garage S3, Zabbix.
+## 架构概况
+- Ubuntu 24.04 与 SaltStack，状态保存在 /srv/salt；凭据通过 pillar 管理，保持在代码和 README 之外。
+- 高可用节点：ska 为主节点，sto 为备用节点。
+- LXD 容器命名为 lxd-<类型>-<客户>，点击测试容器命名为 ct-<客户>-<年月日时分>。
+- 关键服务：PostgreSQL 流复制、Odoo 18–20、Postfix/Dovecot（虚拟用户保存在 PostgreSQL）、Caddy 反向代理、LDAP（FusionDirectory）、Garage S3、Zabbix。
 
-## Regler
-- Svara aldrig med sökvägar/kommandon du är osäker på — peka på README.md
-  eller docs/ istället.
-- Vid driftfrågor (salt/zabbix/alarm): Infrastructure Operator
-  (infrastructureopera) har verktygen — föreslå den.
-            ]]></field>
+## 操作规则
+路径或命令不确定时，指向 README.md 或 docs/ 中的依据。Salt、Zabbix、告警等运维任务应建议使用具备对应工具的 Infrastructure Operator（infrastructureopera）。这些说明只适用于所述 Vertel 环境。
+]]></field>
         </record>
 
         <!-- ── 3. vertel-openspec ──────────────────────────────────────── -->
@@ -96,31 +80,26 @@ Vertel-specifikt lever i skills.
             <field name="name">vertel-openspec</field>
             <field name="category">development</field>
             <field name="source_type">odoo</field>
-            <field name="description">OpenSpec på Vertel — spec-driven planering: openspec/specs (levande specar) + openspec/changes (ändringsförslag). Använd när användaren vill planera en ändring eller nämner openspec/opsx.</field>
-            <field name="trigger_keywords">openspec, opsx, planering, spec, change, proposal, propose, archive, sync, spec-driven, tasks</field>
-            <field name="recipe_text"><![CDATA[
-# Skill: vertel-openspec — planering med OpenSpec
+            <field name="description">OpenSpec 变更规划：说明如何使用 openspec/specs 中的现行规范及 openspec/changes 中的变更提案来规划开发任务。</field>
+            <field name="trigger_keywords">变更规划, 规范, 提案, 归档, 同步规范, 任务, openspec, opsx, spec, change, proposal, propose, archive, sync, spec-driven, tasks</field>
+            <field name="recipe_text"><![CDATA[# 技能：使用 OpenSpec 规划变更
 
-## Vad det är
-OpenSpec är Vertels ramverk för att planera och dokumentera ändringar.
-Ligger i /srv/salt/openspec/:
-- openspec/specs/ — levande specifikationer (kontrakt som gäller)
-- openspec/changes/<namn>/ — ändringsförslag (proposal.md, design.md,
-  tasks.md, README.md)
-- openspec/changes/archive/ — arkiverade, färdiga ändringar
-- openspec/config.yaml — projektkontext och regler
+## 文件结构
+OpenSpec 是 Vertel 的变更规划与记录框架，位于 /srv/salt/openspec/：
+- openspec/specs/：现行规范与有效契约。
+- openspec/changes/<名称>/：变更提案，包含 proposal.md、design.md、tasks.md、README.md。
+- openspec/changes/archive/：已完成并归档的变更。
+- openspec/config.yaml：项目背景和规则。
 
-## Arbetsflöde (via Pi: /opsx-…)
-1. /opsx-propose — skapa förslag (proposal.md, design.md, tasks.md)
-2. Implementera tasks (tasks.md) — /opsx-apply-change
-3. /opsx-sync-specs — uppdatera specarna när delar är klara
-4. /opsx-archive-change — arkivera när allt är implementerat
+## 工作流程（通过 Pi 的 /opsx-… 命令）
+1. /opsx-propose：创建 proposal.md、design.md、tasks.md。
+2. /opsx-apply-change：实施 tasks.md 中的任务。
+3. /opsx-sync-specs：阶段完成时同步规范。
+4. /opsx-archive-change：全部实施完成后归档。
 
-## Regler
-- Större ändringar planeras ALLTID som OpenSpec-change innan kod.
-- Specs uppdateras i takt med implementation — inte efteråt.
-- Exempel: openspec/changes/odoo-clicktest-consolidation/.
-            ]]></field>
+## 规则
+较大变更应在编码前建立 OpenSpec 变更提案。规范随实现同步更新。示例目录：openspec/changes/odoo-clicktest-consolidation/。
+]]></field>
         </record>
 
         <!-- ── 4. vertel-clicktest ─────────────────────────────────────── -->
@@ -128,48 +107,39 @@ Ligger i /srv/salt/openspec/:
             <field name="name">vertel-clicktest</field>
             <field name="category">infrastructure</field>
             <field name="source_type">odoo</field>
-            <field name="description">Vertels klicktest-motor (odoo.clicktest/odoo.canary) — hur man kör tester, var resultaten ligger (errors-summary.txt, failed_modules.txt), ct-*-containrar och livscykel. Använd när användaren pratar om klicktest, canary eller testcontainrar.</field>
-            <field name="trigger_keywords">klicktest, clicktest, canary, click everywhere, ct-, errors-summary, failed_modules, testcontainer, module-errors</field>
-            <field name="recipe_text"><![CDATA[
-# Skill: vertel-clicktest — klicktest/canary
+            <field name="description">自动点击测试：介绍 odoo.clicktest/odoo.canary 的测试运行、结果文件、测试容器和运行周期，适用于排查网页自动化测试问题。</field>
+            <field name="trigger_keywords">点击测试, 自动测试, 测试容器, 测试日志, clicktest, canary, click everywhere, ct-, errors-summary, failed_modules, module-errors</field>
+            <field name="recipe_text"><![CDATA[# 技能：自动点击测试与金丝雀检查
 
-## ENDA källan
-/srv/salt/odoo/docs/clicktest/README.md — all klicktest-kunskap.
-(odoo/CLICKTEST.md är en pekare dit; TESTMANUAL.md/QUICKSTART.md är
-historiska och ska inte utökas.)
+## 唯一文档入口
+/srv/salt/odoo/docs/clicktest/README.md。odoo/CLICKTEST.md 指向该入口；TESTMANUAL.md 和 QUICKSTART.md 为历史资料，不再扩充。
 
-## Vad det är
-Automatiserat klicktest på en LXD-container: skapar testmaskin, installerar
-Odoo med moduler från en repo-fil, kör odoo.canary (click-everywhere) och
-extraherar loggar till mastern. ENDA testmotorn — både manuella klicktester
-och schemalagda canary18 (odoo.provision_cron).
+## 测试机制
+创建 LXD 测试容器，按仓库配置文件安装 Odoo 及模块，运行 odoo.canary 遍历点击测试，并将日志提取到主节点。手动测试和定时 canary18（odoo.provision_cron）使用同一测试引擎。
 
-## Köra (Salt-master)
-# Alla moduler (som cron gör):
-salt-call --local state.apply odoo.clicktest \
-  pillar='{"container_name": "canary18", "aggregate": true}'
-# Kundspecifikt:
-salt-call state.apply odoo.clicktest pillar='{"customer": "<kund>"}'
-# Manuellt med repo-fil — lång körning → --async:
-salt-call --local state.apply odoo.clicktest \
-  pillar='{"repo_file": "master.repo"}' --async
-# OBS: master-timeouten (--timeout) dödar INTE minion-jobbet — nästa steg
-# (loggextrahering) hämtar resultatet ändå.
+## 在 Salt 主节点运行
+```bash
+# 按定时任务方式测试全部模块
+salt-call --local state.apply odoo.clicktest pillar='{"container_name": "canary18", "aggregate": true}'
+# 按客户测试
+salt-call state.apply odoo.clicktest pillar='{"customer": "<customer>"}'
+# 按仓库文件运行，耗时较长时使用异步模式
+salt-call --local state.apply odoo.clicktest pillar='{"repo_file": "master.repo"}' --async
+```
+主节点 --timeout 超时不会终止从节点任务；后续日志提取仍可获取结果。
 
-## Resultat — artifact-katalog
-/srv/salt/odoo/clicktest/<container>/
-├── errors-summary.txt    # fel sammanställda per rotorsak
-├── failed_modules.txt    # moduler som inte installerades
-├── module-errors/        # fellogg per modul
-├── canary/               # canary-loggar (latest_selenium.log + tidsstämplade)
-├── odoo-log/odoo/        # Odoo-serverlogg
-└── databases, odoo.conf  # konfig extraherad från containern
+## 结果目录
+/srv/salt/odoo/clicktest/<container>/：
+- errors-summary.txt：按根因汇总的错误。
+- failed_modules.txt：安装失败的模块。
+- module-errors/：各模块错误日志。
+- canary/：latest_selenium.log 及带时间戳的日志。
+- odoo-log/odoo/：Odoo 服务日志。
+- databases、odoo.conf：从容器提取的配置，注意保护凭据。
 
-## Livscykel & regler
-- ct-*-containrar (och canary18) klassas environment=test och rensas av
-  odoo.clicktest_cleanup efter 7 dagar — bygg INGA manuella fixar där.
-- Rapporter publiceras till Driftsloggen (ledningssystem), source=clicktest.
-            ]]></field>
+## 生命周期
+ct-* 和 canary18 容器归为 environment=test，odoo.clicktest_cleanup 在 7 天后清理。修复应进入源码，不在临时容器中手工保留。测试报告发布到运维日志，source=clicktest。
+]]></field>
         </record>
 
         <!-- ── 5. okf-summarize (maskinell — anropas av cronen) ────────── -->
@@ -177,43 +147,29 @@ salt-call --local state.apply odoo.clicktest \
             <field name="name">okf-summarize</field>
             <field name="category">general</field>
             <field name="source_type">odoo</field>
-            <field name="description">Sammanfatta en text till en kort, sökbar sammanfattning för OKF-indexet. Anropas av OKF-cronen när en posts text överstiger den konfigurerade gränsen. Behåller fakta, namn, siffror och datum — tappar ingen innebörd.</field>
-            <field name="trigger_keywords">sammanfatta, okf, sammanfattning, indexera</field>
-            <field name="recipe_text"><![CDATA[
-# Skill: okf-summarize — sammanfatta för OKF-indexet
+            <field name="description">知识索引摘要：将较长文本整理为简短且便于检索的摘要，保留事实、名称、数字、日期和原意。</field>
+            <field name="trigger_keywords">摘要, 总结, 索引, 知识检索, okf</field>
+            <field name="recipe_text"><![CDATA[# 技能：知识索引摘要
 
-## När du anropas
-OKF-cronen (var 5:e minut) har hittat en post vars text överstiger
-`ai_agent_core.okf_summary_max_chars` (default 2000). Texten är för lång för
-att bli ett koncept — den måste sammanfattas först.
+## 触发条件
+OKF 定时任务每 5 分钟扫描一次。当文本超过 ai_agent_core.okf_summary_max_chars（默认 2000 字符）时，先生成摘要，再建立知识概念。
 
-## Vad du får
-En text, avgränsad med `---`. Den är HELA postens innehåll (en webbsidas
-arch_db, ett blogginläggs content, ett projekts description …).
+## 输入
+以 --- 分隔的完整记录正文，可能来自网页 arch_db、博客 content 或项目 description。
 
-## Vad du ska göra
-1. Skriv en sammanfattning på **högst den angivna teckenlängden**.
-2. **Behåll fakta**: namn, siffror, datum, belopp, artikelnummer, e-postadresser.
-3. **Tappa ingen innebörd.** Om texten säger tre saker ska sammanfattningen
-   säga tre saker — kortare.
-4. **Hitta inte på.** Står det inte i texten ska det inte stå i sammanfattningen.
-5. Svara på **textens eget språk**.
+## 操作
+1. 将摘要控制在给定字符数以内。
+2. 保留姓名、数字、日期、金额、货号、邮箱等事实。
+3. 保留每项原意，用更短的表达覆盖所有要点。
+4. 只使用原文信息。
+5. 使用原文语言，保持原文含义。
 
-## Vad du INTE ska göra
-- Ingen inledning ("Här är en sammanfattning …")
-- Ingen förklaring, ingen rubrik, ingen punktlista om texten inte är en lista
-- Ingen markdown-formatering — ren text
-- Ingen översättning
+## 输出格式
+只返回摘要正文，使用纯文本。省略开场白、解释、标题和 Markdown；原文不是列表时也不改为列表。不翻译原文。
 
-## Format
-Svara med ENDAST sammanfattningen. Ingenting annat.
-
-## Varför det spelar roll
-Sammanfattningen blir ett OKF-koncept: den embeddas (1024d vektor) och går in
-i `search_vector` (svensk fulltext). Den är det enda av posten som är SÖKBART.
-Tappar du ett namn i sammanfattningen är namnet osökbart — originalet finns
-kvar i `okf_body`, men ingen fråga når det.
-            ]]></field>
+## 索引用途
+摘要会成为 OKF 知识概念，生成 1024 维向量，并写入使用瑞典语全文检索配置的 search_vector。摘要是可检索部分；原文虽保留在 okf_body 中，但遗漏的名字可能无法被搜索命中。
+]]></field>
         </record>
 
     </data>

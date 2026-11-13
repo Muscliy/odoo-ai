@@ -551,7 +551,7 @@ class AIOpenAPIController(http.Controller):
                         provider, pmodel = ProviderFactory.from_coworker(
                             gen_env['ai.coworker'].browse(_coworker_id))
                         if not provider:
-                            yield f'data: {json.dumps({"error": {"message": "No AI provider configured for this coworker"}})}\n\n'
+                            yield f'data: {json.dumps({"error": {"message": '此 AI 员工尚未配置 AI 服务。'}})}\n\n'
                             yield 'data: [DONE]\n\n'
                             return
 

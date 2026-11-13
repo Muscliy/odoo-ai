@@ -360,7 +360,7 @@ def _require_session_owner(session_id):
     session = Sess.browse(int(session_id or 0))
     if not session.exists():
         return None, Response(
-            json.dumps({'error': 'Not found'}),
+            json.dumps({'error': '未找到请求的内容。'}),
             status=404, content_type='application/json')
 
     user = request.env.user
@@ -373,7 +373,7 @@ def _require_session_owner(session_id):
         'Owner check denied: uid %s tried to reach session %s owned by uid %s',
         user.id, session.id, session.user_id.id)
     return None, Response(
-        json.dumps({'error': 'Forbidden'}),
+        json.dumps({'error': '无权执行此操作。'}),
         status=403, content_type='application/json')
 
 
@@ -441,7 +441,7 @@ class AIStreamController(http.Controller):
         """Stream AI response via SSE. Supports session persistence."""
         if not prompt:
             return Response(
-                json.dumps({"error": "Missing prompt parameter"}),
+                json.dumps({"error": '缺少 prompt 参数。'}),
                 status=400,
                 content_type='application/json',
             )
@@ -471,7 +471,7 @@ class AIStreamController(http.Controller):
                     'default-medarbetare — nekar anropet')
                 return Response(
                     json.dumps({
-                        "error": "No AI Coworker selected. Pass coworker_id, or set a Default AI Coworker in Settings → AI Agents."
+                        "error": '尚未选择 AI 员工。请提供 coworker_id，或在“设置 → AI 智能体”中设置默认 AI 员工。'
                     }),
                     status=400,
                     content_type='application/json',
@@ -493,13 +493,13 @@ class AIStreamController(http.Controller):
                         _logger.error(
                             '/ai/stream: _quest_is_accessible is None (import error) — denying the call')
                         return Response(
-                            json.dumps({"error": "Quest access check unavailable"}),
+                            json.dumps({"error": '暂时无法检查此 AI 员工的访问权限。'}),
                             status=403,
                             content_type='application/json',
                         )
                     if request.env.user and not _quest_is_accessible(quest, request.env.user):
                         return Response(
-                            json.dumps({"error": "Quest not accessible"}),
+                            json.dumps({"error": '无权访问此 AI 员工。'}),
                             status=403,
                             content_type='application/json',
                         )
@@ -1074,10 +1074,7 @@ class AIStreamController(http.Controller):
                                 gen_coworker_id)
                             yield ("data: " + json.dumps({
                                 'type': 'error',
-                                'message': ('No AI provider configured '
-                                            'for this coworker. Check the agent '
-                                            'model or '
-                                            'ai_agent_core.default_model_id.'),
+                                'message': ('此 AI 员工尚未配置 AI 服务。请检查智能体模型或 ai_agent_core.default_model_id 设置。'),
                             }) + "\n\n")
                             return
                         # explicit-agent-tools: ENDAST settings-default +
@@ -1733,7 +1730,7 @@ class AIStreamController(http.Controller):
         try:
             skill = request.env['ai.skill'].sudo().browse(skill_id)
             if not skill.exists():
-                return Response(json.dumps({'error': 'Skill not found'}),
+                return Response(json.dumps({'error': '未找到技能。'}),
                               status=404, content_type='application/json')
             # A4: `recipe_text` är skillens hela instruktionsrecept. En
             # gruppbunden skill får inte läcka den till en användare utan
@@ -1744,7 +1741,7 @@ class AIStreamController(http.Controller):
                     _logger.warning(
                         'skill_get denied: uid %s lacks the group for skill %s',
                         request.env.user.id, skill.id)
-                    return Response(json.dumps({'error': 'Forbidden'}),
+                    return Response(json.dumps({'error': '无权执行此操作。'}),
                                   status=403,
                                   content_type='application/json')
             return Response(json.dumps({
@@ -1803,7 +1800,7 @@ class AIStreamController(http.Controller):
         """SSE endpoint for interrupt events (needs_input, needs_approval)."""
         if not session_uuid:
             return Response(
-                json.dumps({"error": "Missing session_uuid"}),
+                json.dumps({"error": '缺少 session_uuid 参数。'}),
                 status=400, content_type='application/json',
             )
 
@@ -1856,11 +1853,11 @@ class AIStreamController(http.Controller):
     def interrupt_respond(self, session_uuid=None, response=None, **kw):
         """POST endpoint for human response to interrupt."""
         if not session_uuid or not response:
-            return {"error": "Missing session_uuid or response"}
+            return {"error": '缺少 session_uuid 或 response 参数。'}
 
         handler = _get_webui_handler(session_uuid)
         if not handler:
-            return {"error": "No pending interrupt for this session"}
+            return {"error": '此会话没有待处理的交互请求。'}
 
         # Godkännandesvar (tools-run-approval-channel 3.x): klienten svarar
         # på en begäran med `request_id` + `approved`. Formen skiljs från
@@ -1873,12 +1870,12 @@ class AIStreamController(http.Controller):
         # det är web-UI:ts egen kanal och har sin egen auth-modell.
         if isinstance(response, dict) and response.get('request_id'):
             if not self._check_api_key():
-                return {"error": "Unauthorized"}
+                return {"error": '身份验证失败。'}
             request_id = str(response['request_id'])
             approved = response.get('approved') is True
             reason = str(response.get('reason') or '')
             if not handler.answer_approval(request_id, approved, reason):
-                return {"error": "No pending approval with that request_id"}
+                return {"error": '此 request_id 没有对应的待审批请求。'}
             return {"status": "ok", "request_id": request_id,
                     "approved": approved}
 
@@ -2350,28 +2347,28 @@ class AIStreamController(http.Controller):
         res_id = body.get('res_id')
 
         if not coworker_id or not text:
-            return Response(json.dumps({"error": "Missing coworker_id or text"}),
+            return Response(json.dumps({"error": '缺少 coworker_id 或 text 参数。'}),
                           content_type='application/json', status=400)
 
         quest = request.env['ai.coworker'].sudo().browse(int(coworker_id))
         if not quest.exists():
-            return Response(json.dumps({"error": "Quest not found"}),
+            return Response(json.dumps({"error": '未找到 AI 员工。'}),
                           content_type='application/json', status=404)
         # A4: pröva åtkomst INNAN någon LLM-körning startas — annars kunde
         # vem som helst bränna en coworker's budget genom att gissa ett id.
         if _quest_is_accessible is None:
             _logger.error(
                 'powerbox_run: _quest_is_accessible is None (import error) — denying the call instead of running unprotected')
-            return Response(json.dumps({"error": "Forbidden"}),
+            return Response(json.dumps({"error": '无权执行此操作。'}),
                           content_type='application/json', status=403)
         if not _quest_is_accessible(quest, request.env.user):
             _logger.warning(
                 'powerbox_run denied: uid %s has no access to coworker %s',
                 request.env.user.id, quest.id)
-            return Response(json.dumps({"error": "Forbidden"}),
+            return Response(json.dumps({"error": '无权执行此操作。'}),
                           content_type='application/json', status=403)
         if 'powerbox' not in quest.init_type_ids.filtered('enabled').mapped('init_type'):
-            return Response(json.dumps({"error": "Quest not configured as powerbox"}),
+            return Response(json.dumps({"error": '此 AI 员工尚未配置为快捷操作。'}),
                           content_type='application/json', status=404)
 
         try:
@@ -2403,7 +2400,7 @@ class AIStreamController(http.Controller):
         coworker_id = body.get('coworker_id')
 
         if not learning:
-            return Response(json.dumps({"error": "Empty learning"}),
+            return Response(json.dumps({"error": '学习内容不能为空。'}),
                           content_type='application/json', status=400)
 
         # Find the quest (personal companion or specified)
@@ -2421,7 +2418,7 @@ class AIStreamController(http.Controller):
                     '/learn denied: uid %s tried to write to coworker %s (own companion: %s)',
                     user.id, coworker_id, own.id if own else None)
                 return Response(json.dumps({
-                    "error": "You can only teach your own companion"
+                    "error": '只能训练你自己的个人助手。'
                 }), content_type='application/json', status=403)
             quest = candidate
         elif user.personal_coworker_id:
@@ -2429,13 +2426,13 @@ class AIStreamController(http.Controller):
 
         if not quest or not quest.exists():
             return Response(json.dumps({
-                "error": "No personal companion found. Enable it in Settings first."
+                "error": '未找到个人助手，请先在设置中启用。'
             }), content_type='application/json', status=404)
 
         identity = quest.identity_id
         if not identity:
             return Response(json.dumps({
-                "error": "Quest has no identity to update"
+                "error": '此 AI 员工没有可更新的身份信息。'
             }), content_type='application/json', status=400)
 
         # Determine what to update based on learning content
@@ -2480,7 +2477,7 @@ class AIStreamController(http.Controller):
         """
         session = request.env['ai.coworker.session'].browse(int(session_id))
         if not session.exists():
-            return {'success': False, 'error': 'Session not found'}
+            return {'success': False, 'error': '未找到会话。'}
         if not model or model not in request.env:
             return {'success': False, 'error': 'Unknown model: %s' % model}
         coworker = session.coworker_id
@@ -2498,7 +2495,7 @@ class AIStreamController(http.Controller):
                 session._set_record_context(
                     request.env[model].browse(int(res_id)))
                 return {'success': True, 'count': 1}
-            return {'success': False, 'error': 'res_id or res_ids is required'}
+            return {'success': False, 'error': '必须提供 res_id 或 res_ids。'}
         except Exception as e:
             _logger.warning('record_context: misslyckades: %s', e)
             return {'success': False, 'error': str(e)}
@@ -2565,7 +2562,7 @@ class AIStreamController(http.Controller):
                 _logger.warning(
                     'memory_archive denied: uid %s against sessionless memory %s',
                     user.id, memory.id)
-                return Response(json.dumps({"error": "Forbidden"}),
+                return Response(json.dumps({"error": '无权执行此操作。'}),
                               status=403, content_type='application/json')
         memory.archived = True
         return Response(json.dumps({"status": "ok"}),
@@ -2580,16 +2577,16 @@ class AIStreamController(http.Controller):
         coworker_id = body.get('coworker_id')
         guidance_text = body.get('guidance', '')
         if not guidance_text.strip():
-            return Response(json.dumps({"error": "Empty improvement text"}),
+            return Response(json.dumps({"error": '改进说明不能为空。'}),
                           content_type='application/json', status=400)
         quest = request.env['ai.coworker'].sudo().browse(int(coworker_id)) if coworker_id else None
         if not quest or not quest.exists():
-            return Response(json.dumps({"error": "Quest ej hittad"}),
+            return Response(json.dumps({"error": '未找到 AI 员工。'}),
                           content_type='application/json', status=404)
         is_admin = user.has_group('base.group_system')
         is_owner = quest.user_id and quest.user_id.id == user.id
         if not (is_admin or is_owner):
-            return Response(json.dumps({"error": "Missing permission"}),
+            return Response(json.dumps({"error": '缺少执行此操作的权限。'}),
                           content_type='application/json', status=403)
         memory = request.env['ai.memory'].sudo().create({
             'name': f'Forbattring: {guidance_text[:80]}',
@@ -2623,13 +2620,13 @@ class AIStreamController(http.Controller):
         memory_type = kw.get('memory_type', 'text')
         file_obj = request.httprequest.files.get('file')
         if not file_obj:
-            return Response(json.dumps({"error": "Ingen fil"}),
+            return Response(json.dumps({"error": '未提供文件。'}),
                           content_type='application/json', status=400)
         filename = file_obj.filename
         content = file_obj.read()
         text = _extract_text(filename, content)
         if not text or not text.strip():
-            return Response(json.dumps({"error": "Kunde ej extrahera text"}),
+            return Response(json.dumps({"error": '无法提取文字。'}),
                           content_type='application/json', status=400)
         quest = request.env['ai.coworker'].sudo().browse(int(coworker_id)) if coworker_id else None
         session = None
@@ -4077,12 +4074,12 @@ class PICallbackController(http.Controller):
         designen men aldrig i koden.
         """
         if not self._check_callback_auth():
-            return Response(json.dumps({'error': 'Unauthorized'}),
+            return Response(json.dumps({'error': '身份验证失败。'}),
                             status=403, content_type='application/json')
 
         session = request.env['ai.coworker.session'].sudo().browse(task_id)
         if not session.exists():
-            return Response(json.dumps({'error': 'Session not found'}),
+            return Response(json.dumps({'error': '未找到会话。'}),
                             status=404, content_type='application/json')
 
         # Ägarskapet prövas EFTER uppslaget — `_check_callback_auth` behöver
@@ -4091,7 +4088,7 @@ class PICallbackController(http.Controller):
         # API-nyckelvägen. Ett andra anrop är billigt (ingen DB-åtkomst när
         # hemligheten redan matchat).
         if not self._check_callback_auth(session=session):
-            return Response(json.dumps({'error': 'Unauthorized'}),
+            return Response(json.dumps({'error': '身份验证失败。'}),
                             status=403, content_type='application/json')
 
         # Uppdragets prompt: sessionens job_prompt (fryst vid köning) eller
@@ -4128,7 +4125,7 @@ class PICallbackController(http.Controller):
         Updates the corresponding ai.coworker.session.
         """
         if not self._check_callback_auth():
-            return {'error': 'Unauthorized', 'status': 403}
+            return {'error': '身份验证失败。', 'status': 403}
 
         body = json.loads(request.httprequest.data or '{}')
         state = body.get('state', 'done')
@@ -4138,11 +4135,11 @@ class PICallbackController(http.Controller):
 
         session = request.env['ai.coworker.session'].sudo().browse(task_id)
         if not session.exists():
-            return {'error': 'Session not found', 'status': 404}
+            return {'error': '未找到会话。', 'status': 404}
 
         # A3: API-nyckeln måste tillhöra sessionens ägare.
         if not self._check_callback_auth(session=session):
-            return {'error': 'Unauthorized', 'status': 403}
+            return {'error': '身份验证失败。', 'status': 403}
 
         # Update session
         # `finish_reason` är en Selection (utfall-och-tokenmatning) — den får
@@ -4198,7 +4195,7 @@ class PICallbackController(http.Controller):
         Stores results in the corresponding quest session.
         """
         if not self._check_callback_auth():
-            return {'error': 'Unauthorized', 'status': 403}
+            return {'error': '身份验证失败。', 'status': 403}
 
         body = json.loads(request.httprequest.data or '{}')
         batch_id = body.get('batch_id', '')
@@ -4207,11 +4204,11 @@ class PICallbackController(http.Controller):
         errors = body.get('errors', [])
 
         if not coworker_id:
-            return {'error': 'Missing coworker_id', 'status': 400}
+            return {'error': '缺少 coworker_id 参数。', 'status': 400}
 
         quest = request.env['ai.coworker'].sudo().browse(int(coworker_id))
         if not quest.exists():
-            return {'error': 'Quest not found', 'status': 404}
+            return {'error': '未找到 AI 员工。', 'status': 404}
 
         session = request.env['ai.coworker.session'].sudo().create({
             'coworker_id': quest.id,
@@ -4273,7 +4270,7 @@ class AIOpenAIAPI(http.Controller):
     def list_models(self, **kw):
         """GET /ai/v1/models — Lista AI coworkers med API aktiverat."""
         if not self._check_api_key():
-            return Response(json.dumps({'error': {'message': 'Unauthorized', 'type': 'authentication_error'}}),
+            return Response(json.dumps({'error': {'message': '身份验证失败。', 'type': 'authentication_error'}}),
                           status=401, content_type='application/json')
 
         models = []
@@ -4346,7 +4343,7 @@ class AIOpenAIAPI(http.Controller):
         if not self._check_api_key():
             return Response(
                 json.dumps({'error': {
-                    'message': 'Unauthorized',
+                    'message': '身份验证失败。',
                     'type': 'authentication_error'}}),
                 status=401, content_type='application/json')
 
@@ -4367,7 +4364,7 @@ class AIOpenAIAPI(http.Controller):
             if not rec:
                 return Response(
                     json.dumps({'error': {
-                        'message': 'Coworker not found',
+                        'message': '未找到 AI 员工。',
                         'type': 'invalid_request_error'}}),
                     status=404, content_type='application/json')
             domain.append(('id', 'in', rec.skill_ids.ids))
@@ -4394,7 +4391,7 @@ class AIOpenAIAPI(http.Controller):
     def coworker_models(self, coworker, **kw):
         """GET /ai/v1/<coworker>/models — Lista modellen för en specifik coworker."""
         if not self._check_api_key():
-            return Response(json.dumps({'error': {'message': 'Unauthorized', 'type': 'authentication_error'}}),
+            return Response(json.dumps({'error': {'message': '身份验证失败。', 'type': 'authentication_error'}}),
                           status=401, content_type='application/json')
 
         quest = self._resolve_coworker(coworker)
@@ -4431,20 +4428,20 @@ class AIOpenAIAPI(http.Controller):
         """
         if not self._check_api_key():
             return Response(json.dumps({
-                'error': {'message': 'Unauthorized',
+                'error': {'message': '身份验证失败。',
                           'type': 'authentication_error'}}),
                 status=401, content_type='application/json')
         try:
             body = json.loads(request.httprequest.data or '{}')
         except json.JSONDecodeError:
             return Response(json.dumps({
-                'error': {'message': 'Invalid JSON',
+                'error': {'message': 'JSON 格式无效。',
                           'type': 'invalid_request_error'}}),
                 status=400, content_type='application/json')
         pi_session_id = (body.get('pi_session_id') or '').strip()
         if not pi_session_id:
             return Response(json.dumps({
-                'error': {'message': 'Missing pi_session_id',
+                'error': {'message': '缺少 pi_session_id 参数。',
                           'type': 'invalid_request_error'}}),
                 status=400, content_type='application/json')
         copy_from = (body.get('copy_from_pi_session_id') or '').strip()
@@ -4509,7 +4506,7 @@ class AIOpenAIAPI(http.Controller):
         """
         if not self._check_api_key():
             return Response(json.dumps({
-                'error': {'message': 'Unauthorized',
+                'error': {'message': '身份验证失败。',
                           'type': 'authentication_error'}}),
                 status=401, content_type='application/json')
         body = self._parse_json_body()
@@ -4519,7 +4516,7 @@ class AIOpenAIAPI(http.Controller):
         pi_session_id = (body.get('pi_session_id') or '').strip().lower()
         if not pi_session_id:
             return Response(json.dumps({
-                'error': {'message': 'Missing pi_session_id',
+                'error': {'message': '缺少 pi_session_id 参数。',
                           'type': 'invalid_request_error'}}),
                 status=400, content_type='application/json')
 
@@ -4804,12 +4801,12 @@ class AIOpenAIAPI(http.Controller):
         body = self._parse_json_body()
         if body is None:
             return Response(json.dumps({'error': {
-                'message': 'Invalid JSON body',
+                'message': '请求正文不是有效的 JSON。',
                 'type': 'invalid_request_error'}}),
                 status=400, content_type='application/json')
         coworker = body.get('model', '')
         if not coworker:
-            return Response(json.dumps({'error': {'message': 'Missing model', 'type': 'invalid_request_error'}}),
+            return Response(json.dumps({'error': {'message': '缺少 model 参数。', 'type': 'invalid_request_error'}}),
                           status=400, content_type='application/json')
         try:
             return self._handle_chat(coworker, **kw)
@@ -4886,7 +4883,7 @@ class AIOpenAIAPI(http.Controller):
 
         # Auth: validate user API key
         if not self._check_api_key():
-            return Response(json.dumps({'error': {'message': 'Unauthorized', 'type': 'authentication_error'}}),
+            return Response(json.dumps({'error': {'message': '身份验证失败。', 'type': 'authentication_error'}}),
                           status=401, content_type='application/json')
 
         # ── Budgetkontroll (2026-10-27) ────────────────────────────────────
@@ -5234,7 +5231,7 @@ class AIOpenAIAPI(http.Controller):
         # Extract last user message (för sessionens name + init-prompt)
         user_messages = [m for m in messages if m.get('role') == 'user']
         if not user_messages:
-            return Response(json.dumps({'error': {'message': 'No user message provided', 'type': 'invalid_request_error'}}),
+            return Response(json.dumps({'error': {'message': '未提供用户消息。', 'type': 'invalid_request_error'}}),
                           status=400, content_type='application/json')
 
         prompt = _clean_user_message(
@@ -5268,7 +5265,7 @@ class AIOpenAIAPI(http.Controller):
         msgs = _to_message_list(messages)
         # Sista assistant-meddelandet får alltid korrekt content om det tomt
         if not msgs:
-            return Response(json.dumps({'error': {'message': 'No valid messages', 'type': 'invalid_request_error'}}),
+            return Response(json.dumps({'error': {'message': '没有有效消息。', 'type': 'invalid_request_error'}}),
                           status=400, content_type='application/json')
 
         # ── Supervisor-kontextoptimering (A): Välj RELEVANTA tools per uppgift ──
@@ -6175,7 +6172,7 @@ class AIOpenAIAPI(http.Controller):
         """
         if not self._check_api_key():
             return Response(json.dumps({
-                'error': {'message': 'Unauthorized',
+                'error': {'message': '身份验证失败。',
                           'type': 'authentication_error'}}),
                 status=401, content_type='application/json')
 
@@ -6230,14 +6227,14 @@ class AIOpenAIAPI(http.Controller):
         """
         if not self._check_api_key():
             return Response(json.dumps({
-                'error': {'message': 'Unauthorized',
+                'error': {'message': '身份验证失败。',
                           'type': 'authentication_error'}}),
                 status=401, content_type='application/json')
         try:
             body = json.loads(request.httprequest.data or '{}')
         except json.JSONDecodeError:
             return Response(json.dumps({
-                'error': {'message': 'Invalid JSON',
+                'error': {'message': 'JSON 格式无效。',
                           'type': 'invalid_request_error'}}),
                 status=400, content_type='application/json')
 
@@ -6269,7 +6266,7 @@ class AIOpenAIAPI(http.Controller):
             body.get('permission_defaults') or 'allow').lower()
         if not tool_calls:
             return Response(json.dumps({
-                'error': {'message': 'Missing tool_calls',
+                'error': {'message': '缺少 tool_calls 参数。',
                           'type': 'invalid_request_error'}}),
                 status=400, content_type='application/json')
 
@@ -6358,7 +6355,7 @@ class AIOpenAIAPI(http.Controller):
                         coworker_ref)
             if not quest.exists():
                 return Response(json.dumps({'error': {
-                    'message': 'No coworker session context; pass a valid session_id or coworker',
+                    'message': '缺少 AI 员工会话上下文，请提供有效的 session_id 或 coworker。',
                     'type': 'invalid_request_error'}}),
                     status=400, content_type='application/json')
 
@@ -6739,7 +6736,7 @@ class AIOpenAIAPI(http.Controller):
         """Deprecated — använd _resolve_coworker + ordinarie AgentLoop."""
         return Response(json.dumps({
             'error': {
-                'message': 'Use a coworker name (not a model name). See /ai/v1/models',
+                'message': '请使用 AI 员工名称而非模型名称，可通过 /ai/v1/models 查看。',
                 'type': 'invalid_request_error'
             }
         }), status=400, content_type='application/json')

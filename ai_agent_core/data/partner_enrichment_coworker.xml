@@ -14,23 +14,24 @@
              direkt. HITL sker pausat via tool_calls (interaktiv init-typ). -->
 
         <record id="skill_partner_enrichment" model="ai.skill">
-            <field name="name">Partner: Berika företagsuppgifter</field>
+            <field name="trigger_keywords">企业资料, 补全资料, 公司网站, 联系人资料</field>
+            <field name="name">联系人：补全企业资料</field>
             <field name="category">communication</field>
-            <field name="description">Föreslå berikning av en res.partner (webbplats, bransch, beskrivning) med stöd av web_search, och skriv först efter godkännande.</field>
-            <field name="recipe_text">När du ska berika en partner (res.partner):
-1. Anropa partner_propose_enrichment(partner_id, fields) för att läsa nuvarande värden. Verktyget skriver ingenting.
-2. Sök fakta med web_search när fältet kräver det (webbplats, bransch, beskrivning). Använd företagsnamnet och, om det finns, organisationsnummer eller adress som sökord.
-3. Föreslå ETT värde per fält och motivera kort. Föreslå aldrig en ändring av ett fält som redan har ett rimligt värde — säg det i stället.
-4. Presentera förslagen som en tydlig lista: fält, nuvarande värde, föreslaget värde, motivering.
-5. Skriv INGENTING ännu. Varje fält godkänns separat av användaren (HITL).
-6. När ett fält godkänts: anropa partner_apply_enrichment(partner_id, field, value) för DET fältet. Upprepa per godkänt fält.
-7. Om ett förslag avvisas: skriv inte det fältet, och försök inte igen utan ny information.
-</field>
+            <field name="description">客户资料补全：通过网页检索查找企业网站、行业和公司介绍，先给出建议和依据，经用户批准后再更新 res.partner。</field>
+            <field name="recipe_text"><![CDATA[补全 res.partner 企业资料时：
+1. 调用 partner_propose_enrichment(partner_id, fields) 读取当前值；该工具只读。
+2. 对网站、行业、公司介绍等需要事实依据的字段使用 web_search，以公司名称和已有的注册号或地址为关键词。
+3. 每个字段提出一个建议值并简要说明依据。已有合理值的字段应说明无需修改。
+4. 按“字段、当前值、建议值、理由”列出建议。
+5. 等待用户逐字段批准（HITL），批准前保持原值。
+6. 仅对已批准字段调用 partner_apply_enrichment(partner_id, field, value)，逐项执行。
+7. 用户拒绝的字段保持原值；获得新信息后才重新提议。
+]]></field>
         </record>
 
         <record id="coworker_partner_enrichment" model="ai.coworker">
-            <field name="name">Partner-Berikaren</field>
-            <field name="description">Du är Partner-Berikaren. Du hjälper användaren att fylla i och förbättra företagsuppgifter på en partner (res.partner) — webbplats, bransch, beskrivning och kontaktuppgifter. Du föreslår alltid värden med en kort motivering, och du skriver aldrig något förrän användaren godkänt det fältet. Du är källkritisk: hellre ett tomt fält än en gissning.</field>
+            <field name="name">企业资料助手</field>
+            <field name="description">你帮助用户补全 res.partner 的企业网站、行业、介绍和联系方式。每个建议值都要提供简短依据，用户逐字段批准后才写入。信息应有可靠来源，宁可保留空值也不猜测。</field>
             <field name="status">active</field>
             <field name="orchestration_mode">single</field>
             <field name="heartbeat_enabled" eval="False"/>
@@ -39,10 +40,10 @@
         </record>
 
         <record id="agent_partner_enrichment" model="ai.agent">
-            <field name="name">Partner-Berikning</field>
-            <field name="ai_role">Company Data Enricher</field>
-            <field name="description">Läser en partner, söker fakta på webben och föreslår berikning av företagsuppgifter. Skriver först efter godkännande per fält.</field>
-            <field name="ai_goal">Föreslå korrekta, motiverade fältvärden för en partner — utan att skriva något ofrivilligt.</field>
+            <field name="name">企业资料补全</field>
+            <field name="ai_role">企业资料补全专家</field>
+            <field name="description">读取联系人资料，通过网络查证并提出补全建议，用户逐字段批准后再写入。</field>
+            <field name="ai_goal">为联系人提出准确、有依据的字段建议，保持写入操作符合用户意愿。</field>
             <field name="status">active</field>
             <!-- Runtime-axeln: agenten körs som en separat process. -->
             <field name="runtime">external</field>

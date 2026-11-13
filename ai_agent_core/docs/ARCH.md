@@ -35,3 +35,21 @@ OCA ai_tool 和旧 ai_agent 都定义不兼容的 ai.tool，安装钩子拒绝�
 知识库 SQL 权限辅助函数递归计算继承组，避免 19 的显式组关系漏掉继承的读取权限。
 本次是新库试用适配，不包含 Odoo 18 数据迁移、现有业务库替换或完整生产安全审查。
 未通过验证的旧模块和行业扩展保持不可安装；不得仅通过改 installable 绕过移植验证。
+
+## 内置内容中文适配
+
+技能、智能体和工具的非翻译字段在数据 XML 与 Python 默认定义中直接使用中文。
+`data/localize_builtin_content.xml` 在安装和升级末尾调用
+`ai.skill._localize_builtin_content()`，同步既有的 `noupdate` 内置记录。
+`builtin_skills_zh.json`、`builtin_records_zh.json`、`builtin_tools_zh.json`
+保存字段目标值和旧值 SHA-256；只有字段仍等于旧默认值时才更新，重复执行不写入。
+工具通过 `builtin_name` 定位，保留用户自定义工具名称、参数与关联。
+`builtin_defaults_zh.json` 按完整旧默认值替换员工创建提示及分类说明。
+普通非 `noupdate` 的 XML 数据仍遵循原有仓库管理规则。
+
+技能的中文 `display_name` 与底层 `/技能名` 标识分离；记忆分类和知识资料类型也保留
+技术标识，通过中文显示名呈现。中文账号的标题和摘要使用中文，个人记忆提取跟随用户语言。
+`core/tool_select.py` 将无空格的中文业务短语映射到既有工具词汇，避免汉化工具说明后
+员工查询失去候选工具。此映射只参与候选排序，不扩大工具权限或改变审批级别。
+
+全仓库候选扫描与旧模块残留范围见 `../../docs/CHINESE_ADAPTATION.md`。

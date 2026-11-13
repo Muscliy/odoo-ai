@@ -16,107 +16,50 @@
     <data>
 
         <record id="skill_git_identity" model="ai.skill">
-            <field name="name">git-identitet vid Odoo-kodpush</field>
+            <field name="name">Odoo 代码提交身份核对</field>
             <field name="category">development</field>
             <field name="source_type">odoo</field>
-            <field name="description">Använd rätt git-identitet vid push av Odoo-kod — hämta den e-post som är kopplad till den Odoo-användare man kör som (res.users), eller fråga GitHub direkt vem SSH-nyckeln tillhör. Använd när du ska committa/pusha kod i ett Odoo-repo och git user.name/user.email ska sättas, eller när någon frågar "vilken git-identitet ska jag pusha som" / "varför pushar jag som X i Odoo" / "vem är jag på GitHub".</field>
-            <field name="trigger_keywords">git push, pusha kod, commit, user.name, user.email, git-identitet, marcuszxc, waland, Mitchell Admin, vem är jag på github, ssh nyckel, github</field>
-            <field name="recipe_text"><![CDATA[
-# Skill: git-identitet vid push av Odoo-kod
+            <field name="description">Git 身份配置：在提交或推送 Odoo 代码前，核对当前 Odoo 用户的邮箱或 GitHub SSH 密钥身份，正确设置 user.name 和 user.email。</field>
+            <field name="trigger_keywords">Git 身份, 提交身份, 推送代码, SSH 密钥, GitHub 账号, git push, commit, user.name, user.email, github</field>
+            <field name="recipe_text"><![CDATA[# 技能：Odoo 代码提交与推送身份
 
-## Regel
-När du committar/pushar kod i ett Odoo-repo ska git-identiteten
-(`user.name`/`user.email`) matcha den Odoo-användare som Odoo-verktygen
-kör som — inte en hårdkodad eller antagen identitet.
+## 原则
+user.name 和 user.email 应匹配实际执行 Odoo 工具的用户，或已验证的 GitHub SSH 身份。不要使用硬编码或提示词中可能过期的默认账号；以 ~/.pi/agent/odoo.json 实际认证的身份为准。
 
-Att hårdkoda t.ex. `waland` eller tro att man är "Mitchell Admin" är fel när
-token:en i `~/.pi/agent/odoo.json` autentiserar som en annan användare. Ta
-alltid reda på vem du faktiskt är i Odoo först.
+## 第零步：验证 SSH 身份
+通过 SSH 推送 GitHub 时执行：
+```bash
+ssh -T -o BatchMode=yes git@github.com
+```
+GitHub 返回 Hi <username>! 时，表示该 SSH 密钥所属账号。结合下述仓库历史中的真实邮箱设置身份。
 
-> ⚠️ Systemprompten/verktygsbeskrivningen kan påstå en "standardanvändare"
-> (t.ex. "Mitchell Admin id=2") som är FÖRÅLDRAD. Lita på den faktiska
-> token:en, inte på påståendet.
+## 第一步：验证 Odoo 身份
+Odoo 创建、修改、查询及方法调用使用 ~/.pi/agent/odoo.json 中的 baseUrl 和 token；密钥关联 res_users_apikeys.user_id。
+- ORM 方法：对已有授权且由自己负责的任务执行写入后，查询 write_uid、write_date，确认操作人。
+  odoo_search("project.task", [("id", "=", <id>)], ["write_uid", "write_date"])
+- 数据库方法：仅在具备数据库权限时，在进程内用 passlib.hash.pbkdf2_sha512.verify 将 token 与 res_users_apikeys.key 校验，关联 res_users 和 res_partner 取得用户及邮箱。凭据来自 /etc/odoo/odoo.conf，对应环境见 /skill:odoo-vertel-env。避免在输出中显示密钥。
+- 已确认用户 ID 后：
+  odoo_search("res.users", [("id", "=", <uid>)], ["name", "login", "email"])
+历史环境曾出现提示词默认账号与 token 实际账号不一致，必须以验证结果为准。
 
-## Steg 0 — Fråga GitHub direkt vem du är (via SSH-nyckeln)
-Om du pushar via SSH till GitHub, fråga GitHub vem SSH-nyckeln på maskinen
-tillhör — ingen gissning krävs:
+## 第二步：配置当前仓库身份
+从 res_users.email 或 res_partner.email 取得真实邮箱，并查找已有提交身份：
+```bash
+git log --all --format='%an <%ae>' | sort -u
+```
+仅配置当前仓库，使用核实后的值：
+```bash
+git config user.name "<verified_username>"
+git config user.email "<verified_email>"
+```
+确认邮箱与 SSH 验证的 GitHub 账号匹配，避免提交归属错误。没有历史身份时使用 res_users.name 与 res_users.email。
 
-    ssh -T -o BatchMode=yes git@github.com
-    # → "Hi marcuszxc! You've successfully authenticated..."
+## 第三步：提交与推送
+在已有授权范围内执行。提交说明使用英文约定格式，例如 fix(module): ...。推送前确认目标分支；远端领先时先 git pull --rebase。只暂存自己的修改，共享文件按差异块选择性暂存，保留他人未暂存修改。
 
-Svaret `Hi <användarnamn>!` är den GitHub-användare som äger SSH-nyckeln som
-`git push` använder. Kombinera med användarens kända e-post (ur repots
-historik, se Steg 2) för att sätta `user.name`/`user.email`. Detta verifierar
-den identitet som faktiskt autentiserar mot GitHub — oavsett vad
-systemprompten/git-config påstår.
-
-## Steg 1 — Ta reda på vem du är i Odoo
-Odoo-verktygen (odoo_create/write/search/call_method) exekveras via token:en i
-`~/.pi/agent/odoo.json` → `baseUrl` + `token`. Token:en är knuten till en
-specifik Odoo-användare (`res_users_apikeys.user_id`).
-
-Sätt A — via ORM (tillförlitligast): gör en skrivåtgärd (t.ex. uppdatera ett
-fält på en uppgift du äger) och läs `write_uid` på posten:
-
-    odoo_search("project.task", [("id", "=", <id>)], ["write_uid", "write_date"])
-    # → write_uid = [<uid>, "<namn>"]  ← detta är din Odoo-användare
-
-Sätt B — via databasen (kryptografiskt bevis): om du har DB-åtkomst
-verifierar du exakt vilken användare token:en tillhör mot `res_users_apikeys`
-med passlib:
-
-    import json
-    from passlib.hash import pbkdf2_sha512
-    tok = json.load(open("/home/karmar/.pi/agent/odoo.json"))["token"]
-    # Anslut till DB (params från /etc/odoo/odoo.conf — se /skill:odoo-vertel-env)
-    # SELECT ak.user_id, u.login, p.email FROM res_users_apikeys ak
-    #   JOIN res_users u ON u.id=ak.user_id LEFT JOIN res_partner p ON p.id=u.partner_id
-    # for varje rad: if pbkdf2_sha512.verify(tok, ak.key): → detta är din användare
-
-Sätt C — hämta e-posten för användaren du fått fram:
-
-    odoo_search("res.users", [("id", "=", <uid>)], ["name", "login", "email"])
-    # → email = din git-user.email
-
-> Verkligt exempel (2026-09-09): token i odoo.json tillhörde
-> `marcus.karlsson@vertel.se` (id=150), trots att prompten sa "Mitchell Admin
-> id=2". Bevisat via passlib-verify mot `res_users_apikeys` (nyckel id=10
-> "Pi-Nyckel") och via `write_uid`=[150,"Marcus Karlsson"] på en uppdaterad
-> uppgift.
-
-## Steg 2 — Sätt git-identiteten
-Använd användarens riktiga e-post (från `res_users.email` → `res_partner.email`).
-Ofta har användaren en etablerad git-identitet i repots historik — hitta den:
-
-    cd <repo>
-    git log --all --format='%an <%ae>' | sort -u | grep -i "<efternamn>"
-    # ex: marcuszxc <marcus.karlsson@vertel.se>
-
-Sätt identiteten per-repo (inte globalt — undvik att skriva över andras):
-
-    git config user.name "marcuszxc"                     # användarens git-användarnamn
-    git config user.email "marcus.karlsson@vertel.se"    # e-post från res_users
-
-Kontrollera att `user.email` matchar det GitHub-konto som SSH-nyckeln
-verifierades mot i Steg 0 — annars attribuerar GitHub commiten till fel
-användare trots att push:en lyckas.
-
-Om ingen matchande identitet finns i historiken, använd `res_users.name` +
-`res_users.email` som `user.name`/`user.email`.
-
-## Steg 3 — Commit + push
-- Commit-meddelanden på engelska, konventionell stil: `fix(module): ...`.
-- Pusha till rätt branch; om remote ligger före, `git pull --rebase` först.
-- Rör aldrig andras ostagade ändringar — om en fil delas med andra
-  utvecklare, stagga selektivt (`git add -p`) endast dina egna hunks.
-
-## Säkerhet
-- Exponera ALDRIG `db_password`/token i klartext i kommandon eller output.
-- Läs DB-credentials via env-variabel i barnprocess (`PGPASSWORD="$DB_PASS"`),
-  aldrig genom att `cat`/`echo` odoo.conf okrypterat.
-- `res_users.password` och `ir_config_parameter`-nycklar får aldrig ändras
-  utan explicit administratörsgodkännande.
-            ]]></field>
+## 凭据保护
+db_password 和 token 保持在受控凭据源中，不输出到命令或日志。数据库密码通过子进程环境传递，例如 PGPASSWORD="$DB_PASS"；不要打印 odoo.conf。修改 res_users.password 或 ir_config_parameter 密钥需要明确的管理员批准。
+]]></field>
         </record>
 
     </data>

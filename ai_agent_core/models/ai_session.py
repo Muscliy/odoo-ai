@@ -1577,9 +1577,10 @@ class AICoworkerSession(models.Model):
         # inte `Syfte:` alls, och `Syfte` utan kolon blev ett godkänt namn.
         _prefix_words = (
             'titel', 'title', 'subject', 'amne', 'subject', 'sammanfattning',
-            'syfte', 'utfall', 'beslut', 'fakta', 'artefakter')
+            'syfte', 'utfall', 'beslut', 'fakta', 'artefakter',
+            '标题', '主题', '摘要', '目的', '结果', '决策', '事实', '产出', '待解决问题')
         line = re.sub(
-            r'^(%s)\s*:\s*' % '|'.join(_prefix_words),
+            r'^(%s)\s*[:：]\s*' % '|'.join(_prefix_words),
             '', line, flags=re.IGNORECASE)
         line = re.sub(r'\s+', ' ', line).strip()
         # Ett namn som BARA är ett rubrikord säger ingenting om sessionen
@@ -1588,6 +1589,7 @@ class AICoworkerSession(models.Model):
         # gav sessionsnamnet "Syfte". Returnera tomt: `_maybe_set_title`
         # hanterar det och en starkare källa får sätta namnet i stället.
         _headings = {h.lower() for h in self.SUMMARY_HEADINGS}
+        _headings.update(('目的', '结果', '决策', '事实', '产出', '待解决问题'))
         if line.rstrip(':').strip().lower() in _headings:
             return ''
         if len(line) > max_chars:
@@ -1608,6 +1610,7 @@ class AICoworkerSession(models.Model):
         if not summary:
             return ''
         headings = {h.lower() for h in self.SUMMARY_HEADINGS}
+        headings.update(('目的', '结果', '决策', '事实', '产出', '待解决问题'))
         for raw in str(summary).splitlines():
             line = raw.strip()
             if not line:
@@ -1622,7 +1625,7 @@ class AICoworkerSession(models.Model):
             if line.rstrip(':').strip().lower() in headings:
                 continue
             # En rad som bara är ett ord är oftast en etikett, inte en mening.
-            if len(line.split()) < 2:
+            if len(line.split()) < 2 and not re.search(r'[\u4e00-\u9fff]{4}', line):
                 continue
             return line
         return ''
@@ -1683,6 +1686,11 @@ class AICoworkerSession(models.Model):
 
     def _title_prompt(self, transcript):
         """Prompt för namngenereringen — EN mening, på svenska."""
+        if (self.env.lang or '').startswith('zh'):
+            return (
+                '请用简体中文为下面的会话起一个标题。只返回一句话，最多 %d 个字符。'
+                '省略标题标签、引号和句末句号。概括整个会话主题，而不是仅复述第一条消息。'
+                '\n\n--- 会话 ---\n%s' % (self.TITLE_MAX_CHARS, transcript))
         return (
             'Give the session below a name in Swedish. Answer with EXACTLY one '
             'sentence, at most %d characters, with no heading, no quotation '
@@ -2404,6 +2412,12 @@ class AICoworkerSession(models.Model):
         råvara: samma form varje gång gör den jämförbar och sökbar med
         svensk fulltextsökning.
         """
+        if (self.env.lang or '').startswith('zh'):
+            return (
+                '请用简体中文总结下面的会话，按需使用以下标题：\n\n'
+                '### 目的\n### 结果\n### 决策\n### 事实\n### 产出\n### 待解决问题\n\n'
+                '无内容的章节直接省略。保持简洁完整，保留事实、决策和待解决问题，'
+                '只使用会话中有依据的信息。\n\n--- 会话 ---\n%s' % transcript)
         headings = '\n'.join('### %s' % h for h in self.SUMMARY_HEADINGS)
         return (
             'Summarise the session below in Swedish. Use exactly these headings '

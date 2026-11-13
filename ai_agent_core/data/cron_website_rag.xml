@@ -8,7 +8,7 @@
              "Record cannot be modified right now". cron.task har ingen
              sådan spärr, och motorn äger kadens, lås och körhistorik. -->
         <record id="cron_task_cron_website_rag_refresh" model="cron.task">
-            <field name="name">Website RAG Refresh</field>
+            <field name="name">更新网站知识库</field>
             <field name="technical_name">ai_website_rag_refresh</field>
             <field name="module">ai_agent_core</field>
             <field name="model_name">ai.company.memory</field>

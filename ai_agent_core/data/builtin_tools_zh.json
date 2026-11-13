@@ -1,0 +1,514 @@
+[
+  {
+    "builtin_name": "odoo_calculator",
+    "fields": {
+      "description": {
+        "source_sha256": "81ff5b5c9e0666320e7e325a8746611f6aa73b9c5b3f6fd9e64f5a97af0daee0",
+        "value": "安全计算数学表达式，支持 +、-、*、/、括号和基本算术，以字符串返回计算结果。"
+      },
+      "parameters": {
+        "source_sha256": "3d828cca0c8e15a97fe405f9b065d1c9ff4d0e8e6ccff3baaaedb4b713992407",
+        "value": "{\"type\": \"object\", \"properties\": {\"expression\": {\"type\": \"string\", \"description\": \"\\u8981\\u8ba1\\u7b97\\u7684\\u6570\\u5b66\\u8868\\u8fbe\\u5f0f\\uff0c\\u4f8b\\u5982 12 * (3 + 4) / 2\\u3002\"}}, \"required\": [\"expression\"]}"
+      }
+    }
+  },
+  {
+    "builtin_name": "odoo_web_search",
+    "fields": {
+      "description": {
+        "source_sha256": "e7aa89649510437f56a789c26982347078ef2e3b4ce839ad94cc8967c5f6fbdb",
+        "value": "搜索网络上的最新信息。使用无需 API 密钥的 DuckDuckGo，Bing 和 Brave 作为备用来源。返回标题、摘要和网址，适合查找文档、新闻及其他网络信息。"
+      },
+      "parameters": {
+        "source_sha256": "89b845410adefd5296b8621b064d309975ec28682cd447c5821a89d80add9044",
+        "value": "{\"type\": \"object\", \"properties\": {\"query\": {\"type\": \"string\", \"minLength\": 1, \"description\": \"\\u641c\\u7d22\\u95ee\\u9898\\uff0c\\u4f8b\\u5982\\u201c\\u6700\\u65b0 Odoo 18 \\u53d1\\u5e03\\u8bf4\\u660e\\u201d\\u3002\"}, \"max_results\": {\"type\": \"integer\", \"description\": \"\\u8fd4\\u56de\\u7ed3\\u679c\\u6570\\u91cf\\u4e0a\\u9650\\uff0c\\u8303\\u56f4 1\\u201315\\uff0c\\u9ed8\\u8ba4 5\\u3002\"}, \"recency\": {\"type\": \"string\", \"enum\": [\"day\", \"week\", \"month\", \"year\"], \"description\": \"\\u6309\\u65f6\\u95f4\\u9650\\u5236\\u7ed3\\u679c\\uff0c\\u7559\\u7a7a\\u8868\\u793a\\u4e0d\\u9650\\u3002\\u65b0\\u95fb\\u3001\\u53d1\\u5e03\\u52a8\\u6001\\u7b49\\u5177\\u6709\\u65f6\\u6548\\u6027\\u7684\\u95ee\\u9898\\u5e94\\u6307\\u5b9a\\u65f6\\u95f4\\u8303\\u56f4\\u3002\"}}, \"required\": [\"query\"]}"
+      }
+    }
+  },
+  {
+    "builtin_name": "odoo_fetch_url",
+    "fields": {
+      "description": {
+        "source_sha256": "d56aa1aafb4dab01b87ea45ae0aafbe0028e9559a07700820e93f678b5402e43",
+        "value": "读取网址并返回可读正文，支持网页正文（排除菜单和 Cookie 提示）、带文字层的 PDF、YouTube 视频字幕。跟随 HTTP 重定向与页面刷新跳转，阻止私有地址、回环地址和云元数据地址。"
+      },
+      "parameters": {
+        "source_sha256": "7aae0315784070bd83b7dd9eb94fee0008a6639a3035a2aa333feebc6e59e92e",
+        "value": "{\"type\": \"object\", \"properties\": {\"url\": {\"type\": \"string\", \"description\": \"\\u8981\\u8bfb\\u53d6\\u7684\\u5b8c\\u6574\\u7f51\\u5740\\uff0c\\u5fc5\\u987b\\u5305\\u542b http:// \\u6216 https://\\u3002\"}, \"max_length\": {\"type\": \"integer\", \"description\": \"\\u8fd4\\u56de\\u6b63\\u6587\\u6700\\u591a\\u5b57\\u7b26\\u6570\\uff0c\\u8303\\u56f4 1000\\u201320000\\uff0c\\u9ed8\\u8ba4 5000\\u3002\"}, \"prompt\": {\"type\": \"string\", \"description\": \"\\u8bf4\\u660e\\u8981\\u67e5\\u627e\\u7684\\u5185\\u5bb9\\uff0c\\u4f8b\\u5982\\u201c\\u4e0a\\u4f20\\u91cd\\u8bd5\\u7684\\u8d85\\u65f6\\u65f6\\u95f4\\u201d\\u3002\\u8be5\\u53c2\\u6570\\u8bb0\\u5f55\\u67e5\\u8be2\\u610f\\u56fe\\uff0c\\u4e0d\\u7b5b\\u9009\\u7ed3\\u679c\\uff0c\\u4ecd\\u4f1a\\u8fd4\\u56de\\u5b8c\\u6574\\u6b63\\u6587\\u3002\"}}, \"required\": [\"url\"]}"
+      }
+    }
+  },
+  {
+    "builtin_name": "news_fetch",
+    "fields": {
+      "description": {
+        "source_sha256": "d861401e444ab82c6250a9db4aab1f07fa93eaac0f0be6753ed891ee343f577c",
+        "value": "读取并解析指定 RSS/Atom 地址，返回规范化条目：title、url、published、summary。接收网址并返回数据；新闻来源清单由智能体技能维护。"
+      },
+      "parameters": {
+        "source_sha256": "a5e4488f7d0f4d810efe50eaf90b9589c0853d29e1c18c4b14c058d3bdb70f67",
+        "value": "{\"type\": \"object\", \"properties\": {\"url\": {\"type\": \"string\", \"minLength\": 1, \"description\": \"\\u8ba2\\u9605\\u6e90\\u5730\\u5740\\uff0c\\u5fc5\\u987b\\u5305\\u542b http:// \\u6216 https://\\u3002\"}, \"limit\": {\"type\": \"integer\", \"description\": \"\\u8fd4\\u56de\\u9879\\u76ee\\u6570\\u91cf\\u4e0a\\u9650\\uff0c\\u8303\\u56f4 1\\u2013100\\uff0c\\u9ed8\\u8ba4 20\\u3002\"}}, \"required\": [\"url\"]}"
+      }
+    }
+  },
+  {
+    "builtin_name": "news_digest",
+    "fields": {
+      "description": {
+        "source_sha256": "a73cab1091aaabd0345f458d9334a679370624400c9ae969fe6c6704cf23b87b",
+        "value": "读取或保存用户在 ai.personal.memory 中的当天新闻简报缓存。未传 digest_text 时读取缓存，无需调用模型；传入 digest_text 时保存当天简报。简报属于个人记忆，可跨 AI 员工和会话使用。"
+      },
+      "parameters": {
+        "source_sha256": "9679ffe53274c87ea22940b149b7533ff133f771b176d2b77b3f36b1089a8af1",
+        "value": "{\"type\": \"object\", \"properties\": {\"topic\": {\"type\": \"string\", \"description\": \"\\u53ef\\u9009\\u4e3b\\u9898\\u7b5b\\u9009\\uff0c\\u4f8b\\u5982 AI\\uff1b\\u7559\\u7a7a\\u8868\\u793a\\u5168\\u90e8\\u3002\"}, \"count\": {\"type\": \"integer\", \"description\": \"\\u65b0\\u95fb\\u6761\\u6570\\u4e0a\\u9650\\uff0c\\u8303\\u56f4 1\\u201350\\uff0c\\u9ed8\\u8ba4 10\\u3002\"}, \"digest_text\": {\"type\": \"string\", \"description\": \"\\u8981\\u7f13\\u5b58\\u7684\\u7b80\\u62a5\\u5185\\u5bb9\\uff0c\\u7559\\u7a7a\\u65f6\\u8bfb\\u53d6\\u7f13\\u5b58\\u3002\"}}, \"required\": []}"
+      }
+    }
+  },
+  {
+    "builtin_name": "personal_memory",
+    "fields": {
+      "description": {
+        "source_sha256": "1f2de94f9dae637f211ce6a91ba32dc19e4b1b49bd1618e246f27a9f73d7c2b7",
+        "value": "读写用户的个人记忆 ai.personal.memory，包含偏好、事实和洞察，可跨 AI 员工与会话保留。action=write 保存用户明确提供的信息，例如“只要五条新闻”存为 category=preference；action=search 按 query 查找；action=recent 获取最近记忆。用于让偏好在后续会话中继续生效。"
+      },
+      "parameters": {
+        "source_sha256": "d9cbecb3609698991209be7360c20977b6d8ca8fc4b450474e9dfe41e2578b6b",
+        "value": "{\"type\": \"object\", \"properties\": {\"action\": {\"type\": \"string\", \"enum\": [\"write\", \"search\", \"recent\"], \"description\": \"write \\u4fdd\\u5b58\\u5185\\u5bb9\\uff0csearch \\u6309\\u5173\\u952e\\u8bcd\\u67e5\\u627e\\uff0crecent \\u8bfb\\u53d6\\u6700\\u8fd1\\u8bb0\\u5fc6\\u3002\"}, \"content\": {\"type\": \"string\", \"description\": \"action=write \\u65f6\\u5fc5\\u586b\\u7684\\u8bb0\\u5fc6\\u5185\\u5bb9\\uff0c\\u4f8b\\u5982\\u201c\\u7528\\u6237\\u5e0c\\u671b\\u65b0\\u95fb\\u7b80\\u62a5\\u5305\\u542b\\u4e94\\u6761\\u65b0\\u95fb\\u201d\\u3002\"}, \"query\": {\"type\": \"string\", \"description\": \"action=search \\u65f6\\u4f7f\\u7528\\u7684\\u67e5\\u8be2\\u8bcd\\uff0c\\u7559\\u7a7a\\u8868\\u793a\\u6700\\u65b0\\u8bb0\\u5fc6\\u3002\"}, \"category\": {\"type\": \"string\", \"enum\": [\"fact\", \"preference\", \"goal\", \"correction\", \"pattern\", \"feedback\", \"context\", \"insight\", \"policy\", \"skill\"], \"description\": \"\\u8bb0\\u5fc6\\u7c7b\\u578b\\uff0c\\u9ed8\\u8ba4 fact\\uff1b\\u8bb0\\u5f55\\u7528\\u6237\\u504f\\u597d\\u65f6\\u4f7f\\u7528 preference\\u3002\"}, \"importance\": {\"type\": \"string\", \"enum\": [\"low\", \"medium\", \"high\"], \"description\": \"\\u8bb0\\u5fc6\\u7684\\u91cd\\u8981\\u7a0b\\u5ea6\\uff0c\\u9ed8\\u8ba4 medium\\u3002\"}, \"source_ref\": {\"type\": \"string\", \"description\": \"\\u53ef\\u9009\\u6765\\u6e90\\u5f15\\u7528\\uff0c\\u4f8b\\u5982\\u65b0\\u95fb\\u94fe\\u63a5\\u3002\"}, \"limit\": {\"type\": \"integer\", \"description\": \"search \\u6216 recent \\u7684\\u6700\\u591a\\u8fd4\\u56de\\u6761\\u6570\\uff0c\\u8303\\u56f4 1\\u201350\\uff0c\\u9ed8\\u8ba4 10\\u3002\"}}, \"required\": [\"action\"]}"
+      }
+    }
+  },
+  {
+    "builtin_name": "browser_navigate",
+    "fields": {
+      "description": {
+        "source_sha256": "57fa8e2f8240b9c2564e8d59d58f65794491b0603f873fa90a241bded93f4f93",
+        "value": "通过无界面浏览器打开网址并返回完整页面正文，适用于需要 JavaScript 渲染的网站、网站可用性检查和动态页面内容提取。通过 NATS 委派给 Pi 智能体。"
+      },
+      "parameters": {
+        "source_sha256": "9b93fd354af48df5a2abcfe9120facb7a8f1643dde9d4d1580c222dfaee430d0",
+        "value": "{\"type\": \"object\", \"properties\": {\"url\": {\"type\": \"string\", \"description\": \"\\u8981\\u6253\\u5f00\\u7684\\u7f51\\u5740\\uff0c\\u4f8b\\u5982 https://example.com\\u3002\"}, \"action\": {\"type\": \"string\", \"enum\": [\"snapshot\", \"screenshot\", \"check_uptime\"], \"description\": \"\\u9875\\u9762\\u64cd\\u4f5c\\uff1asnapshot \\u8bfb\\u53d6\\u6b63\\u6587\\uff0cscreenshot \\u622a\\u56fe\\uff0ccheck_uptime \\u68c0\\u67e5\\u9875\\u9762\\u80fd\\u5426\\u52a0\\u8f7d\\u3002\"}}, \"required\": [\"url\"]}"
+      }
+    }
+  },
+  {
+    "builtin_name": "graph_query",
+    "fields": {
+      "description": {
+        "source_sha256": "f25c8d27dff0955581aea32e12536c63a8ef3c51c590640ba73234a6535f15c1",
+        "value": "使用 Cypher 只读查询 Odoo Mind 图数据库，查找联系人、公司、邮件、发票、战略计划和知识文章之间的关系，返回节点和关系的 JSON。示例：MATCH (p:OdooPartner {id: 42})-[:HAS_CONTACT]->(person) RETURN person.name, person.email。只读，不能修改数据。"
+      },
+      "parameters": {
+        "source_sha256": "eeaf6e3511b8972be76f60be8cacc9b28738627ed8b3ba96665b44c604c47b74",
+        "value": "{\"type\": \"object\", \"properties\": {\"query\": {\"type\": \"string\", \"description\": \"\\u53ea\\u8bfb Cypher \\u67e5\\u8be2\\uff0c\\u4ec5\\u5141\\u8bb8 MATCH\\u3001RETURN\\u3002\\u793a\\u4f8b\\uff1aMATCH (p:OdooPartner)-[:BELONGS_TO]->(c:Company {id: 1}) RETURN p.name\\u3002\"}}, \"required\": [\"query\"]}"
+      }
+    }
+  },
+  {
+    "builtin_name": "graphify_search",
+    "fields": {
+      "description": {
+        "source_sha256": "570dc8e290c10ff40e842518a4d35a6b133424f30323dcf4ffcdcb78abe0f656",
+        "value": "搜索由 graphify 索引的 OCA 模块和内部仓库，适用于查找可用模块或已有解决方案。返回模块名、说明和相关度，通过 NATS 委派给 Pi 智能体。"
+      },
+      "parameters": {
+        "source_sha256": "2fa5f4f80b19cb03c1f37466ac83d964301a18567c3371052453d5dbfac096a2",
+        "value": "{\"type\": \"object\", \"properties\": {\"query\": {\"type\": \"string\", \"description\": \"\\u641c\\u7d22\\u8bcd\\u3002\"}, \"repos\": {\"type\": \"array\", \"items\": {\"type\": \"string\"}, \"description\": \"\\u4ed3\\u5e93\\u7b5b\\u9009\\uff0c\\u4f8b\\u5982 [\\\"oca/*\\\"]\\u3002\"}, \"limit\": {\"type\": \"integer\", \"description\": \"\\u6700\\u591a\\u8fd4\\u56de\\u6761\\u6570\\uff0c\\u9ed8\\u8ba4 5\\u3002\"}}, \"required\": [\"query\"]}"
+      }
+    }
+  },
+  {
+    "builtin_name": "pi_unified_recall",
+    "fields": {
+      "description": {
+        "source_sha256": "a110aebe95aa0ee790534ea080a4f06ab5afa8aea1014cb1b1ff92adcd8bdb01",
+        "value": "跨 Odoo Mind 与外部 graphify、文件系统等来源进行综合检索，覆盖 Odoo 内部数据和外部知识。返回排序后的结果及来源，通过 NATS 委派给 Pi 智能体。"
+      },
+      "parameters": {
+        "source_sha256": "79d1ef4c5440dc04fc2e9232c43ca078959cbeb43e491e1055c5c956fb1c28bb",
+        "value": "{\"type\": \"object\", \"properties\": {\"query\": {\"type\": \"string\", \"description\": \"\\u641c\\u7d22\\u8bcd\\u3002\"}, \"sources\": {\"type\": \"array\", \"items\": {\"type\": \"string\"}, \"description\": \"\\u6765\\u6e90\\u6807\\u8bc6\\uff1ainternal\\u3001graphify\\u3001filesystem \\u6216 all\\u3002\"}, \"strategy\": {\"type\": \"string\", \"enum\": [\"precision\", \"balanced\", \"recall\", \"detective\"], \"description\": \"\\u641c\\u7d22\\u7b56\\u7565\\u3002\"}, \"limit\": {\"type\": \"integer\", \"description\": \"\\u6700\\u591a\\u8fd4\\u56de\\u6761\\u6570\\uff0c\\u9ed8\\u8ba4 10\\u3002\"}}, \"required\": [\"query\"]}"
+      }
+    }
+  },
+  {
+    "builtin_name": "echo",
+    "fields": {
+      "description": {
+        "source_sha256": "c929a62e4d1a498a5e80670e6eff662eb64eb59f125077f4752ee991664b7b2c",
+        "value": "原样返回消息，用于测试。"
+      },
+      "parameters": {
+        "source_sha256": "6c5a5fec67fd0f20408d2a13a81a52541dea117a8efb0ae56ec4e7d6dee28850",
+        "value": "{\"type\": \"object\", \"properties\": {\"message\": {\"type\": \"string\", \"description\": \"\\u8981\\u539f\\u6837\\u8fd4\\u56de\\u7684\\u6d88\\u606f\\u3002\"}}, \"required\": [\"message\"]}"
+      }
+    }
+  },
+  {
+    "builtin_name": "nats_publish",
+    "fields": {
+      "description": {
+        "source_sha256": "1362e8b306d7bbe0a221244dbd62beb58eaccd17345615d0f55ce55e2330dd96",
+        "value": "向 NATS 主题发布消息，由 Pi 工作进程领取。用于将命令执行、部署、监控等基础设施任务委派给远程 Pi 智能体，返回确认或错误。"
+      },
+      "parameters": {
+        "source_sha256": "c38027f555c1e3cea95f9a24b0b43877196e58b5f59e1382a82b1ce6f377360f",
+        "value": "{\"type\": \"object\", \"properties\": {\"subject\": {\"type\": \"string\", \"description\": \"\\u8981\\u53d1\\u5e03\\u7684 NATS \\u4e3b\\u9898\\uff0c\\u4f8b\\u5982 pi.task.new \\u6216 pi.task.assign.{host}\\u3002\"}, \"task_id\": {\"type\": \"integer\", \"description\": \"\\u8ddf\\u8e2a\\u4efb\\u52a1\\u7ed3\\u679c\\u7684\\u552f\\u4e00\\u4efb\\u52a1 ID\\u3002\"}, \"prompt\": {\"type\": \"string\", \"description\": \"\\u4ea4\\u7ed9\\u5de5\\u4f5c\\u8fdb\\u7a0b\\u6267\\u884c\\u7684\\u4efb\\u52a1\\u6307\\u4ee4\\u3002\"}, \"skills\": {\"type\": \"array\", \"items\": {\"type\": \"string\"}, \"description\": \"\\u5de5\\u4f5c\\u8fdb\\u7a0b\\u5e94\\u52a0\\u8f7d\\u7684\\u6280\\u80fd\\u540d\\u79f0\\u5217\\u8868\\uff0c\\u53ef\\u9009\\u3002\"}}, \"required\": [\"subject\", \"task_id\", \"prompt\"]}"
+      }
+    }
+  },
+  {
+    "builtin_name": "inventory_architecture",
+    "fields": {
+      "description": {
+        "source_sha256": "33975f2c639066e71643057f3ee01c9f505bc1938bd6a9cd42a991a95ed4bd41",
+        "value": "返回完整系统架构，包括 ai.* 模型的字段和关系、init_types，以及已安装 ai_* 模块的 MODULE.md 文档。"
+      }
+    }
+  },
+  {
+    "builtin_name": "inventory_quests",
+    "fields": {
+      "description": {
+        "source_sha256": "836067f252ae0fa1be8964396c1ccba5992091176e7b4bc4d3038180c952b0a4",
+        "value": "列出所有有效的 ai.coworker 记录，包含名称、状态和 init_type。"
+      }
+    }
+  },
+  {
+    "builtin_name": "inventory_agents",
+    "fields": {
+      "description": {
+        "source_sha256": "f5eb0ff103a69720917be80b4567dee3b00ce2e81d9bed7efee2e06649041bb1",
+        "value": "列出 ai.agent 记录，包含名称、模型和已关联技能。"
+      }
+    }
+  },
+  {
+    "builtin_name": "inventory_skills",
+    "fields": {
+      "description": {
+        "source_sha256": "730dc497f60fc229b27529fe324162f64cb56472ee548639650a608af38199ea",
+        "value": "列出 ai.skill 记录，包含名称、分类和触发关键词。"
+      }
+    }
+  },
+  {
+    "builtin_name": "inventory_models",
+    "fields": {
+      "description": {
+        "source_sha256": "639eb83af135885986b3587aa0ac548497722f51ec5f6629a386bcfa6c586282",
+        "value": "列出 ai.model 记录及能力，包括 is_vision、has_streaming、context_window、provider。"
+      }
+    }
+  },
+  {
+    "builtin_name": "inventory_tools",
+    "fields": {
+      "description": {
+        "source_sha256": "748761edd1cd06f4dd1180418cbf972b8129087437f65c10a2bec12cb447a127",
+        "value": "列出 ai.tool 记录的名称和 risk_level 风险等级。"
+      }
+    }
+  },
+  {
+    "builtin_name": "inventory_identities",
+    "fields": {
+      "description": {
+        "source_sha256": "0dcef5d6424ee3dc7b55715e9ce7f530fb3296af1904cba23619259ecec0fcc4",
+        "value": "列出 ai.identity 身份模板的名称和 scope 范围。"
+      }
+    }
+  },
+  {
+    "builtin_name": "inventory_odoo_models",
+    "fields": {
+      "description": {
+        "source_sha256": "359b9d9111c9d4c1ca5e65d7a25022710e1518054f1f9614165d2004f2b86c1f",
+        "value": "列出可用于快捷操作绑定的 Odoo 模型 ir.model。"
+      }
+    }
+  },
+  {
+    "builtin_name": "builder_create_quest",
+    "fields": {
+      "description": {
+        "source_sha256": "cfb041452be9f29fd28f8fff93d916908f74245f8c4ee6df2fea4ec5b91f19ff",
+        "value": "创建 ai.coworker。参数：必填 name，可选 description、init_types 列表、orchestration_mode（single、supervisor、buzz）。返回 AI 员工 ID。"
+      },
+      "parameters": {
+        "source_sha256": "efa35396a1db28dff0dea1fc7b52d1ae174bd9e629d6a19d97f4fe839e48abcc",
+        "value": "{\"type\": \"object\", \"properties\": {\"name\": {\"type\": \"string\", \"description\": \"AI \\u5458\\u5de5\\u540d\\u79f0\\u3002\"}, \"description\": {\"type\": \"string\", \"description\": \"\\u7cfb\\u7edf\\u6307\\u4ee4\\u6216 AI \\u5458\\u5de5\\u8bf4\\u660e\\u3002\"}, \"init_types\": {\"type\": \"string\", \"description\": \"\\u9017\\u53f7\\u5206\\u9694\\u7684\\u542f\\u52a8\\u65b9\\u5f0f\\uff1aweb_ui\\u3001chat\\u3001powerbox\\u3001mail\\u3001cron\\u3001server_action\\u3001manual\\u3002\"}, \"orchestration_mode\": {\"type\": \"string\", \"enum\": [\"single\", \"supervisor\", \"buzz\"], \"description\": \"\\u7f16\\u6392\\u6a21\\u5f0f\\uff1bsupervisor \\u542f\\u7528\\u591a\\u667a\\u80fd\\u4f53\\u4efb\\u52a1\\u59d4\\u6d3e\\u3002\"}}, \"required\": [\"name\"]}"
+      }
+    }
+  },
+  {
+    "builtin_name": "builder_update_quest",
+    "fields": {
+      "description": {
+        "source_sha256": "e475b8f518843026af4286c11be970328b4631d8ab08d13a607fad82ee58dc21",
+        "value": "更新 ai.coworker。coworker_id 必填，可修改 name、description、orchestration_mode。"
+      },
+      "parameters": {
+        "source_sha256": "b1aa90b147cbe01f8ec96b24de4d864850d52d59e4812bdb46f6662baf29a7fe",
+        "value": "{\"type\": \"object\", \"properties\": {\"coworker_id\": {\"type\": \"integer\", \"description\": \"\\u8981\\u66f4\\u65b0\\u7684 AI \\u5458\\u5de5 ID\\u3002\"}, \"name\": {\"type\": \"string\"}, \"description\": {\"type\": \"string\"}, \"orchestration_mode\": {\"type\": \"string\", \"enum\": [\"single\", \"supervisor\", \"buzz\"]}}, \"required\": [\"coworker_id\"]}"
+      }
+    }
+  },
+  {
+    "builtin_name": "builder_create_agent",
+    "fields": {
+      "description": {
+        "source_sha256": "4e83f660336f42fb312cac326fcdf5ab3d832530a852c60d315a8b2e6b70fa95",
+        "value": "创建 ai.agent。name 必填，可填写 description、model（Bifrost 模型名）、skills（逗号分隔的技能名）。返回智能体 ID。"
+      },
+      "parameters": {
+        "source_sha256": "4794bd0071dfa317eef73e60a1977a1a68152f2b8187482103f8b027d983b3d7",
+        "value": "{\"type\": \"object\", \"properties\": {\"name\": {\"type\": \"string\", \"description\": \"\\u667a\\u80fd\\u4f53\\u540d\\u79f0\\u3002\"}, \"description\": {\"type\": \"string\", \"description\": \"\\u667a\\u80fd\\u4f53\\u8bf4\\u660e\\u4e0e\\u89d2\\u8272\\u3002\"}, \"model\": {\"type\": \"string\", \"description\": \"AI \\u6a21\\u578b\\u540d\\u79f0\\uff0c\\u4f8b\\u5982 cheap\\u3001moderate\\u3001deepseek/deepseek-chat\\u3002\"}, \"skills\": {\"type\": \"string\", \"description\": \"\\u8981\\u5173\\u8054\\u7684\\u5df2\\u6709\\u6280\\u80fd\\u540d\\u79f0\\uff0c\\u4f7f\\u7528\\u9017\\u53f7\\u5206\\u9694\\u3002\"}}, \"required\": [\"name\"]}"
+      }
+    }
+  },
+  {
+    "builtin_name": "builder_create_skill",
+    "fields": {
+      "description": {
+        "source_sha256": "9927e50d4dd631b1e7837b97f07e0e44fb9ae1aae21b40b84deb61ba3b311f68",
+        "value": "创建 ai.skill。name 必填，可填写 category、recipe_text（完整 Markdown 操作说明）、trigger_keywords。"
+      },
+      "parameters": {
+        "source_sha256": "56bedcc3623aa20c918600e5c44bb8193b0e2483884c7cab4b73d460d8d00bf2",
+        "value": "{\"type\": \"object\", \"properties\": {\"name\": {\"type\": \"string\", \"description\": \"\\u6280\\u80fd\\u6280\\u672f\\u540d\\u79f0\\u3002\"}, \"category\": {\"type\": \"string\", \"description\": \"\\u5206\\u7c7b\\u6807\\u8bc6\\uff1ageneral\\u3001analysis\\u3001accounting\\u3001development\\u3001infrastructure\\u3001communication\\u3001research\\u3002\"}, \"recipe_text\": {\"type\": \"string\", \"description\": \"\\u6b64\\u6280\\u80fd\\u7684\\u5b8c\\u6574 Markdown \\u64cd\\u4f5c\\u8bf4\\u660e\\u3002\"}, \"trigger_keywords\": {\"type\": \"string\", \"description\": \"\\u89e6\\u53d1\\u6b64\\u6280\\u80fd\\u7684\\u5173\\u952e\\u8bcd\\uff0c\\u4f7f\\u7528\\u9017\\u53f7\\u5206\\u9694\\u3002\"}}, \"required\": [\"name\", \"recipe_text\"]}"
+      }
+    }
+  },
+  {
+    "builtin_name": "builder_assign_agent",
+    "fields": {
+      "description": {
+        "source_sha256": "4943c3dc3543e32be8304b2491cce0a659b570d327b3ee29c7bf8559862c09ed",
+        "value": "将智能体分配给 AI 员工。参数：coworker_id、agent_id、可选 sequence。"
+      },
+      "parameters": {
+        "source_sha256": "63c343cd228c8a843e305a2d505753fbbcbc71046ed9520af58588a46e358c40",
+        "value": "{\"type\": \"object\", \"properties\": {\"coworker_id\": {\"type\": \"integer\"}, \"agent_id\": {\"type\": \"integer\"}, \"sequence\": {\"type\": \"integer\", \"description\": \"\\u667a\\u80fd\\u4f53\\u5728\\u5904\\u7406\\u6d41\\u7a0b\\u4e2d\\u7684\\u987a\\u5e8f\\uff0c\\u4ece 1 \\u5f00\\u59cb\\u3002\"}}, \"required\": [\"coworker_id\", \"agent_id\"]}"
+      }
+    }
+  },
+  {
+    "builtin_name": "builder_configure_init_type",
+    "fields": {
+      "description": {
+        "source_sha256": "0864bdea52409342cdcc716870f07e4fa270fd67a527e847e0716724e9ddb485",
+        "value": "配置 AI 员工的启动方式。参数：coworker_id、init_type（web_ui、chat、channel、mail、cron、server_action、powerbox、manual、openai_api）和 config_json（该启动方式的配置）。"
+      },
+      "parameters": {
+        "source_sha256": "9e392d32e9b8df27e8d5811df79070c500f44753ba7293cb249316a50a226705",
+        "value": "{\"type\": \"object\", \"properties\": {\"coworker_id\": {\"type\": \"integer\"}, \"init_type\": {\"type\": \"string\", \"description\": \"\\u8981\\u914d\\u7f6e\\u7684\\u542f\\u52a8\\u65b9\\u5f0f\\u3002\"}, \"config\": {\"type\": \"string\", \"description\": \"JSON \\u914d\\u7f6e\\uff1a\\u5feb\\u6377\\u64cd\\u4f5c\\u793a\\u4f8b {\\\"model_ids\\\": [\\\"sale.order\\\",\\\"crm.lead\\\"]}\\uff1b\\u90ae\\u4ef6\\u793a\\u4f8b {\\\"alias_name\\\":\\\"support\\\"}\\u3002\"}}, \"required\": [\"coworker_id\", \"init_type\"]}"
+      }
+    }
+  },
+  {
+    "builtin_name": "builder_link_skill_to_agent",
+    "fields": {
+      "description": {
+        "source_sha256": "774ca7979fa55589d99ca902512663b55f1fc24164e1348065d4b634407c68fc",
+        "value": "关联已有技能和智能体。参数：agent_id、skill_id。"
+      }
+    }
+  },
+  {
+    "builtin_name": "read_skill",
+    "fields": {
+      "description": {
+        "source_sha256": "a2ff2e64b9d8439dff018afce4533f7b50fcea5b1683590a36a3e0d2a853f467",
+        "value": "读取 ai.skill 的完整 recipe_text 操作说明。参数：skill_id。"
+      }
+    }
+  },
+  {
+    "builtin_name": "search_github_skills",
+    "fields": {
+      "description": {
+        "source_sha256": "b0b156cfb93ab02e130a53d9ce26e88878f79d3c42d0a68afb9893065500968b",
+        "value": "在 GitHub 中查找匹配 query 的 SKILL.md 文件，返回仓库、文件路径和原文网址。"
+      }
+    }
+  },
+  {
+    "builtin_name": "builder_draft_skill",
+    "fields": {
+      "description": {
+        "source_sha256": "041ed17716e220543ce8d5cda14c00ea3e9c7f8815a182f5cf622717934f29b1",
+        "value": "创建用于测试的临时技能草稿。name 必填，可填写 recipe_text、category、trigger_keywords。"
+      }
+    }
+  },
+  {
+    "builtin_name": "builder_test_skill",
+    "fields": {
+      "description": {
+        "source_sha256": "c88b0c1ec0316ace1295847063588fc9225fdb207e5f741895113166e9a6e4c6",
+        "value": "使用临时 AI 员工运行 prompt 测试技能。参数：skill_id、prompt，返回 AI 回复。"
+      }
+    }
+  },
+  {
+    "builtin_name": "builder_improve_skill",
+    "fields": {
+      "description": {
+        "source_sha256": "5c5e4e7226ae24616c1b849bbae2567a8a81765283757d0eff2e8e10024ed378",
+        "value": "根据用户反馈更新技能。参数：skill_id、feedback、field。"
+      },
+      "parameters": {
+        "source_sha256": "43f69d2a3450c491b6aaeafd7bb8b396ef58b3c47c0334c8b111e0212b814328",
+        "value": "{\"type\": \"object\", \"properties\": {\"skill_id\": {\"type\": \"integer\"}, \"feedback\": {\"type\": \"string\"}, \"field\": {\"type\": \"string\", \"description\": \"\\u8981\\u4fee\\u6539\\u7684\\u5b57\\u6bb5\\uff1arecipe_text\\u3001trigger_keywords\\u3001description\\u3001category\\u3002\"}}, \"required\": [\"skill_id\", \"feedback\"]}"
+      }
+    }
+  },
+  {
+    "builtin_name": "describe_model",
+    "fields": {
+      "description": {
+        "source_sha256": "f7612f9c3b7d7ce3160b07ae2a0137a8a2378f2ef7fa01ce101548290746afe5",
+        "value": "返回模型结构：字段类型、只读和计算属性，关系，可调用的 action_*、button_* 方法，以及 has_okf、has_graph、has_embedding 能力。查询或写入模型前使用。"
+      },
+      "parameters": {
+        "source_sha256": "e1b532cddd3b40239227297e4bfb6158859d97cf2c5f0b0d2c53a63723f45a81",
+        "value": "{\"type\": \"object\", \"properties\": {\"model\": {\"type\": \"string\", \"description\": \"Odoo \\u6a21\\u578b\\u6280\\u672f\\u540d\\u79f0\\uff0c\\u4f8b\\u5982 crm.lead\\u3002\", \"example\": \"res.partner\", \"next_step\": \"Call describe_available with your question to see which models exist, or pass a model like 'res.partner'.\"}}, \"required\": [\"model\"]}"
+      }
+    }
+  },
+  {
+    "builtin_name": "describe_available",
+    "fields": {
+      "description": {
+        "source_sha256": "e6e03f42c1ee66a1f37b33b64adca0a2f93cbb92948bebe28776d131e99bd430",
+        "value": "根据自然语言问题查找已安装的相关模型，并指出承载内容、时间、客户、状态和操作的字段。猜测模型名或反复搜索 ir.model 之前先调用，直接找到筛选和排序所需字段。"
+      },
+      "parameters": {
+        "source_sha256": "8a443ab88677bd3c1c1d4d8d5fa7e6d007cc80cda124b96c98a37b2a863058e0",
+        "value": "{\"type\": \"object\", \"properties\": {\"question\": {\"type\": \"string\", \"description\": \"\\u8981\\u67e5\\u627e\\u7684\\u5185\\u5bb9\\uff0c\\u4f8b\\u5982\\u90ae\\u4ef6\\u3001\\u4f1a\\u8bae\\u3001\\u53d1\\u7968\\u3002\", \"example\": \"mail fr\\u00e5n en kund\"}}, \"required\": [\"question\"]}"
+      }
+    }
+  },
+  {
+    "builtin_name": "odoo_search",
+    "fields": {
+      "description": {
+        "source_sha256": "1a0a4290baff994b4b8a5612f7129de035fa33af421d18583d3b1f1cf6cb7987",
+        "value": "使用 Odoo domain 语法通过 ORM 的 search_read 查询记录。默认返回 id、name、display_name、create_date；可通过 fields 指定其他字段。limit 默认 20。"
+      },
+      "parameters": {
+        "source_sha256": "3d7dfb43bf61ca112d3335cfb4097920f9f84d7ef802bb91777cb1f7e8eef53e",
+        "value": "{\"type\": \"object\", \"properties\": {\"model\": {\"type\": \"string\"}, \"domain\": {\"type\": \"array\", \"description\": \"Odoo \\u67e5\\u8be2\\u6761\\u4ef6\\uff0c\\u4f8b\\u5982 [[\\\"state\\\", \\\"=\\\", \\\"draft\\\"]]\\u3002\", \"items\": {\"type\": \"array\"}}, \"fields\": {\"type\": \"array\", \"items\": {\"type\": \"string\"}}, \"limit\": {\"type\": \"integer\", \"default\": 20}, \"offset\": {\"type\": \"integer\"}, \"order\": {\"type\": \"string\"}}, \"required\": [\"model\"]}"
+      }
+    }
+  },
+  {
+    "builtin_name": "odoo_create",
+    "fields": {
+      "description": {
+        "source_sha256": "f2caf54c1f52093e8daeae05279ce57b2a831e65d6509603fa4ddfba6d1ec870",
+        "value": "通过 ORM 业务层创建记录，应用默认值和 onchange，返回 id、display_name。需要审批。"
+      },
+      "parameters": {
+        "source_sha256": "2b3cf1fa0cdd0360be0bb193837b4796038ff97b054d776273b26b759de3b1e8",
+        "value": "{\"type\": \"object\", \"properties\": {\"model\": {\"type\": \"string\"}, \"values\": {\"type\": \"object\", \"description\": \"\\u5b57\\u6bb5\\u503c\\u3002\"}}, \"required\": [\"model\", \"values\"]}"
+      }
+    }
+  },
+  {
+    "builtin_name": "odoo_call_method",
+    "fields": {
+      "description": {
+        "source_sha256": "386a41d42e17f1ffa94801c3aa8f0a1788048d93ded4830d08fc0db729316222",
+        "value": "调用记录的 action_*、button_* 业务方法，例如 action_confirm、action_post。业务流转应调用方法而非直接写 state。始终需要人工审批（HITL）。"
+      },
+      "parameters": {
+        "source_sha256": "6bac71c96233f01734119f51fd1f423f829e5a2b79e0d75a41e960216ab59cf8",
+        "value": "{\"type\": \"object\", \"properties\": {\"model\": {\"type\": \"string\"}, \"id\": {\"type\": \"integer\"}, \"method\": {\"type\": \"string\", \"description\": \"\\u4e1a\\u52a1\\u65b9\\u6cd5\\u540d\\uff0c\\u5fc5\\u987b\\u4ee5 action_ \\u6216 button_ \\u5f00\\u5934\\uff0c\\u6216\\u4f4d\\u4e8e\\u5141\\u8bb8\\u5217\\u8868\\u3002\"}, \"args\": {\"type\": \"object\", \"description\": \"\\u53ef\\u9009\\u7684\\u547d\\u540d\\u53c2\\u6570\\u3002\"}}, \"required\": [\"model\", \"id\", \"method\"]}"
+      }
+    }
+  },
+  {
+    "builtin_name": "odoo_write",
+    "fields": {
+      "description": {
+        "source_sha256": "8392d9d15844962e1bc6ba548ce70d4537b9ee491012c4d9d76b99505c2264ae",
+        "value": "更新记录中的安全字段。state、move_type、journal_id、amount_* 等业务字段应通过 odoo_call_method 流转，不能直接写入。需要审批。"
+      }
+    }
+  },
+  {
+    "builtin_name": "odoo_attach",
+    "fields": {
+      "description": {
+        "source_sha256": "c2cfbd34324dd19fd36cff634958f6a27329f4e462ba6d02cd574ec28ec6f970",
+        "value": "在文件路径与 Odoo 记录的二进制字段间传输文件，适用于 ir.attachment 及其他含二进制字段的模型。先下载到磁盘处理，再写回结果。文件正文保持在模型上下文外，仅传递路径；写入已有记录需要审批。"
+      },
+      "parameters": {
+        "source_sha256": "843827fd080936c663f24a4899dbf60975e019d8cc2f01b42fca8ed3620f9330",
+        "value": "{\"type\": \"object\", \"properties\": {\"model\": {\"type\": \"string\", \"description\": \"Odoo \\u6a21\\u578b\\u540d\\u79f0\\uff0c\\u4f8b\\u5982 ir.attachment\\u3002\"}, \"id\": {\"type\": \"integer\", \"description\": \"\\u8bb0\\u5f55 ID\\u3002\"}, \"field\": {\"type\": \"string\", \"description\": \"\\u4e8c\\u8fdb\\u5236\\u5b57\\u6bb5\\uff0c\\u4f8b\\u5982 content\\u3001raw\\u3002\"}, \"path\": {\"type\": \"string\", \"description\": \"\\u6587\\u4ef6\\u7edd\\u5bf9\\u8def\\u5f84\\uff0c\\u6216\\u76f8\\u5bf9\\u4e8e\\u667a\\u80fd\\u4f53\\u5de5\\u4f5c\\u76ee\\u5f55\\u7684\\u8def\\u5f84\\u3002\"}, \"direction\": {\"type\": \"string\", \"enum\": [\"in\", \"out\"], \"description\": \"out \\u8868\\u793a\\u5b57\\u6bb5\\u5199\\u5165\\u6587\\u4ef6\\uff0cin \\u8868\\u793a\\u6587\\u4ef6\\u5199\\u56de\\u5b57\\u6bb5\\u3002\"}}, \"required\": [\"model\", \"id\", \"field\", \"path\", \"direction\"]}"
+      }
+    }
+  },
+  {
+    "builtin_name": "odoo_unlink",
+    "fields": {
+      "description": {
+        "source_sha256": "32ac29a837b80e3ae30d060d886f9e7bdd1f533fee6a71c672738f8192ca9efe",
+        "value": "删除记录，属于破坏性操作，始终需要人工明确批准，不能绕过审批。"
+      }
+    }
+  },
+  {
+    "builtin_name": "okf_search",
+    "fields": {
+      "description": {
+        "source_sha256": "fda7d1aa14502c2e8ab3afffc39c12ce05926d892727573af101a256224c22af",
+        "value": "搜索 ai.okf.concept 知识概念，混合向量和全文检索并按访问权限过滤。在已配置 OKF 时用于查询流程与背景知识。"
+      },
+      "parameters": {
+        "source_sha256": "f5fe7285e23039c3835dd7ddc7078fd04849061f793d5b3df617716ced344ebe",
+        "value": "{\"type\": \"object\", \"properties\": {\"query\": {\"type\": \"string\"}, \"scope\": {\"type\": \"string\", \"enum\": [\"company\", \"personal\", \"coworker\"]}, \"limit\": {\"type\": \"integer\", \"default\": 10}, \"period\": {\"type\": \"string\", \"description\": \"\\u53ef\\u9009\\uff0c\\u4ec5\\u5728\\u8986\\u76d6\\u81ea\\u52a8\\u65f6\\u95f4\\u8303\\u56f4\\u65f6\\u586b\\u5199\\u3002\\u652f\\u6301\\u745e\\u5178\\u8bed\\u76f8\\u5bf9\\u65f6\\u95f4\\u8868\\u8fbe\\uff0c\\u4f8b\\u5982 i veckan\\u3001senaste m\\u00e5naden\\u3001f\\u00f6rra \\u00e5ret\\u3002\\u901a\\u5e38\\u7559\\u7a7a\\uff1a\\u90ae\\u4ef6\\u9ed8\\u8ba4\\u8fc7\\u53bb 7 \\u5929\\uff0c\\u65e5\\u5386\\u9ed8\\u8ba4\\u672a\\u6765 7 \\u5929\\uff0c\\u67e5\\u8be2\\u4e2d\\u7684\\u65f6\\u95f4\\u8868\\u8fbe\\u4f1a\\u81ea\\u52a8\\u8bc6\\u522b\\u3002\"}}, \"required\": [\"query\"]}"
+      }
+    }
+  },
+  {
+    "builtin_name": "delegate_task",
+    "fields": {
+      "description": {
+        "source_sha256": "a5d4953dfab957e653ff6e9e547a656ec1c9d6df56dc1ae2b990f0a65be29d07",
+        "value": "向同部门的 ai.coworker 同事分派任务。仅用于自己能力之外、同级或下级同事可完成的工作，例如请同部门运维同事检查日志；不能向上级委派或跨部门委派，上报属于升级流程。任务携带当前信任等级，由对方通过 Heartbeat 按自己的节奏处理并返回结果。有效收件人见系统提示中的同事目录。"
+      },
+      "parameters": {
+        "source_sha256": "18faf1533dac9a8e7470214efb45b4749d5428555289913afa7c00a3302a40b0",
+        "value": "{\"type\": \"object\", \"properties\": {\"target_coworker\": {\"type\": \"string\", \"description\": \"\\u63a5\\u6536\\u4efb\\u52a1\\u7684\\u540c\\u4e8b\\u540d\\u79f0\\uff0c\\u53c2\\u7167\\u540c\\u4e8b\\u76ee\\u5f55\\u3002\"}, \"description\": {\"type\": \"string\", \"description\": \"\\u660e\\u786e\\u8bf4\\u660e\\u8981\\u5b8c\\u6210\\u7684\\u5de5\\u4f5c\\uff0c\\u5fc5\\u586b\\uff1b\\u7a7a\\u8bf4\\u660e\\u4f1a\\u5bfc\\u81f4\\u4efb\\u52a1\\u65e0\\u6cd5\\u6267\\u884c\\u3002\"}, \"name\": {\"type\": \"string\", \"description\": \"\\u7b80\\u77ed\\u6807\\u9898\\uff0c\\u9ed8\\u8ba4\\u4f7f\\u7528 description\\u3002\"}, \"priority\": {\"type\": \"string\", \"enum\": [\"0\", \"1\", \"2\", \"3\"], \"description\": \"0=\\u4f4e\\uff0c1=\\u666e\\u901a\\uff0c2=\\u9ad8\\uff0c3=\\u7d27\\u6025\\u3002\"}}, \"required\": [\"target_coworker\", \"description\"]}"
+      }
+    }
+  },
+  {
+    "builtin_name": "push_notification",
+    "fields": {
+      "description": {
+        "source_sha256": "b6675987ea6b9afe93777f6f03033bbcdde1a97dde4ec6808bb75489a0e2ca43",
+        "value": "向当前会话所属用户发送推送。长任务开始前通知用户可以离开聊天，或用于后台任务完成提醒。收件人固定为会话用户，不能指定其他人。返回是否成功加入队列；没有注册设备时明确返回失败，不声称已发送。"
+      },
+      "parameters": {
+        "source_sha256": "c8f54ae303529c1d36af8a8c0de68153904f7b7ee9def66e0bf5a715044a9539",
+        "value": "{\"type\": \"object\", \"properties\": {\"title\": {\"type\": \"string\", \"description\": \"\\u7b80\\u77ed\\u6807\\u9898\\uff0c\\u6700\\u591a\\u7ea6 60 \\u5b57\\u7b26\\u3002\"}, \"body\": {\"type\": \"string\", \"description\": \"\\u7528\\u4e00\\u81f3\\u4e24\\u53e5\\u8bdd\\u8bf4\\u660e\\u80cc\\u666f\\u3002\"}, \"url\": {\"type\": \"string\", \"description\": \"\\u70b9\\u51fb\\u901a\\u77e5\\u65f6\\u6253\\u5f00\\u7684\\u8def\\u5f84\\uff0c\\u4f8b\\u5982 /ai/chat\\uff0c\\u9ed8\\u8ba4\\u4e5f\\u662f /ai/chat\\u3002\"}}, \"required\": [\"title\", \"body\"]}"
+      }
+    }
+  },
+  {
+    "builtin_name": "mail_digest",
+    "fields": {
+      "description": {
+        "source_sha256": "175972360840d57250d1b05a6f538d49c867992ebb17b2d14c5ace22e8406892",
+        "value": "一次调用获取用户的重要邮件并按重要性排序，逐条说明理由，避免手工查找邮件模型。action_needed 权重 3、follow_up_at 权重 2、customer 权重 1；interest_score 仅展示，不参与排序。默认回看 7 天；missed 列出 7 至 30 天内仍需处理的邮件，更早邮件只统计数量；upcoming 返回未来 7 天的日历活动，以辅助判断邮件紧急性。询问邮箱或邮件时优先使用。"
+      },
+      "parameters": {
+        "source_sha256": "add805766383eb4d4747b63395f0f59c50d90183233712ecb2c63122767913ad",
+        "value": "{\"type\": \"object\", \"properties\": {\"limit\": {\"type\": \"integer\", \"default\": 5, \"description\": \"\\u8fd4\\u56de\\u90ae\\u4ef6\\u6570\\u91cf\\uff0c\\u9ed8\\u8ba4 5\\u3002\"}, \"since_days\": {\"type\": \"integer\", \"default\": 7, \"description\": \"\\u56de\\u6eaf\\u5929\\u6570\\uff0c\\u9ed8\\u8ba4 7\\u3002\\u7528\\u6237\\u672a\\u53e6\\u884c\\u6307\\u5b9a\\u65f6\\uff0c\\u201c\\u6700\\u8fd1\\u201d\\u8868\\u793a\\u8fc7\\u53bb\\u4e00\\u5468\\u30020 \\u8868\\u793a\\u4e0d\\u9650\\uff0c\\u5927\\u578b\\u90ae\\u7bb1\\u8bf7\\u8c28\\u614e\\u4f7f\\u7528\\u3002\"}, \"only_action_needed\": {\"type\": \"boolean\", \"default\": false, \"description\": \"\\u4ec5\\u8fd4\\u56de\\u9700\\u8981\\u5904\\u7406\\u7684\\u90ae\\u4ef6\\u3002\"}, \"include_missed\": {\"type\": \"boolean\", \"default\": true, \"description\": \"\\u540c\\u65f6\\u5217\\u51fa\\u8d85\\u8fc7 7 \\u5929\\u3001\\u4ecd\\u9700\\u5904\\u7406\\u7684\\u90ae\\u4ef6\\u3002\"}, \"missed_days\": {\"type\": \"integer\", \"default\": 30, \"description\": \"missed \\u67e5\\u8be2\\u7684\\u6700\\u957f\\u56de\\u6eaf\\u5929\\u6570\\uff1b\\u66f4\\u65e9\\u90ae\\u4ef6\\u53ea\\u7edf\\u8ba1\\u6570\\u91cf\\uff0c\\u4e0d\\u9010\\u6761\\u5217\\u51fa\\u3002\"}, \"lookahead_days\": {\"type\": \"integer\", \"default\": 7, \"description\": \"\\u540c\\u65f6\\u8fd4\\u56de\\u672a\\u6765 N \\u5929\\u7684\\u65e5\\u5386\\u6d3b\\u52a8\\uff0c\\u9ed8\\u8ba4 7 \\u5929\\uff1b\\u4e34\\u8fd1\\u4e8b\\u9879\\u6709\\u52a9\\u4e8e\\u5224\\u65ad\\u90ae\\u4ef6\\u7d27\\u6025\\u6027\\u3002\"}}, \"required\": []}"
+      }
+    }
+  }
+]

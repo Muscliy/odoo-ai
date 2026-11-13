@@ -6,7 +6,7 @@
              manuellt), vilket gjorde att den varken kunde spåras eller
              uppgraderas — och den var avstängd. Samma jobb som cron.task. -->
         <record id="cron_task_graph_sync" model="cron.task">
-            <field name="name">Odoo Mind Graph Sync</field>
+            <field name="name">同步知识图谱</field>
             <field name="technical_name">ai_graph_sync</field>
             <field name="module">ai_agent_core</field>
             <field name="model_name">graph.node.definition</field>

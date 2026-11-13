@@ -23,22 +23,30 @@ class AICompanyMemoryCategory(models.Model):
              'Empty = public (all company users can see).')
     active = fields.Boolean(string='Active', default=True)
 
+    @api.depends('name')
+    @api.depends_context('lang')
+    def _compute_display_name(self):
+        from .chinese_labels import MEMORY_CATEGORIES
+        for record in self:
+            record.display_name = (MEMORY_CATEGORIES.get(record.name, record.name)
+                                   if (self.env.lang or '').startswith('zh') else record.name)
+
     @api.model
     def get_default_categories(self):
         """Seed data for default categories."""
         return [
-            {'name': 'customer', 'description': 'Customer intelligence'},
-            {'name': 'supplier', 'description': 'Supplier intelligence'},
-            {'name': 'strategy', 'description': 'Strategy, OKR, BMC, SWOT'},
-            {'name': 'marketing', 'description': 'Marketing campaigns, KPIs'},
-            {'name': 'competitor', 'description': 'Competitor intelligence'},
-            {'name': 'market', 'description': 'Market intelligence'},
-            {'name': 'management', 'description': 'Management system, ISO'},
-            {'name': 'knowledge', 'description': 'Knowledge base articles'},
-            {'name': 'website', 'description': 'Website content'},
-            {'name': 'social', 'description': 'Social media'},
-            {'name': 'hr', 'description': 'HR data'},
-            {'name': 'finance', 'description': 'Financial data'},
-            {'name': 'mgmt_summary', 'description': 'Management summary'},
-            {'name': 'operations', 'description': 'Operations data'},
+            {'name': 'customer', 'description': '客户情报'},
+            {'name': 'supplier', 'description': '供应商情报'},
+            {'name': 'strategy', 'description': '战略管理'},
+            {'name': 'marketing', 'description': '营销活动'},
+            {'name': 'competitor', 'description': '竞争对手情报'},
+            {'name': 'market', 'description': '市场情报'},
+            {'name': 'management', 'description': '管理体系'},
+            {'name': 'knowledge', 'description': '知识库'},
+            {'name': 'website', 'description': '网站内容'},
+            {'name': 'social', 'description': '社交媒体'},
+            {'name': 'hr', 'description': '人事资料'},
+            {'name': 'finance', 'description': '财务资料'},
+            {'name': 'mgmt_summary', 'description': '管理摘要'},
+            {'name': 'operations', 'description': '运营资料'},
         ]

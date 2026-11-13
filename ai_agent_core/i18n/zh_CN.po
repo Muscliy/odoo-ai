@@ -18694,3 +18694,67 @@ msgstr "战略索引"
 #: code:addons/ai_agent_core/models/ai_coworker.py:0
 msgid "Ledningssammanfattning"
 msgstr "经营管理摘要"
+
+#. module: ai_agent_core
+#. odoo-python
+#: code:addons/ai_agent_core/models/ai_coworker_builder_wizard.py:0
+msgid "Quest to build or edit. Empty = create new."
+msgstr "要创建或编辑的任务，留空表示新建。"
+
+#. module: ai_agent_core
+#. odoo-python
+#: code:addons/ai_agent_core/models/ai_coworker_builder_wizard.py:0
+msgid "Chat URL"
+msgstr "聊天地址"
+
+#. module: ai_agent_core
+#. odoo-python
+#: code:addons/ai_agent_core/models/ai_session_line.py:0
+msgid "First Token (s)"
+msgstr "首字响应耗时（秒）"
+
+#. module: ai_agent_core
+#. odoo-python
+#: code:addons/ai_agent_core/models/ai_session_line.py:0
+msgid ""
+"Seconds from the request until the first streamed token. 0 = not measured."
+msgstr "从发出请求到收到首个流式字符的秒数，0 表示未测量。"
+
+#. module: ai_agent_core
+#. odoo-python
+#: code:addons/ai_agent_core/models/ai_session_line.py:0
+msgid ""
+"Longest pause between two streamed tokens in the turn. 0 = not measured."
+msgstr "本轮流式字符之间的最长停顿秒数，0 表示未测量。"
+
+#. module: ai_agent_core
+#. odoo-python
+#: code:addons/ai_agent_core/models/ai_session_line.py:0
+msgid "Stream Duration (s)"
+msgstr "流式回复时长（秒）"
+
+#. module: ai_agent_core
+#. odoo-python
+#: code:addons/ai_agent_core/models/ai_session_line.py:0
+msgid "Total streaming duration of the turn, in seconds. 0 = not measured."
+msgstr "本轮流式回复的总时长，单位为秒，0 表示未测量。"
+
+#. module: ai_agent_core
+#. odoo-javascript
+#: code:addons/ai_agent_core/static/src/xml/okf_global_search.xml:0
+msgid ""
+"<i class=\"fa fa-circle-o-notch\"/>\n"
+"                    <span>Semantic search — slower, uses the embedding provider.</span>"
+msgstr ""
+"<i class=\"fa fa-circle-o-notch\"/>\n"
+"                    <span>语义搜索：调用向量模型，耗时较长。</span>"
+
+#. module: ai_agent_core
+#. odoo-javascript
+#: code:addons/ai_agent_core/static/src/xml/okf_global_search.xml:0
+msgid ""
+"<i class=\"fa fa-font\"/>\n"
+"                    <span>Text search (Swedish stemming).</span>"
+msgstr ""
+"<i class=\"fa fa-font\"/>\n"
+"                    <span>文本搜索（使用瑞典语词干配置）。</span>"

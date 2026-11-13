@@ -73,7 +73,7 @@ class AiSearchSource(models.Model):
                 'sequence': 10,
                 'is_wired': True,
                 'wired_note': 'Inkopplad via _okf_search (fas 12).',
-                'description': 'Hybrid search (vector + Swedish BM25) over ai.okf.concept, deduplicated per concept.',
+                'description': '对 ai.okf.concept 进行向量与瑞典语 BM25 混合检索，按知识概念去重。',
             },
             {
                 'code': 'ai_memory',
@@ -82,7 +82,7 @@ class AiSearchSource(models.Model):
                 'sequence': 20,
                 'is_wired': True,
                 'wired_note': 'Inkopplad via _search_chunks (ai-memory-pgvector).',
-                'description': 'Search in ai.memory artifacts: pgvector cosine + Swedish BM25 over ai.memory.chunk. Ownership is decided by the link (ai.agent.memory).',
+                'description': '对 ai.memory.chunk 使用 pgvector 余弦相似度与瑞典语 BM25 检索记忆资料，所有权由 ai.agent.memory 关联决定。',
             },
             {
                 'code': 'graph',
@@ -91,7 +91,7 @@ class AiSearchSource(models.Model):
                 'sequence': 30,
                 'is_wired': False,
                 'wired_note': 'AGE-grafen odoo_mind finns men har 0 noder.',
-                'description': 'Graph enrichment via graph.executor.cypher. The catalog honesty field: the graph is empty in operation, so enrichment cannot carry an answer.',
+                'description': '通过 graph.executor.cypher 补充图谱关系。当前图谱为空，仅作为目录能力列出，不能单独据此生成回答。',
             },
             {
                 'code': 'documents',
@@ -100,7 +100,7 @@ class AiSearchSource(models.Model):
                 'sequence': 40,
                 'is_wired': False,
                 'wired_note': '11 packages in requirements.txt are not installed (faiss-cpu, sentence_transformers).',
-                'description': 'Vector RAG over ir.attachment. Catalog entry only — see phase 10.',
+                'description': '针对 ir.attachment 的向量检索增强能力，目前仅为目录条目，参见第 10 阶段。',
             },
         ]
         for vals in sources:

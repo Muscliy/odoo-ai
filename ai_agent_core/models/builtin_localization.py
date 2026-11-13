@@ -47,17 +47,73 @@ def localize_builtin_coworkers(env, *, overwrite: bool = False) -> list[int]:
 
 
 def localize_skill_descriptions(env) -> list[int]:
-    """Translate stock descriptions without renaming slash-command identifiers."""
-    path = Path(__file__).resolve().parents[1] / "data/builtin_skill_descriptions_zh.json"
+    """Translate stock skill fields, preserving each independently edited field."""
+    return localize_seed_records(env, "builtin_skills_zh.json")
+
+
+def skill_display_labels(env, records=None) -> dict[int, str]:
+    """Keep slash-command names stable while showing Chinese skill titles."""
+    if not (env.lang or "").startswith("zh"):
+        return {}
+    path = Path(__file__).resolve().parents[1] / "data/builtin_skills_zh.json"
+    labels = {}
+    selected = {record.id: record for record in records} if records is not None else None
+    for definition in json.loads(path.read_text(encoding="utf-8")):
+        record = env.ref(definition["xmlid"], raise_if_not_found=False)
+        if selected is not None:
+            record = selected.get(record.id) if record else None
+        names = {definition["technical_name"]}
+        if "name" in definition["fields"]:
+            names.add(definition["fields"]["name"]["value"])
+        if record and record.exists() and record.name in names:
+            labels[record.id] = definition["label"]
+    return labels
+
+
+def localize_seed_records(env, filename: str) -> list[int]:
+    """Apply reviewed translations only when the source fingerprint matches."""
+    path = Path(__file__).resolve().parents[1] / "data" / filename
     changed = []
     for definition in json.loads(path.read_text(encoding="utf-8")):
         record = env.ref(definition["xmlid"], raise_if_not_found=False)
         if not record or not record.exists():
             continue
-        digest = hashlib.sha256((record.description or "").encode()).hexdigest()
-        if digest == definition["source_description_sha256"]:
-            record.with_context(tracking_disable=True, mail_notrack=True).write({
-                "description": definition["description"],
-            })
+        values = {}
+        for field, translation in definition["fields"].items():
+            current = record[field] or ""
+            digest = hashlib.sha256(current.encode()).hexdigest()
+            if digest == translation["source_sha256"] and current != translation["value"]:
+                values[field] = translation["value"]
+        if values:
+            record.with_context(tracking_disable=True, mail_notrack=True).write(values)
             changed.append(record.id)
     return changed
+
+
+def localize_tool_descriptions(env) -> list[int]:
+    """Use builtin_name so renamed tools retain their configuration and links."""
+    path = Path(__file__).resolve().parents[1] / "data/builtin_tools_zh.json"
+    changed = []
+    for definition in json.loads(path.read_text(encoding="utf-8")):
+        for record in env["ai.tool"].search([("builtin_name", "=", definition["builtin_name"])]):
+            values = {}
+            for field, translation in definition["fields"].items():
+                current = record[field] or ""
+                if hashlib.sha256(current.encode()).hexdigest() == translation["source_sha256"]:
+                    values[field] = translation["value"]
+            if values:
+                record.with_context(tracking_disable=True, mail_notrack=True).write(values)
+                changed.append(record.id)
+    return changed
+
+
+def localize_runtime_defaults(env) -> None:
+    """Replace exact old defaults; retain user-authored system instructions."""
+    path = Path(__file__).resolve().parents[1] / "data/builtin_defaults_zh.json"
+    for definition in json.loads(path.read_text(encoding="utf-8")):
+        records = env[definition["model"]].search([
+            (definition["field"], "=", definition["source"]),
+        ])
+        records.with_context(tracking_disable=True, mail_notrack=True).write({
+            definition["field"]: definition["value"],
+        })

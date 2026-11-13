@@ -24,99 +24,37 @@
             <field name="name">news-briefing</field>
             <field name="category">research</field>
             <field name="source_type">odoo</field>
-            <field name="description">Omvärldsbevakning — svara på "vilka är de viktigaste nyheterna nu?" med 7-10 rangordnade nyheter. Cachad dygnsdigest i personligt minne, ämnesfiltrering, intresselärande.</field>
-            <field name="trigger_keywords">nyheter, nyhet, nyhetsbevakning, omvärldsbevakning, vad har hänt, aktuellt, news, briefing, digest, dagens nyheter, senaste nytt</field>
-            <field name="recipe_text"><![CDATA[
-# Nyhetsbevakning (news-briefing)
+            <field name="description">新闻简报：筛选并按重要程度排列 7–10 条新闻，支持每日摘要缓存、主题过滤和根据用户兴趣调整内容。</field>
+            <field name="trigger_keywords">新闻, 今日新闻, 最新消息, 新闻简报, 行业动态, 资讯, news, briefing, digest</field>
+            <field name="recipe_text"><![CDATA[# 技能：新闻简报
 
-Används för att snabbt svara på vad som hänt i omvärlden — "vilka är de
-viktigaste nyheterna nu?", "vad har hänt inom AI?" — utan att användaren
-själv bläddrar bland källor.
+用于回答“现在有哪些重要新闻”“AI 行业发生了什么”等问题。
 
-## Verktyg
+## 工具
+- news_digest(topic, count, digest_text)：读取或写入当天缓存。无 digest_text 时读取；cached: false 表示当天无缓存。汇总后传入 digest_text 保存。
+- news_fetch(url, limit)：实时读取 RSS/Atom，返回标题、链接、时间和导语。
+- okf_search(query)：检索用户记忆和兴趣。
+- personal_memory(action, content, query, category)：读写个人记忆。action='write'、category='preference' 立即保存偏好；action='search' 读取。
 
-- `news_digest(topic, count, digest_text)` — läser eller skriver **dagens
-  cachade digest** i användarens personliga minne.
-  - Utan `digest_text` → läser dagens cache. `cached: false` = ingen cache idag.
-  - Med `digest_text` → skriver digesten till cachen (gör detta efter att
-    du byggt den, så nästa fråga samma dag går snabbt).
-- `news_fetch(url, limit)` — läser en RSS/Atom-feed live och returnerar
-  poster (titel, url, tid, ingress). Används för att hämta artiklarna.
-- `okf_search(query)` — söker i användarens minne (t.ex. inlärda intressen).
-- `personal_memory(action, content, query, category)` — **skriver** eller
-  läser användarens personliga minne. Detta är hur en preferens överlever
-  till nästa session:
-  - `action='write', category='preference', content='...'` → spara direkt.
-  - `action='search', query='...'` → läs tillbaka.
+## 操作流程
+1. 先查询偏好：personal_memory(action='search', query='新闻 数量 来源 主题')。有已记录数量时优先使用。
+2. 调用 news_digest()。cached: true 时直接展示缓存；没有缓存时继续生成，并说明首次获取需要更多时间。
+3. 读取 news-sources 共享来源，再用 okf_search 查找个人来源，逐项调用 news_fetch(url)。
+4. 按重要程度和用户兴趣排序，默认选择 7–10 条，用户指定数量时遵循该数量。
+5. 使用用户语言汇总为“标题、来源、一句话”，同时翻译外语来源内容；调用 news_digest(digest_text="...") 缓存。
+6. 用户提出数量、来源、主题偏好时，立即写入 personal_memory，而不是等待会话结束反思。例如 content='用户希望新闻简报只包含五条新闻'。
+7. 展示简报，标明对应日期。
 
-## Process
+## 主题过滤
+“AI 行业发生了什么”这类问题按主题筛选。有当天缓存时先按主题标签过滤，无需重复获取。
 
-0. **Läs användarens preferenser FÖRST:**
-   `personal_memory(action='search', query='nyheter antal källor ämnen')`.
-   Hittar du ett inlärt antal (t.ex. "fem") används DET i steg 3 — inte
-   standard 7–10.
-1. **Läs cachen först:** `news_digest()`.
-   - `cached: true` → presentera digesten direkt. Snabbt, inget LLM-anrop.
-   - `cached: false` → bygg en ny (steg 2–4) och säg att svaret inte kom
-     från cachen (första frågan på dygnet tar längre tid).
-2. **Hämta källorna:** läs `news-sources`-skillen för de delade källorna,
-   och `okf_search` efter användarens egna källor (personliga minnen).
-   Anropa `news_fetch(url)` per källa.
-3. **Rangordna:** välj 7–10 nyheter och rangordna efter vad DU bedömer
-   viktigast. Vikta mot användarens inlärda intressen (ämnen/källor).
-   Antal: standard 7–10, eller det antal användaren lärt dig.
-4. **Cacha:** `news_digest(digest_text="...")` med sammanställningen —
-   titel, källa, en rad per nyhet, på användarens språk. Översätt utländska
-5. **Lär dig:** säger användaren något om sina önskemål (antal, källor,
-   ämnen) → spara DIREKT med
-   `personal_memory(action='write', category='preference', content='...')`.
-   Exempel: "jag vill bara ha fem" →
-   `content='Användaren vill ha fem nyheter i digesten'`. Vänta inte på
-   reflektionen vid sessionsslut — den är passiv om inte medarbetaren har
-   `learning='active'`, och då tappas preferensen.
-   källor till användarens språk i samma sammanställning.
-5. **Presentera:** titel + källa + en rad per nyhet.
+## 人工审批
+读取和展示新闻可以自动完成。用户要求添加个人来源时，写入 preference，包含名称和 URL。通过邮件或频道转发简报需要批准。
 
-## Ämnesfråga
-
-"Vad har hänt inom AI?" → bygg/filtrera digesten på ämnet. Om dagens cache
-finns, filtrera den på ämnes-taggar (ingen ny hämtning).
-
-## HITL-policy
-
-- Att läsa nyheter och visa en digest är **ofarligt** → autonomt.
-- Att **lägga till en personlig källa** (som användaren ber om) → skriv ett
-  personligt minne (`preference`, "användaren vill följa <källa> <url>").
-- Att **skicka** digesten vidare (mail/kanal) → kräver godkännande.
-
-## Lärande (ai.personal.memory)
-
-Lär dig och lagra i användarens personliga minne **med verktyget
-`personal_memory`** (action='write'). Det sparar direkt — vänta inte på
-reflektionen vid sessionsslut:
-
-```
-personal_memory(action='write', category='preference',
-                content='Användaren vill ha fem nyheter i digesten')
-```
-
-- **Antal** nyheter ("jag vill bara ha fem") → `preference`.
-- **Källor** användaren föredrar → `preference`.
-- **Ämnen** användaren följer → `preference`/`pattern`, som normaliserade
-  nyckelord (AI, politik, ekonomi) så matchning fungerar över språk.
-- **Nya personliga källor** → `preference` med namn + URL.
-
-Läs tillbaka med `personal_memory(action='search', query='nyheter antal')`
-eller `action='recent'` innan du svarar — så används det inlärda antalet
-nästa gång. Bekräfta gärna: "jag kommer ihåg att du gillar AI-nyheter".
-
-## Ärlighet
-
-- Hitta aldrig på nyheter. Om en källa inte svarar, säg det.
-- Säg vilket datum digesten avser (den är färskvara).
-- Nämn gärna en källa du känner till men inte följer som ett erbjudande:
-  "om du vill kan jag söka på Expressen och Svenska Dagbladet också" —
-  lägg till den först om användaren säger ja.
+## 记忆与准确性
+数量、偏好来源和新增个人来源存为 preference；关注主题存为 preference 或 pattern，使用 AI、政治、经济等规范关键词，便于跨语言匹配。
+回答前使用 personal_memory(action='search', query='新闻 数量') 或 action='recent' 回读，确保下一次使用已学偏好。
+保持新闻真实；来源不可用时说明原因。可以提出新增来源建议，得到用户同意后再加入。
 ]]></field>
         </record>
 
@@ -125,45 +63,29 @@ nästa gång. Bekräfta gärna: "jag kommer ihåg att du gillar AI-nyheter".
             <field name="name">news-sources</field>
             <field name="category">research</field>
             <field name="source_type">odoo</field>
-            <field name="description">Delade nyhetskällor (RSS) som Nyhetsbevakaren läser — SVT, BBC, Computer Sweden m.fl. Personliga källor läggs i användarens minne.</field>
-            <field name="trigger_keywords">nyhetskällor, news sources, rss, feed, källor</field>
-            <field name="recipe_text"><![CDATA[
-# Nyhetskällor (news-sources)
+            <field name="description">新闻来源管理：提供共享新闻订阅源（RSS），供新闻助手读取；用户个人关注的来源保存在个人记忆中。</field>
+            <field name="trigger_keywords">新闻来源, 新闻订阅, 订阅源, 信息来源, news sources, rss, feed</field>
+            <field name="recipe_text"><![CDATA[# 技能：新闻来源
 
-Delade startkällor för alla användare av Allmän assistent. Verifierade
-2026-09-30 (svarade 200 med giltig RSS).
+通用助手的共享初始来源。以下验证记录日期为 2026-09-30，当时返回 HTTP 200 和有效 RSS；使用时仍以实际请求为准。
 
-## Verifierade källor (använd dessa)
-
-| Källa | Språk | RSS-URL |
+## 已验证来源
+| 来源 | 语言 | RSS 地址 |
 |---|---|---|
-| SVT Nyheter | sv | https://www.svt.se/rss.xml |
-| BBC News | en | https://feeds.bbci.co.uk/news/rss.xml |
-| Computer Sweden | sv | https://computersweden.se/feed |
+| SVT Nyheter | 瑞典语 sv | https://www.svt.se/rss.xml |
+| BBC News | 英语 en | https://feeds.bbci.co.uk/news/rss.xml |
+| Computer Sweden | 瑞典语 sv | https://computersweden.se/feed |
 
-## Kända men overifierade (erbjud, läs inte förrän verifierade)
+## 尚未验证的来源
+- Omni、Ny Teknik：曾返回 404，使用前需要找到并验证正确的 RSS 地址。
+- Expressen、Svenska Dagbladet：尚未检查，可向用户提出，验证后再使用。
 
-| Källa | Status |
-|---|---|
-| Omni | flödesväg ej verifierad (404) — hitta rätt RSS innan användning |
-| Ny Teknik | flödesväg ej verifierad (404) — hitta rätt RSS innan användning |
-| Expressen, Svenska Dagbladet | ej kontrollerade — erbjud användaren |
+## 读取方式
+每个来源调用 news_fetch(url="<RSS-URL>", limit=20)。
 
-## Så läser du
-
-`news_fetch(url="<RSS-URL>", limit=20)` per källa.
-
-## Personliga källor
-
-Användarens egna källor bor i dennes personliga minne (ai.personal.memory,
-`preference`). Sök dem med `okf_search` innan du bygger digesten, och lägg
-till nya när användaren ber om det.
-
-## Utländska källor
-
-Källor på annat språk (usa, spanien, nederländerna, frankrike) får ingå.
-Översätt till användarens språk när du sammanställer digesten — inte som
-ett separat steg.
+## 个人来源与翻译
+用户个人来源保存在 ai.personal.memory 的 preference 中；生成简报前通过 okf_search 查找，用户要求时再新增。
+可使用其他国家、其他语言的来源，在汇总时直接翻译为用户语言。
 ]]></field>
         </record>
 

@@ -19,112 +19,61 @@
             <field name="category">general</field>
             <field name="source_type">odoo</field>
             <field name="compatibility">pi_python</field>
-            <field name="description">Läs, skapa och ändra Office-dokument (docx, xlsx, pptx, odt, ods, odp) och PDF — inklusive OCR av skannade PDF:er. Dokument hämtas och lämnas via odoo_attach.</field>
-            <field name="trigger_keywords">dokument, document, presentation, powerpoint, pptx, odp, impress, word, docx, odt, writer, excel, xlsx, ods, kalkylark, pdf, ocr, skanna, förlaga, mall, euro-office, office</field>
-            <field name="recipe_text"><![CDATA[
-# Skill: office-dokument
+            <field name="description">办公文档处理：读取、创建和修改 Word、Excel、演示文稿、开放文档及 PDF，支持扫描件文字识别；通过 odoo_attach 获取和交付文件。</field>
+            <field name="trigger_keywords">文档, 办公文档, 演示文稿, 幻灯片, 表格, 电子表格, 扫描, 文字识别, 模板, 格式转换, document, presentation, powerpoint, pptx, odp, impress, word, docx, odt, writer, excel, xlsx, ods, pdf, ocr, euro-office, office</field>
+            <field name="recipe_text"><![CDATA[# 技能：办公文档处理
 
-## Scope
+## 范围
+读取、创建、修改 Office 文档及 PDF，并支持 OCR。运行环境为具备 bash 的外部进程，可直接调用下述库。
+工具：describe_model 检查二进制字段；odoo_search 查找模板；odoo_create 创建记录；odoo_attach 获取和交付文件；odoo_write、odoo_call_method 处理其他字段与业务流程。
+文件字节保持在模型上下文之外：500 KB 文件经 base64 编码约 667000 字符，工具结果会在 8000 字符处截断。使用接收路径的 odoo_attach 传输文件，不将文件正文塞进工具参数。
 
-Förmåga: läsa, skapa och ändra Office-dokument och PDF, samt OCR.
+## 1. 工作目录
+使用 /tmp/<进程ID>/，需要时创建，进程结束自动清理。使用相对路径，odoo_attach 会相对于工作目录解析，例如 path="deck.pptx" 对应 /tmp/1234/deck.pptx。
 
-**Du körs som en extern process med bash.** Du har alltså tillgång till
-biblioteken nedan direkt — använd `bash` för att anropa dem.
-
-Verktyg du har:
-- `describe_model` — ta reda på en modells binärfält innan du rör den
-- `odoo_search` — hitta poster (t.ex. ett dokument att utgå från)
-- `odoo_create` — skapa en ny post (t.ex. en ny dms.file)
-- `odoo_attach` — **hämta och lämna filbytes** (se nedan)
-- `odoo_write`, `odoo_call_method` — övriga fält och affärsflöden
-
-⚠ **Filbytes passerar ALDRIG modellkontexten.** En base64-kodad
-presentation på 500 KB är ~667 000 tecken; verktygsresultat klipps vid
-8 000. Skicka därför aldrig filinnehåll genom ett verktygsanrop — använd
-`odoo_attach`, som tar en SÖKVÄG.
-
----
-
-## 1. Arbetskatalogen
-
-Du arbetar i `/tmp/<ditt pid>/`. Skapas vid behov, städas automatiskt när
-processen avslutas. Använd **relativa sökvägar** — `odoo_attach` löser dem
-mot arbetskatalogen (t.ex. `path="deck.pptx"` → `/tmp/1234/deck.pptx`).
-
----
-
-## 2. Hämta och lämna dokument — odoo_attach
-
+## 2. 获取与交付文件
 ```
 odoo_attach(model, id, field, path, direction)
 ```
+- direction="out"：将字段内容读取为工作目录中的文件。
+- direction="in"：将文件写回字段，需要人工批准，可能覆盖已有内容。
+结果只含路径、大小、校验和等元数据，不返回文件字节。
+先 describe_model(model) 检查字段类型为 binary。ir.attachment 使用 raw（原始数据）或 datas（base64）；dms.file 使用公开的 content 字段，由逆向方法管理存储。
+content_binary、content_file、db_datas 等底层字段由模型管理，工具会拒绝直接写入。
 
-- `direction="out"` — fält → fil. Hämta dokumentet till arbetskatalogen.
-- `direction="in"`  — fil → fält. Lämna resultatet tillbaka.
-
-Resultatet innehåller **endast metadata** (sökväg, storlek, checksumma) —
-aldrig filens bytes. Det är avsiktligt.
-
-### Hitta rätt fält
-
-Fältet måste vara av typen `binary`. Kör `describe_model(model)` och leta
-efter `"type": "binary"`. Vanliga fält:
-
-| Modell | Fält | Not |
-|---|---|---|
-| `ir.attachment` | `raw` eller `datas` | `raw` = rådata, `datas` = base64 |
-| `dms.file` | `content` | exponerat fält — inversen äger lagringen |
-
-⚠ Skriv **aldrig** till underliggande lagringsfält (`content_binary`,
-`content_file`, `db_datas`). Verktyget nekar det och hänvisar till rätt
-fält. Skriv till det exponerade fältet och låt modellens invers avgöra
-lagringen.
-
-### Exempel: hämta en förlaga
-
+### 获取模板与提交新文件
 ```
-# 1. Hitta förlagan
+# 示例操作
 odoo_search("dms.file", [("name", "ilike", "presentation")], ["name","extension"])
 
-# 2. Hämta den till arbetskatalogen
+# 示例操作
 odoo_attach("dms.file", 42, "content", "forlaga.pptx", "out")
 
-# 3. ... arbeta med den ...
+# 示例操作
 
-# 4. Skapa en ny post och lämna resultatet dit
+# 示例操作
 odoo_create("dms.file", {"name": "ny-presentation.pptx", "directory_id": 7})
 odoo_attach("dms.file", 99, "content", "resultat.pptx", "in")
 ```
+写入前检查 is_locked、locked_by；已锁定意味着有人正在 Euro-Office 编辑，应优先创建新记录，避免覆盖他人工作。
 
-⚠ `direction="in"` kräver **mänskligt godkännande** — det kan skriva över
-befintlig data. `direction="out"` gör det inte.
-
-### Incheckning
-
-Om dokumentet är incheckat (`is_locked`, `locked_by`) redigerar en människa
-det i Euro-Office. Att skriva då skriver över deras arbete. Kontrollera
-först, och skapa hellre en ny post.
-
----
-
-## 3. Läsa dokument
-
-### MS-format
-
+## 3. 读取文档
+### 微软格式
+使用 python-pptx、python-docx、openpyxl：
 ```bash
-# PowerPoint
+# 示例操作
 python3 -c "
 from pptx import Presentation
 p = Presentation('deck.pptx')
-print('sidor:', len(p.slides))
+print('页数：', len(p.slides))
 for i, s in enumerate(p.slides, 1):
-    print(f'--- sida {i} ---')
+    print(f'--- 第 {i} 页 ---')
     for sh in s.shapes:
         if sh.has_text_frame and sh.text_frame.text.strip():
             print(sh.text_frame.text)
 "
 
-# Word
+# 示例操作
 python3 -c "
 import docx
 d = docx.Document('doc.docx')
@@ -132,7 +81,7 @@ for para in d.paragraphs:
     if para.text.strip(): print(para.text)
 "
 
-# Excel
+# 示例操作
 python3 -c "
 import openpyxl
 wb = openpyxl.load_workbook('ark.xlsx', data_only=True)
@@ -143,12 +92,8 @@ for name in wb.sheetnames:
         if any(c is not None for c in row): print(row)
 "
 ```
-
-### ODF-format (odt, ods, odp)
-
-`odfpy` kan användas, men ODF är ett zip med `content.xml` — stdlib räcker
-och ger samma resultat:
-
+### 开放文档格式（odt、ods、odp）
+可用 odfpy；也可用标准库读取 ZIP 包中的 content.xml：
 ```bash
 python3 -c "
 import zipfile, xml.etree.ElementTree as ET
@@ -160,243 +105,159 @@ for el in root.iter():
         print(el.text.strip())
 "
 ```
+按页、工作表、章节返回结构化内容，帮助用户定位。
 
-⚠ Returnera **strukturerat** innehåll (per sida/blad/avsnitt), inte en rå
-textmassa. Användaren behöver veta VAR något står.
-
----
-
-## 4. Skapa dokument
-
-### Från tomt
-
+## 4. 创建文档
+### 从空白创建
 ```bash
-# PowerPoint
+# 示例操作
 python3 -c "
 from pptx import Presentation
 from pptx.util import Inches, Pt
 p = Presentation()
 s = p.slides.add_slide(p.slide_layouts[0])
-s.shapes.title.text = 'Rubrik'
-s.placeholders[1].text = 'Underrubrik'
+s.shapes.title.text = '标题'
+s.placeholders[1].text = '副标题'
 p.save('ny.pptx')
 "
 
-# Word
+# 示例操作
 python3 -c "
 import docx
 d = docx.Document()
-d.add_heading('Rubrik', 0)
-d.add_paragraph('Brödtext')
+d.add_heading('标题', 0)
+d.add_paragraph('正文')
 d.save('ny.docx')
 "
 
-# Excel
+# 示例操作
 python3 -c "
 import openpyxl
 wb = openpyxl.Workbook(); ws = wb.active
-ws['A1'] = 'Rubrik'
+ws['A1'] = '标题'
 wb.save('ny.xlsx')
 "
 ```
-
-### Utifrån en förlaga
-
-En **förlaga** är ett dokument du utgår från för stil och generiska sidor.
-Det är inte givet att den har platshållare — arbeta med dess struktur.
-
-Följ detta flöde (det ger dramatiskt bättre resultat än att bygga från tomt):
-
-1. **Analysera förlagan.** Läs den (§3) och lista dess sidor med layout och
-   syfte. Rita gärna en översikt:
-   ```bash
-   soffice --headless --convert-to pdf forlaga.pptx --outdir .
-   pdftoppm -jpeg -r 60 forlaga.pdf sida   # → sida-1.jpg, sida-2.jpg ...
-   ```
-2. **Planera sidmappning.** För varje innehållsavsnitt: välj en sida ur
-   förlagan att utgå från.
-   ⚠ **VARIERA LAYOUTER.** Monotona presentationer är det vanligaste
-   kvalitetsfelet. Leta aktivt efter: två-/trekolumnslayouter, bild+text,
-   helblecksbild med text, citat, avdelare, sifferutsagor, ikonrader.
-   Undvik att upprepa samma texttunga layout på varje sida.
-   Matcha innehållstyp mot layout (punkter → punktlista, team → kolumner,
-   citat → citatsida).
-3. **Kopiera och strukturera.** Duplicera de sidor du behöver, ta bort
-   resten, ordna om. Gör klart all struktur INNAN du redigerar text.
-4. **Redigera texten** sida för sida.
-5. **Städa och spara.**
-
-För pptx kan du arbeta på XML-nivå (zip + ElementTree) eller med
-`python-pptx` — båda fungerar. XML-nivå bevarar formgivningen bättre när
-du bara byter text.
-
----
-
-## 5. Ändra dokument
-
-⚠ **Bevara formgivningen utanför det du ändrar.** Ändrar du texten på en
-bild ska bildens layout, typsnitt och färger vara oförändrade. Ändrar du
-ett cellvärde i ett kalkylark ska övriga blad och formler vara orörda.
-
+### 使用模板
+模板提供样式和通用页面，未必包含占位符，应先分析实际结构。
+1. 读取模板，列出页面布局和用途，转换为图片进行检查：
 ```bash
-# Byt text på en bild utan att röra layouten
+   soffice --headless --convert-to pdf forlaga.pptx --outdir .
+   pdftoppm -jpeg -r 60 forlaga.pdf sida   # 示例操作
+   ```
+2. 为每段内容选择合适的模板页。主动使用双栏、三栏、图文、全幅图片、引用、分隔页、数字和图标行；避免每页都用同一种密集文字布局。
+3. 复制所需页面、删除多余页面并排序，先完成整体结构。
+4. 逐页改写文字。
+5. 清理并保存。
+可使用 python-pptx 或 ZIP 与 ElementTree 操作 XML；仅替换文字时，直接改 XML 更容易保留样式。
+
+## 5. 修改文档
+保留修改范围之外的排版、字体、颜色，以及其他工作表和公式。
+```bash
+# 示例操作
 python3 -c "
 from pptx import Presentation
 p = Presentation('deck.pptx')
 s = p.slides[2]
 for sh in s.shapes:
-    if sh.has_text_frame and 'GAMMAL TEXT' in sh.text_frame.text:
+    if sh.has_text_frame and '旧文本' in sh.text_frame.text:
         for para in sh.text_frame.paragraphs:
             for run in para.runs:
-                run.text = run.text.replace('GAMMAL TEXT', 'NY TEXT')
+                run.text = run.text.replace('旧文本', '新文本')
 p.save('deck-ny.pptx')
 "
 ```
+修改 run.text 保留文字片段格式；直接替换 shape.text_frame.text 会丢失片段格式。
 
-⚠ Redigera `run.text`, inte `shape.text_frame.text` — det senare kastar
-formateringen på runs.
-
----
-
-## 6. PDF — läsa, skapa, ändra
-
-`PyMuPDF` (`import fitz`) täcker hela trippeln. Ett bibliotek, inte fyra.
-
-### Läsa
-
+## 6. PDF 读取、创建和修改
+使用 PyMuPDF（import fitz）。
+### 读取
 ```bash
 python3 -c "
 import fitz
 d = fitz.open('fil.pdf')
-print('sidor:', len(d))
+print('页数：', len(d))
 for i, page in enumerate(d, 1):
-    print(f'--- sida {i} ---')
+    print(f'--- 第 {i} 页 ---')
     print(page.get_text())
 "
 ```
-
-Saknar PDF:en textlager är `get_text()` tom → kör OCR (§7).
-
-### Skapa
-
+get_text() 为空表示缺少文字层，转到 OCR 步骤。
+### 创建
 ```bash
 python3 -c "
 import fitz
 d = fitz.open()
 page = d.new_page()
-page.insert_text((72, 72), 'Hej', fontsize=14)
-d.set_metadata({'title': 'Titel', 'author': 'Vertel'})
+page.insert_text((72, 72), '你好', fontsize=14)
+d.set_metadata({'title': '标题', 'author': 'Vertel'})
 d.save('ny.pdf')
 "
 ```
-
-### Ändra
-
+### 修改
 ```bash
 python3 -c "
 import fitz
 d = fitz.open('a.pdf')
-d.insert_pdf(fitz.open('b.pdf'), from_page=0, to_page=2)  # infoga sidor
-d.select([0, 2, 3])                                       # behåll/ordna om
-d.set_metadata({'title': 'Ny titel'})
+d.insert_pdf(fitz.open('b.pdf'), from_page=0, to_page=2)  # 示例操作
+d.select([0, 2, 3])                                       # 示例操作
+d.set_metadata({'title': '新标题'})
 d.save('ut.pdf')
 "
 ```
+insert_pdf 插入页面，delete_page 删除，select 筛选或重排，set_metadata 修改元数据，insert_textbox 插入文本。
 
-`insert_pdf` (infoga), `delete_page` (ta bort), `select` (ordna om),
-`set_metadata` (metadata), `insert_textbox` (text).
-
----
-
-## 7. OCR — PDF till dokument
-
-Använd PyMuPDF:s inbyggda Tesseract-integration:
-
+## 7. OCR：扫描 PDF 转文档
+使用 PyMuPDF 的 Tesseract 集成；示例 swe+eng 为瑞典语和英语识别配置，按源文档选择已安装的语言包：
 ```bash
 python3 -c "
 import fitz
 d = fitz.open('skannad.pdf')
 for i, page in enumerate(d, 1):
     tp = page.get_textpage_ocr(language='swe+eng', dpi=300, full=False)
-    print(f'--- sida {i} ---')
+    print(f'--- 第 {i} 页 ---')
     print(page.get_text(textpage=tp))
 "
 ```
+full=False 仅识别缺少数字文字的区域，保留混合文档原有文字层；full=True 会重新识别全部内容，可能降低数字文字质量。
+遇到 RuntimeError: No tessdata specified and Tesseract is not installed 时，向用户说明 OCR 引擎未安装；带文字层的 PDF 仍可读取。
+将识别结果保存为 .txt 或 .docx，并使用 odoo_attach、direction="in" 交付。
 
-⚠ **`full=False` är viktigt.** Det betyder: OCR:a bara områden som SAKNAR
-läsbar digital text. En PDF med blandat innehåll (digital text + skannade
-bilagor) får OCR bara på de skannade delarna — den digitala texten bevaras
-oförändrad. Med `full=True` OCR:as allt och den digitala texten försämras.
-
-⚠ **Om OCR-motorn saknas:** `get_textpage_ocr` kastar
-`RuntimeError: No tessdata specified and Tesseract is not installed`.
-Fånga det och säg till användaren att OCR-motorn inte är installerad —
-krascha inte. Utan OCR kan du fortfarande läsa PDF:er som har textlager.
-
-Lämna OCR-resultatet som ett dokument (t.ex. `.txt` eller `.docx`) via
-`odoo_attach` med `direction="in"`.
-
----
-
-## 8. Formatkonvertering
-
-`soffice` (LibreOffice) konverterar mellan format:
-
+## 8. 格式转换
+使用 LibreOffice 的 soffice：
 ```bash
-# Office → PDF
+# 示例操作
 soffice --headless --convert-to pdf dokument.docx --outdir .
 
-# Äldre binärformat → läsbart (doc, xls, ppt)
+# 示例操作
 soffice --headless --convert-to docx gammal.doc --outdir .
 soffice --headless --convert-to xlsx gammal.xls --outdir .
 
-# PDF → bilder (för visuell kontroll av en presentation)
+# 示例操作
 soffice --headless --convert-to pdf deck.pptx --outdir .
 pdftoppm -jpeg -r 60 deck.pdf sida
 ```
+soffice 启动需要几秒，同一个用户配置不能同时运行两个实例，按顺序转换。
 
-⚠ `soffice` tar några sekunder och kan inte köra två instanser samtidigt
-mot samma profil. Kör en i taget.
-
----
-
-## 9. Lämna resultatet
-
-Användaren avgör om resultatet ska bli en **ny post** eller en **ny version**.
-Fråga när det är relevant. Utan svar: skapa en ny post (vanligaste fallet).
-
+## 9. 交付结果
+由用户选择新记录或新版本，需要时询问；未指定时创建新记录。
 ```
-# Ny post
+# 示例操作
 odoo_create("dms.file", {"name": "resultat.pptx", "directory_id": <id>})
 odoo_attach("dms.file", <nytt id>, "content", "resultat.pptx", "in")
 ```
+DMS 同一目录不允许同名文件，会报 A file with the same name already exists in this directory。原环境 Odoo 18 的 document_version 依赖 17.0 已移除的 name_get，不能假定可用。
+可选方式：
+1. 新记录加版本后缀，例如 resultat_v2.pptx，保持可追溯。
+2. 覆盖已有记录内容：会丢失旧版本，必须先获批准，并检查 is_locked，避免覆盖他人编辑。
+报告记录 ID 和名称供用户打开。安装 dms_euro_office 时，可提示继续在浏览器编辑。
 
-⚠ **Ny version av ett DMS-dokument:** `dms` tillåter INTE två filer med
-samma namn i samma mapp (`A file with the same name already exists in this
-directory`). Modulen `document_version` är dessutom trasig i Odoo 18
-(anropar `name_get`, som togs bort i 17.0) — den kan inte användas.
-
-Två fungerande vägar:
-
-1. **Ny post med versionssuffix** — `resultat_v2.pptx`. Enkelt, spårbart,
-   ingen konflikt.
-2. **Skriv över innehållet på befintlig post** — samma post, nytt innehåll.
-   ⚠ Detta förstör föregående version. Fråga alltid användaren först, och
-   kontrollera `is_locked` (§2) så du inte skriver över någon annans arbete.
-
-Rapportera postens referens (id/namn) så användaren kan öppna den. Om
-modulen `dms_euro_office` är installerad kan dokumentet fortsätta redigeras
-i webbläsaren — nämn det.
-
----
-
-## Checklista innan du är klar
-
-- [ ] Dokumentet är hämtat med `odoo_attach` (inte base64 i ett anrop)
-- [ ] Formgivningen utanför ändringen är bevarad
-- [ ] Layouterna varierar (inte samma texttunga layout på varje sida)
-- [ ] Resultatet är lämnat via `odoo_attach` med `direction="in"`
-- [ ] Postens referens är rapporterad till användaren
+## 完成检查
+- 使用 odoo_attach 获取文件。
+- 保留修改范围外的样式。
+- 演示文稿布局有变化。
+- 通过 odoo_attach、direction="in" 交付。
+- 向用户提供记录引用。
 ]]></field>
         </record>
     </data>

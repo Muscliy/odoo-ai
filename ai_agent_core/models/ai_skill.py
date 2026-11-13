@@ -13,6 +13,27 @@ class AISkill(models.Model):
     _description = 'AI Skill'
     _inherit = ['mail.thread', 'mail.activity.mixin']
     _order = 'category, name asc'
+    _rec_names_search = ['name', 'description', 'trigger_keywords']
+
+    @api.depends('name')
+    @api.depends_context('lang')
+    def _compute_display_name(self):
+        from .builtin_localization import skill_display_labels
+        labels = skill_display_labels(self.env, self)
+        for skill in self:
+            skill.display_name = labels.get(skill.id, skill.name)
+
+    @api.model
+    def _localize_builtin_content(self):
+        """Run after seed data on installation and module upgrades."""
+        from .builtin_localization import (
+            localize_runtime_defaults, localize_seed_records,
+            localize_skill_descriptions, localize_tool_descriptions,
+        )
+        localize_skill_descriptions(self.env)
+        localize_seed_records(self.env, "builtin_records_zh.json")
+        localize_tool_descriptions(self.env)
+        localize_runtime_defaults(self.env)
 
     name = fields.Char(required=True)
     active = fields.Boolean(default=True)

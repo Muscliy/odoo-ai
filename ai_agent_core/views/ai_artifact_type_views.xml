@@ -7,7 +7,7 @@
         <field name="model">ai.artifact.type</field>
         <field name="arch" type="xml">
             <list string="Artifact Types">
-                <field name="name"/>
+                <field name="display_name" string="名称"/>
                 <field name="kind"/>
                 <field name="model_id"/>
                 <field name="bridge_module"/>
@@ -24,7 +24,8 @@
                 <sheet>
                     <group>
                         <group>
-                            <field name="name"/>
+                            <field name="display_name" string="名称"/>
+                            <field name="name" string="技术标识"/>
                             <field name="kind"/>
                             <field name="model_id"/>
                             <field name="bridge_module"/>

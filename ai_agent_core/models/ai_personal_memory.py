@@ -961,7 +961,8 @@ class AIPersonalMemory(models.Model):
 
         prompt = f"""Extract ALL new memorable facts from this conversation.
 ADD only — never update or delete existing memories.
-Each fact MUST be a self-contained, context-rich statement in Swedish.
+Each fact MUST be a self-contained, context-rich statement in the user's language.
+For a Chinese conversation, write the facts in Simplified Chinese.
 
 Existing memories (DO NOT duplicate these):
 {existing_str or '(none)'}

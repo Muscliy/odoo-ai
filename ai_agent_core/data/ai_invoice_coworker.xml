@@ -6,38 +6,40 @@
              medarbetarens agenter — INTE som force-körda sub-agenter ── -->
 
         <record id="skill_mail_partner" model="ai.skill">
-            <field name="name">Mail: Hitta/skapa res.partner</field>
+            <field name="trigger_keywords">邮件发件人, 识别发件人, 邮件联系人</field>
+            <field name="name">邮件：查找或创建联系人</field>
             <field name="category">communication</field>
-            <field name="description">Hitta eller skapa rätt res.partner från avsändaren av ett mail.</field>
-            <field name="recipe_text">När ett mail kommer in och du ska identifiera avsändaren som en res.partner:
-1. Extrahera email-adressen och avsändarnamnet från mailet.
-2. odoo_search res.partner med domain [('email','=',&lt;email&gt;)] — kontrollera också email_normalized.
-3. Hittas ingen: sök på företagsnamn ([('name','ilike',&lt;namn&gt;)]) och is_company=True.
-4. Hittas fortfarande ingen: odoo_create res.partner med name (helst företagsnamn), email, is_company=True om det ser ut som ett företag.
-5. Returnera partner-id:t och namnet i ditt svar.
-</field>
+            <field name="description">邮件发件人识别：根据发件人的邮箱和名称，在 res.partner 中查找或创建正确的联系人。</field>
+            <field name="recipe_text"><![CDATA[收到邮件并需要将发件人识别为 res.partner 联系人时：
+1. 提取发件人的邮箱地址和名称。
+2. 使用 odoo_search 查询 res.partner，条件为 [('email','=',<email>)]，同时检查 email_normalized。
+3. 未找到时，按公司名称 [('name','ilike',<name>)] 和 is_company=True 查找。
+4. 仍未找到时，使用 odoo_create 创建 res.partner，填写 name（优先公司名）、email；判断为公司时设置 is_company=True。
+5. 返回联系人的 ID 和名称。
+]]></field>
         </record>
 
         <record id="skill_mail_invoice" model="ai.skill">
-            <field name="name">Mail: Leverantörsfaktura → account.move</field>
+            <field name="trigger_keywords">供应商发票, 采购发票, 邮件发票, 供应商账单</field>
+            <field name="name">邮件：供应商发票处理</field>
             <field name="category">accounting</field>
-            <field name="description">Analysera en leverantörsfaktura (mail + bilaga) och skapa en korrekt account.move (in_invoice).</field>
-            <field name="recipe_text">När en leverantörsfaktura kommer in via mail:
-1. Identifiera partnern (se skill: Mail: Hitta/skapa res.partner).
-2. Analysera fakturatexten/bilagan: leverantör, fakturanummer (ref), faktura- och förfallodatum, valuta, moms, rader (name, quantity, price_unit, account_id, tax_ids) och totalbelopp.
-3. odoo_search account.journal med domain [('type','=','purchase')] för att hitta inköpsjournalen.
-4. odoo_create account.move med move_type='in_invoice', partner_id, journal_id, ref, invoice_date, invoice_date_due, invoice_line_ids.
-5. Fyll i så mycket som möjligt; vid osäkerhet gissa rimligt och notera i beskrivningen.
-6. Om allt ser korrekt ut: odoo_call_method action_post på movet. Annars lämna i draft.
-7. Svara kort: move-id, leverantör, belopp och status.
-</field>
+            <field name="description">供应商发票处理：读取邮件及附件，识别票据信息，并创建正确的供应商账单 account.move（in_invoice）。</field>
+            <field name="recipe_text"><![CDATA[通过邮件收到供应商发票时：
+1. 识别联系人，参照“邮件：查找或创建联系人”技能。
+2. 分析发票正文和附件：供应商、发票号码 ref、开票及到期日期、币种、税额、明细行（name、quantity、price_unit、account_id、tax_ids）和总金额。
+3. 使用 odoo_search 查询 account.journal，条件为 [('type','=','purchase')]，找到采购日记账。
+4. 使用 odoo_create 创建 account.move，填写 move_type='in_invoice'、partner_id、journal_id、ref、invoice_date、invoice_date_due、invoice_line_ids。
+5. 尽可能补齐信息；存在不确定项时，作合理估计并在说明中注明。
+6. 内容核对正确时，通过 odoo_call_method 调用 action_post；否则保留 draft 草稿状态。所有操作仍受工具的人工审批规则约束。
+7. 简短回复：账单 ID、供应商、金额和状态。
+]]></field>
         </record>
 
         <!-- ── AI Medarbetare: Faktura-Assistenten (single mode; skills
              aggregeras i systemprompten av run()) ── -->
         <record id="coworker_invoice_assistant" model="ai.coworker">
-            <field name="name">Faktura-Assistenten</field>
-            <field name="description">Du är Faktura-Assistenten på ekonomiavdelningen. Du tar emot leverantörsfakturor via mail, identifierar avsändaren (res.partner), läser fakturan (OCR) och skapar korrekta leverantörsfakturor (account.move) i Odoo. Du är noggrann med belopp, datum, moms och referensnummer.</field>
+            <field name="name">发票助手</field>
+            <field name="description">你是财务部门的发票助手。接收邮件中的供应商发票，识别发件人（res.partner），读取发票及 OCR 内容，并在 Odoo 创建供应商账单（account.move）。仔细核对金额、日期、税额和参考号。</field>
             <field name="status">active</field>
             <field name="orchestration_mode">single</field>
             <field name="heartbeat_enabled" eval="True"/>
@@ -45,10 +47,10 @@
         </record>
 
         <record id="agent_invoice_partner" model="ai.agent">
-            <field name="name">Mail till Partner</field>
-            <field name="ai_role">Mail Sender Analyst</field>
-            <field name="description">Analyserar avsändaren av ett inkommande mail och hittar/skapar rätt res.partner (via skill: Mail: Hitta/skapa res.partner).</field>
-            <field name="ai_goal">Hitta eller skapa rätt res.partner från mail-avsändaren.</field>
+            <field name="name">邮件联系人识别</field>
+            <field name="ai_role">邮件发件人分析员</field>
+            <field name="description">分析来信发件人，按“邮件：查找或创建联系人”技能查询或创建正确的 res.partner。</field>
+            <field name="ai_goal">根据邮件发件人查找或创建正确的 res.partner 联系人。</field>
             <field name="status">active</field>
             <field name="skill_ids" eval="[(6, 0, [ref('skill_mail_partner')])]"/>
             <!-- explicit-agent-tools: odoo-verktyg anges EXPLICIT här. -->
@@ -60,10 +62,10 @@
         </record>
 
         <record id="agent_invoice_analyser" model="ai.agent">
-            <field name="name">Fakturaanalys</field>
-            <field name="ai_role">Invoice Analyst</field>
-            <field name="description">Analyserar leverantörsfakturor (OCR-text/bilaga) och skapar korrekta account.move via skill: Mail: Leverantörsfaktura → account.move.</field>
-            <field name="ai_goal">Skapa en korrekt account.move (move_type=in_invoice) från fakturatexten.</field>
+            <field name="name">发票分析</field>
+            <field name="ai_role">发票分析员</field>
+            <field name="description">分析发票 OCR 文字和附件，按“邮件：供应商发票处理”技能创建正确的 account.move。</field>
+            <field name="ai_goal">根据发票正文创建正确的 account.move，move_type=in_invoice。</field>
             <field name="status">active</field>
             <field name="skill_ids" eval="[(6, 0, [ref('skill_mail_invoice')])]"/>
             <!-- explicit-agent-tools: odoo-verktyg anges EXPLICIT här. -->

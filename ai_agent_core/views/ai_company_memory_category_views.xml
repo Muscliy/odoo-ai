@@ -8,7 +8,7 @@
             <field name="model">ai.company.memory.category</field>
             <field name="arch" type="xml">
                 <list>
-                    <field name="name"/>
+                    <field name="display_name" string="名称"/>
                     <field name="description"/>
                     <field name="group_ids" widget="many2many_tags"/>
                     <field name="active"/>
@@ -24,7 +24,8 @@
                 <form>
                     <sheet>
                         <group>
-                            <field name="name"/>
+                            <field name="display_name" string="名称"/>
+                            <field name="name" string="技术标识"/>
                             <field name="active"/>
                         </group>
                         <group>

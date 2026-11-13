@@ -27,7 +27,7 @@ class AIWebhookController(http.Controller):
         auth_header = request.httprequest.headers.get('Authorization', '')
         if not auth_header.startswith('Bearer '):
             return Response(
-                json.dumps({"error": "Missing Authorization header"}),
+                json.dumps({"error": '缺少 Authorization 请求头。'}),
                 status=401, content_type='application/json',
             )
 
@@ -36,19 +36,19 @@ class AIWebhookController(http.Controller):
 
         if not coworker.exists():
             return Response(
-                json.dumps({"error": "Coworker not found"}),
+                json.dumps({"error": '未找到 AI 员工。'}),
                 status=404, content_type='application/json',
             )
 
         if not coworker.webhook_secret:
             return Response(
-                json.dumps({"error": "Webhook not configured for this coworker"}),
+                json.dumps({"error": '此 AI 员工尚未配置 Webhook。'}),
                 status=404, content_type='application/json',
             )
 
         if coworker.webhook_secret != secret:
             return Response(
-                json.dumps({"error": "Invalid webhook secret"}),
+                json.dumps({"error": 'Webhook 密钥无效。'}),
                 status=401, content_type='application/json',
             )
 
@@ -56,7 +56,7 @@ class AIWebhookController(http.Controller):
         content_length = request.httprequest.content_length or 0
         if content_length > (coworker.max_webhook_payload_size or 1048576):
             return Response(
-                json.dumps({"error": "Payload too large"}),
+                json.dumps({"error": '请求内容超过大小限制。'}),
                 status=413, content_type='application/json',
             )
 
@@ -65,7 +65,7 @@ class AIWebhookController(http.Controller):
             payload = json.loads(request.httprequest.data or '{}')
         except json.JSONDecodeError:
             return Response(
-                json.dumps({"error": "Invalid JSON payload"}),
+                json.dumps({"error": '请求内容不是有效的 JSON。'}),
                 status=400, content_type='application/json',
             )
 

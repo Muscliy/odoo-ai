@@ -16,7 +16,7 @@
              "Record cannot be modified right now". cron.task har ingen
              sådan spärr, och motorn äger kadens, lås och körhistorik. -->
         <record id="cron_task_cron_company_memory_nightly" model="cron.task">
-            <field name="name">Company Memory Nightly Consolidation</field>
+            <field name="name">每晚整理公司记忆</field>
             <field name="technical_name">ai_company_memory_nightly</field>
             <field name="module">ai_agent_core</field>
             <field name="model_name">ai.company.memory</field>
@@ -27,7 +27,7 @@
             <field name="active" eval="True"/>
         </record>
         <record id="cron_task_cron_company_memory_partners" model="cron.task">
-            <field name="name">Company Memory Partner Customers</field>
+            <field name="name">建立客户记忆索引</field>
             <field name="technical_name">ai_company_memory_partners</field>
             <field name="module">ai_agent_core</field>
             <field name="model_name">ai.company.memory</field>
@@ -38,7 +38,7 @@
             <field name="active" eval="True"/>
         </record>
         <record id="cron_task_cron_company_memory_suppliers" model="cron.task">
-            <field name="name">Company Memory Partner Suppliers</field>
+            <field name="name">建立供应商记忆索引</field>
             <field name="technical_name">ai_company_memory_suppliers</field>
             <field name="module">ai_agent_core</field>
             <field name="model_name">ai.company.memory</field>
@@ -49,7 +49,7 @@
             <field name="active" eval="True"/>
         </record>
         <record id="cron_task_cron_company_memory_knowledge" model="cron.task">
-            <field name="name">Company Memory Knowledge Articles</field>
+            <field name="name">建立知识文章索引</field>
             <field name="technical_name">ai_company_memory_knowledge</field>
             <field name="module">ai_agent_core</field>
             <field name="model_name">ai.company.memory</field>
@@ -60,7 +60,7 @@
             <field name="active" eval="True"/>
         </record>
         <record id="cron_task_cron_company_memory_dms" model="cron.task">
-            <field name="name">Company Memory DMS Documents</field>
+            <field name="name">建立文档索引</field>
             <field name="technical_name">ai_company_memory_dms</field>
             <field name="module">ai_agent_core</field>
             <field name="model_name">ai.company.memory</field>
@@ -71,7 +71,7 @@
             <field name="active" eval="True"/>
         </record>
         <record id="cron_task_cron_company_memory_website" model="cron.task">
-            <field name="name">Company Memory Website RAG</field>
+            <field name="name">建立公司网站知识索引</field>
             <field name="technical_name">ai_company_memory_website</field>
             <field name="module">ai_agent_core</field>
             <field name="model_name">ai.company.memory</field>
@@ -82,7 +82,7 @@
             <field name="active" eval="True"/>
         </record>
         <record id="cron_task_cron_company_memory_strategy" model="cron.task">
-            <field name="name">Company Memory Strategy</field>
+            <field name="name">建立公司战略索引</field>
             <field name="technical_name">ai_company_memory_strategy</field>
             <field name="module">ai_agent_core</field>
             <field name="model_name">ai.company.memory</field>
@@ -93,7 +93,7 @@
             <field name="active" eval="True"/>
         </record>
         <record id="cron_task_cron_company_memory_mgmt_summary" model="cron.task">
-            <field name="name">Company Memory Management Summary</field>
+            <field name="name">生成经营管理摘要</field>
             <field name="technical_name">ai_company_memory_mgmt_summary</field>
             <field name="module">ai_agent_core</field>
             <field name="model_name">ai.company.memory</field>

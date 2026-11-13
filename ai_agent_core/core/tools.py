@@ -361,10 +361,7 @@ async def _tool_news_digest(env, topic: str = "", count: int = 10,
         return json.dumps({
             'cached': False,
             'reason': 'no_digest_for_today',
-            'hint': 'No cached digest for today. Fetch feeds with news_fetch, '
-                    'build the digest, then store it with news_digest '
-                    '(digest_text=...). Tell the user it did not come from '
-                    'cache.',
+            'hint': '今天尚无简报缓存。使用 news_fetch 读取来源并生成简报，再通过 news_digest(digest_text=...) 保存；向用户说明本次内容来自新获取的来源。',
         })
     text = found.content or ''
     # Ta bort markören från svaret
@@ -973,7 +970,7 @@ def _capability_enum_schema(members):
         'operation': {
             'type': 'string',
             'enum': [m.name for m in members],
-            'description': 'Operation to perform. Choose exactly one from the enum.',
+            'description': '要执行的操作，从枚举选项中选择一项。',
         },
     }
     for m in members:
@@ -1192,7 +1189,7 @@ def _tool_describe_available(env, question=''):
     """
     import json as _json
     if 'ai.okf.concept' not in env:
-        return _json.dumps({'models': [], 'note': 'OKF is not installed'})
+        return _json.dumps({'models': [], 'note': '尚未安装知识库服务。'})
 
     question = (question or '').strip().lower()
     if not question:
@@ -1296,11 +1293,11 @@ def _tool_push_notification(env, title='', body='', url=None):
     import json as _json
     if not title or not (title or '').strip():
         return _json.dumps({'queued': False,
-                            'reason': 'title is required'})
+                            'reason': '必须提供 title 参数。'})
     if 'web.pwa.push' not in env:
         return _json.dumps({
             'queued': False,
-            'reason': 'web push is not installed in this database'})
+            'reason': '当前数据库尚未安装网页推送。'})
 
     sess_id = 0
     if env.context.get('_ai_context_model') == 'ai.coworker.session':
@@ -1310,19 +1307,18 @@ def _tool_push_notification(env, title='', body='', url=None):
     if not sess_id:
         return _json.dumps({
             'queued': False,
-            'reason': 'no session in context - the notification needs a '
-                      'session to know its recipient'})
+            'reason': '上下文中没有会话，无法确定通知收件人。'})
 
     try:
         session = env['ai.coworker.session'].sudo().browse(int(sess_id))
         if not session.exists():
             return _json.dumps({'queued': False,
-                                'reason': 'session not found'})
+                                'reason': '未找到会话。'})
         user = session.user_id
         if not user:
             return _json.dumps({
                 'queued': False,
-                'reason': 'the session has no user to notify'})
+                'reason': '此会话没有可通知的用户。'})
         queued = env['web.pwa.push']._push_user_notification(
             user,
             title=(title or '').strip(),
@@ -1337,8 +1333,7 @@ def _tool_push_notification(env, title='', body='', url=None):
     if not queued:
         return _json.dumps({
             'queued': False,
-            'reason': 'the user has no registered device, or the server '
-                      'has no VAPID keys - nothing was sent'})
+            'reason': '用户没有注册设备，或服务器尚未配置 VAPID 密钥，未发送通知。'})
     return _json.dumps({'queued': True, 'recipient': user.display_name})
 
 
@@ -1359,14 +1354,13 @@ def builtin_tools() -> list[Tool]:
     return [
         Tool(
             name="odoo_calculator",
-            description="Evaluate a mathematical expression safely. Supports +, -, *, /, parentheses, "
-                        "and basic arithmetic. Returns the numeric result as a string.",
+            description='安全计算数学表达式，支持 +、-、*、/、括号和基本算术，以字符串返回计算结果。',
             parameters={
                 "type": "object",
                 "properties": {
                     "expression": {
                         "type": "string",
-                        "description": "The mathematical expression to evaluate (e.g. '12 * (3 + 4) / 2')",
+                        "description": '要计算的数学表达式，例如 12 * (3 + 4) / 2。',
                     }
                 },
                 "required": ["expression"],
@@ -1377,28 +1371,23 @@ def builtin_tools() -> list[Tool]:
         ),
         Tool(
             name="odoo_web_search",
-            description="Search the web for current information. Uses DuckDuckGo "
-                        "(free, no API key) with Bing and Brave as fallback. "
-                        "Returns top results with title, snippet and URL. Good for "
-                        "documentation, news and anything online.",
+            description='搜索网络上的最新信息。使用无需 API 密钥的 DuckDuckGo，Bing 和 Brave 作为备用来源。返回标题、摘要和网址，适合查找文档、新闻及其他网络信息。',
             parameters={
                 "type": "object",
                 "properties": {
                     "query": {
                         "type": "string",
                         "minLength": 1,
-                        "description": "The search query (e.g. 'latest Odoo 18 release notes')",
+                        "description": '搜索问题，例如“最新 Odoo 18 发布说明”。',
                     },
                     "max_results": {
                         "type": "integer",
-                        "description": "Maximum number of results to return (1-15, default 5)",
+                        "description": '返回结果数量上限，范围 1–15，默认 5。',
                     },
                     "recency": {
                         "type": "string",
                         "enum": ["day", "week", "month", "year"],
-                        "description": "Limit results by age. Leave empty for all "
-                                       "time. Use for news, releases and anything "
-                                       "where an old answer is wrong.",
+                        "description": '按时间限制结果，留空表示不限。新闻、发布动态等具有时效性的问题应指定时间范围。',
                     },
                 },
                 "required": ["query"],
@@ -1410,28 +1399,21 @@ def builtin_tools() -> list[Tool]:
         ),
         Tool(
             name="odoo_fetch_url",
-            description="Fetch a URL and return its readable text. Handles web pages "
-                        "(article body, not menus or cookie banners), PDFs (text "
-                        "layer) and YouTube videos (transcript). Follows HTTP "
-                        "redirects and meta-refresh pages. Private, loopback and "
-                        "cloud-metadata addresses are blocked.",
+            description='读取网址并返回可读正文，支持网页正文（排除菜单和 Cookie 提示）、带文字层的 PDF、YouTube 视频字幕。跟随 HTTP 重定向与页面刷新跳转，阻止私有地址、回环地址和云元数据地址。',
             parameters={
                 "type": "object",
                 "properties": {
                     "url": {
                         "type": "string",
-                        "description": "The full URL to fetch (must include http:// or https://)",
+                        "description": '要读取的完整网址，必须包含 http:// 或 https://。',
                     },
                     "max_length": {
                         "type": "integer",
-                        "description": "Maximum characters to return (1000-20000, default 5000)",
+                        "description": '返回正文最多字符数，范围 1000–20000，默认 5000。',
                     },
                     "prompt": {
                         "type": "string",
-                        "description": "What you are looking for. Does not filter the "
-                                       "result — the full text is returned — but it "
-                                       "keeps your intent attached to the fetch "
-                                       "(e.g. 'the retry timeout for uploads').",
+                        "description": '说明要查找的内容，例如“上传重试的超时时间”。该参数记录查询意图，不筛选结果，仍会返回完整正文。',
                     },
                 },
                 "required": ["url"],
@@ -1443,21 +1425,18 @@ def builtin_tools() -> list[Tool]:
         ),
         Tool(
             name="news_fetch",
-            description="Fetch and parse an RSS/Atom feed from a URL and return "
-                        "normalized items (title, url, published, summary). "
-                        "Model-agnostic: it takes a URL and returns data. The "
-                        "agent owns the source list in its skill.",
+            description='读取并解析指定 RSS/Atom 地址，返回规范化条目：title、url、published、summary。接收网址并返回数据；新闻来源清单由智能体技能维护。',
             parameters={
                 "type": "object",
                 "properties": {
                     "url": {
                         "type": "string",
                         "minLength": 1,
-                        "description": "Feed URL (must include http:// or https://)",
+                        "description": '订阅源地址，必须包含 http:// 或 https://。',
                     },
                     "limit": {
                         "type": "integer",
-                        "description": "Maximum number of items to return (1-100, default 20)",
+                        "description": '返回项目数量上限，范围 1–100，默认 20。',
                     },
                 },
                 "required": ["url"],
@@ -1469,25 +1448,21 @@ def builtin_tools() -> list[Tool]:
         ),
         Tool(
             name="news_digest",
-            description="Read or write the user's cached news digest in personal "
-                        "memory (ai.personal.memory). Without digest_text: read "
-                        "today's cached digest (fast, no LLM call). With "
-                        "digest_text: store it for today. The digest follows "
-                        "the person, like all personal memory.",
+            description='读取或保存用户在 ai.personal.memory 中的当天新闻简报缓存。未传 digest_text 时读取缓存，无需调用模型；传入 digest_text 时保存当天简报。简报属于个人记忆，可跨 AI 员工和会话使用。',
             parameters={
                 "type": "object",
                 "properties": {
                     "topic": {
                         "type": "string",
-                        "description": "Optional topic filter (e.g. 'AI'); empty = all",
+                        "description": '可选主题筛选，例如 AI；留空表示全部。',
                     },
                     "count": {
                         "type": "integer",
-                        "description": "Maximum number of news items (1-50, default 10)",
+                        "description": '新闻条数上限，范围 1–50，默认 10。',
                     },
                     "digest_text": {
                         "type": "string",
-                        "description": "The digest to cache (empty = read the cached one)",
+                        "description": '要缓存的简报内容，留空时读取缓存。',
                     },
                 },
                 "required": [],
@@ -1499,50 +1474,42 @@ def builtin_tools() -> list[Tool]:
         ),
         Tool(
             name="personal_memory",
-            description="Read or write the user's PERSONAL memory "
-                        "(ai.personal.memory) — preferences, facts, insights "
-                        "that follow the person across coworkers and "
-                        "conversations. Use action='write' to remember "
-                        "something the user told you (e.g. 'jag vill bara ha "
-                        "fem' -> category='preference'), action='search' to "
-                        "recall by query, action='recent' for the latest. "
-                        "This is how a learned preference survives the next "
-                        "session.",
+            description='读写用户的个人记忆 ai.personal.memory，包含偏好、事实和洞察，可跨 AI 员工与会话保留。action=write 保存用户明确提供的信息，例如“只要五条新闻”存为 category=preference；action=search 按 query 查找；action=recent 获取最近记忆。用于让偏好在后续会话中继续生效。',
             parameters={
                 "type": "object",
                 "properties": {
                     "action": {
                         "type": "string",
                         "enum": ["write", "search", "recent"],
-                        "description": "write = store content; search = find by query; recent = latest memories",
+                        "description": 'write 保存内容，search 按关键词查找，recent 读取最近记忆。',
                     },
                     "content": {
                         "type": "string",
-                        "description": "The memory to store (required for action='write'), e.g. 'The user wants five news items'",
+                        "description": 'action=write 时必填的记忆内容，例如“用户希望新闻简报包含五条新闻”。',
                     },
                     "query": {
                         "type": "string",
-                        "description": "Search query (for action='search'); empty = latest",
+                        "description": 'action=search 时使用的查询词，留空表示最新记忆。',
                     },
                     "category": {
                         "type": "string",
                         "enum": ["fact", "preference", "goal", "correction",
                                  "pattern", "feedback", "context", "insight",
                                  "policy", "skill"],
-                        "description": "Memory type (default 'fact'); use 'preference' for what the user wants",
+                        "description": '记忆类型，默认 fact；记录用户偏好时使用 preference。',
                     },
                     "importance": {
                         "type": "string",
                         "enum": ["low", "medium", "high"],
-                        "description": "How important the memory is (default 'medium')",
+                        "description": '记忆的重要程度，默认 medium。',
                     },
                     "source_ref": {
                         "type": "string",
-                        "description": "Optional reference to the source (e.g. a news URL)",
+                        "description": '可选来源引用，例如新闻链接。',
                     },
                     "limit": {
                         "type": "integer",
-                        "description": "Max results for search/recent (1-50, default 10)",
+                        "description": 'search 或 recent 的最多返回条数，范围 1–50，默认 10。',
                     },
                 },
                 "required": ["action"],
@@ -1553,22 +1520,18 @@ def builtin_tools() -> list[Tool]:
         ),
         Tool(
             name="browser_navigate",
-            description="Navigate to a URL using a headless browser and return the full page text content. "
-                        "Useful for browsing websites that require JavaScript rendering, "
-                        "checking if sites are up, or extracting content from dynamic pages. "
-                        "Delegates to a Pi-agent via NATS.",
+            description='通过无界面浏览器打开网址并返回完整页面正文，适用于需要 JavaScript 渲染的网站、网站可用性检查和动态页面内容提取。通过 NATS 委派给 Pi 智能体。',
             parameters={
                 "type": "object",
                 "properties": {
                     "url": {
                         "type": "string",
-                        "description": "The URL to navigate to (e.g. https://example.com)",
+                        "description": '要打开的网址，例如 https://example.com。',
                     },
                     "action": {
                         "type": "string",
                         "enum": ["snapshot", "screenshot", "check_uptime"],
-                        "description": "What to do on the page. snapshot = read page text, "
-                                       "screenshot = capture image, check_uptime = verify page loads",
+                        "description": '页面操作：snapshot 读取正文，screenshot 截图，check_uptime 检查页面能否加载。',
                     },
                 },
                 "required": ["url"],
@@ -1584,20 +1547,13 @@ def builtin_tools() -> list[Tool]:
         ),
         Tool(
             name="graph_query",
-            description="Query the Odoo Mind graph database using Cypher. "
-                        "Use this to find relationships between Odoo records — "
-                        "partners, companies, emails, invoices, strategy plans, "
-                        "knowledge articles. "
-                        "Returns JSON with nodes and relationships. "
-                        "Example: MATCH (p:OdooPartner {id: 42})-[:HAS_CONTACT]->(person) RETURN person.name, person.email "
-                        "READ-ONLY only. Cannot modify data.",
+            description='使用 Cypher 只读查询 Odoo Mind 图数据库，查找联系人、公司、邮件、发票、战略计划和知识文章之间的关系，返回节点和关系的 JSON。示例：MATCH (p:OdooPartner {id: 42})-[:HAS_CONTACT]->(person) RETURN person.name, person.email。只读，不能修改数据。',
             parameters={
                 "type": "object",
                 "properties": {
                     "query": {
                         "type": "string",
-                        "description": "Cypher query. Must be read-only (MATCH/RETURN only). "
-                                       "Example: MATCH (p:OdooPartner)-[:BELONGS_TO]->(c:Company {id: 1}) RETURN p.name",
+                        "description": '只读 Cypher 查询，仅允许 MATCH、RETURN。示例：MATCH (p:OdooPartner)-[:BELONGS_TO]->(c:Company {id: 1}) RETURN p.name。',
                     },
                 },
                 "required": ["query"],
@@ -1608,15 +1564,13 @@ def builtin_tools() -> list[Tool]:
         ),
         Tool(
             name="graphify_search",
-            description="Search graphify-indexed repositories (OCA modules, internal repos). "
-                        "Use when user asks 'does OCA have a module for...' or 'has anyone solved this?'. "
-                        "Returns module names, descriptions, relevance scores. Delegates to Pi-agent via NATS.",
+            description='搜索由 graphify 索引的 OCA 模块和内部仓库，适用于查找可用模块或已有解决方案。返回模块名、说明和相关度，通过 NATS 委派给 Pi 智能体。',
             parameters={
                 "type": "object",
                 "properties": {
-                    "query": {"type": "string", "description": "Search query"},
-                    "repos": {"type": "array", "items": {"type": "string"}, "description": "Repo filter, e.g. ['oca/*']"},
-                    "limit": {"type": "integer", "description": "Max results (default 5)"},
+                    "query": {"type": "string", "description": '搜索词。'},
+                    "repos": {"type": "array", "items": {"type": "string"}, "description": '仓库筛选，例如 ["oca/*"]。'},
+                    "limit": {"type": "integer", "description": '最多返回条数，默认 5。'},
                 },
                 "required": ["query"],
             },
@@ -1630,16 +1584,14 @@ def builtin_tools() -> list[Tool]:
         ),
         Tool(
             name="pi_unified_recall",
-            description="Multi-source search across Odoo Mind AND external sources (graphify, filesystem). "
-                        "Use for comprehensive knowledge — both internal Odoo data and external systems. "
-                        "Returns ranked, attributed results. Delegates to Pi-agent via NATS.",
+            description='跨 Odoo Mind 与外部 graphify、文件系统等来源进行综合检索，覆盖 Odoo 内部数据和外部知识。返回排序后的结果及来源，通过 NATS 委派给 Pi 智能体。',
             parameters={
                 "type": "object",
                 "properties": {
-                    "query": {"type": "string", "description": "Search query"},
-                    "sources": {"type": "array", "items": {"type": "string"}, "description": "Sources: 'internal', 'graphify', 'filesystem', or 'all'"},
-                    "strategy": {"type": "string", "enum": ["precision", "balanced", "recall", "detective"], "description": "Search strategy"},
-                    "limit": {"type": "integer", "description": "Max results (default 10)"},
+                    "query": {"type": "string", "description": '搜索词。'},
+                    "sources": {"type": "array", "items": {"type": "string"}, "description": '来源标识：internal、graphify、filesystem 或 all。'},
+                    "strategy": {"type": "string", "enum": ["precision", "balanced", "recall", "detective"], "description": '搜索策略。'},
+                    "limit": {"type": "integer", "description": '最多返回条数，默认 10。'},
                 },
                 "required": ["query"],
             },
@@ -1653,13 +1605,13 @@ def builtin_tools() -> list[Tool]:
         ),
         Tool(
             name="echo",
-            description="Echo back the message. Useful for testing.",
+            description='原样返回消息，用于测试。',
             parameters={
                 "type": "object",
                 "properties": {
                     "message": {
                         "type": "string",
-                        "description": "The message to echo back",
+                        "description": '要原样返回的消息。',
                     }
                 },
                 "required": ["message"],
@@ -1670,28 +1622,26 @@ def builtin_tools() -> list[Tool]:
         ),
         Tool(
             name="nats_publish",
-            description="Publish a message to a NATS subject for Pi workers to consume. "
-                        "Use this to delegate infrastructure tasks (bash, deployment, monitoring) "
-                        "to remote Pi agents. Returns acknowledgment or error.",
+            description='向 NATS 主题发布消息，由 Pi 工作进程领取。用于将命令执行、部署、监控等基础设施任务委派给远程 Pi 智能体，返回确认或错误。',
             parameters={
                 "type": "object",
                 "properties": {
                     "subject": {
                         "type": "string",
-                        "description": "NATS subject to publish to, e.g. 'pi.task.new' or 'pi.task.assign.{host}'",
+                        "description": '要发布的 NATS 主题，例如 pi.task.new 或 pi.task.assign.{host}。',
                     },
                     "task_id": {
                         "type": "integer",
-                        "description": "Unique task ID for tracking the result",
+                        "description": '跟踪任务结果的唯一任务 ID。',
                     },
                     "prompt": {
                         "type": "string",
-                        "description": "The task prompt for the worker to execute",
+                        "description": '交给工作进程执行的任务指令。',
                     },
                     "skills": {
                         "type": "array",
                         "items": {"type": "string"},
-                        "description": "List of skill names the worker should load (optional)",
+                        "description": '工作进程应加载的技能名称列表，可选。',
                     },
                 },
                 "required": ["subject", "task_id", "prompt"],
@@ -1704,7 +1654,7 @@ def builtin_tools() -> list[Tool]:
         # ── Quest Builder: Inventory tools (read_only, safe) ──
         Tool(
             name="inventory_architecture",
-            description="Return complete system architecture: all ai.* models with fields/relations, init_types, and MODULE.md docs from installed ai_* modules.",
+            description='返回完整系统架构，包括 ai.* 模型的字段和关系、init_types，以及已安装 ai_* 模块的 MODULE.md 文档。',
             parameters={"type": "object", "properties": {}, "required": []},
             handler=_tool_inventory_architecture,
             risk_level="safe",
@@ -1712,7 +1662,7 @@ def builtin_tools() -> list[Tool]:
         ),
         Tool(
             name="inventory_quests",
-            description="List all active ai.coworker records with name, status, and init_type.",
+            description='列出所有有效的 ai.coworker 记录，包含名称、状态和 init_type。',
             parameters={"type": "object", "properties": {}, "required": []},
             handler=_tool_inventory_quests,
             risk_level="safe",
@@ -1720,7 +1670,7 @@ def builtin_tools() -> list[Tool]:
         ),
         Tool(
             name="inventory_agents",
-            description="List all ai.agent records with name, model, and assigned skills.",
+            description='列出 ai.agent 记录，包含名称、模型和已关联技能。',
             parameters={"type": "object", "properties": {}, "required": []},
             handler=_tool_inventory_agents,
             risk_level="safe",
@@ -1728,7 +1678,7 @@ def builtin_tools() -> list[Tool]:
         ),
         Tool(
             name="inventory_skills",
-            description="List all ai.skill records with name, category, and trigger keywords.",
+            description='列出 ai.skill 记录，包含名称、分类和触发关键词。',
             parameters={"type": "object", "properties": {}, "required": []},
             handler=_tool_inventory_skills,
             risk_level="safe",
@@ -1736,7 +1686,7 @@ def builtin_tools() -> list[Tool]:
         ),
         Tool(
             name="inventory_models",
-            description="List all ai.model records with capabilities: is_vision, has_streaming, context_window, provider.",
+            description='列出 ai.model 记录及能力，包括 is_vision、has_streaming、context_window、provider。',
             parameters={"type": "object", "properties": {}, "required": []},
             handler=_tool_inventory_models,
             risk_level="safe",
@@ -1744,7 +1694,7 @@ def builtin_tools() -> list[Tool]:
         ),
         Tool(
             name="inventory_tools",
-            description="List all ai.tool records with name and risk_level.",
+            description='列出 ai.tool 记录的名称和 risk_level 风险等级。',
             parameters={"type": "object", "properties": {}, "required": []},
             handler=_tool_inventory_tools,
             risk_level="safe",
@@ -1752,7 +1702,7 @@ def builtin_tools() -> list[Tool]:
         ),
         Tool(
             name="inventory_identities",
-            description="List all ai.identity templates with name and scope.",
+            description='列出 ai.identity 身份模板的名称和 scope 范围。',
             parameters={"type": "object", "properties": {}, "required": []},
             handler=_tool_inventory_identities,
             risk_level="safe",
@@ -1760,7 +1710,7 @@ def builtin_tools() -> list[Tool]:
         ),
         Tool(
             name="inventory_odoo_models",
-            description="List available Odoo models (ir.model) for powerbox binding.",
+            description='列出可用于快捷操作绑定的 Odoo 模型 ir.model。',
             parameters={"type": "object", "properties": {}, "required": []},
             handler=_tool_inventory_odoo_models,
             risk_level="safe",
@@ -1770,12 +1720,12 @@ def builtin_tools() -> list[Tool]:
         # ── Quest Builder: Execution tools (write, destructive) ──
         Tool(
             name="builder_create_quest",
-            description="Create a new ai.coworker record. Params: name (required), description, init_types (list), orchestration_mode (single|supervisor|buzz). Returns quest ID.",
+            description='创建 ai.coworker。参数：必填 name，可选 description、init_types 列表、orchestration_mode（single、supervisor、buzz）。返回 AI 员工 ID。',
             parameters={"type": "object", "properties": {
-                "name": {"type": "string", "description": "Quest name"},
-                "description": {"type": "string", "description": "System prompt / quest description"},
-                "init_types": {"type": "string", "description": "Comma-separated init types: web_ui,chat,powerbox,mail,cron,server_action,manual"},
-                "orchestration_mode": {"type": "string", "enum": ["single", "supervisor", "buzz"], "description": "Orchestration mode; 'supervisor' enables multi-agent delegation"},
+                "name": {"type": "string", "description": 'AI 员工名称。'},
+                "description": {"type": "string", "description": '系统指令或 AI 员工说明。'},
+                "init_types": {"type": "string", "description": '逗号分隔的启动方式：web_ui、chat、powerbox、mail、cron、server_action、manual。'},
+                "orchestration_mode": {"type": "string", "enum": ["single", "supervisor", "buzz"], "description": '编排模式；supervisor 启用多智能体任务委派。'},
             }, "required": ["name"]},
             handler=_tool_builder_create_quest,
             risk_level="destructive",
@@ -1783,9 +1733,9 @@ def builtin_tools() -> list[Tool]:
         ),
         Tool(
             name="builder_update_quest",
-            description="Update an existing ai.coworker. Params: coworker_id (required), then any of: name, description, orchestration_mode.",
+            description='更新 ai.coworker。coworker_id 必填，可修改 name、description、orchestration_mode。',
             parameters={"type": "object", "properties": {
-                "coworker_id": {"type": "integer", "description": "Quest ID to update"},
+                "coworker_id": {"type": "integer", "description": '要更新的 AI 员工 ID。'},
                 "name": {"type": "string"},
                 "description": {"type": "string"},
                 "orchestration_mode": {"type": "string", "enum": ["single", "supervisor", "buzz"]},
@@ -1796,12 +1746,12 @@ def builtin_tools() -> list[Tool]:
         ),
         Tool(
             name="builder_create_agent",
-            description="Create a new ai.agent. Params: name (required), description, model (bifrost model name), skills (comma-separated skill names). Returns agent ID.",
+            description='创建 ai.agent。name 必填，可填写 description、model（Bifrost 模型名）、skills（逗号分隔的技能名）。返回智能体 ID。',
             parameters={"type": "object", "properties": {
-                "name": {"type": "string", "description": "Agent name"},
-                "description": {"type": "string", "description": "Agent description / role"},
-                "model": {"type": "string", "description": "AI model name (e.g. cheap, moderate, deepseek/deepseek-chat)"},
-                "skills": {"type": "string", "description": "Comma-separated skill names to assign (must exist)"},
+                "name": {"type": "string", "description": '智能体名称。'},
+                "description": {"type": "string", "description": '智能体说明与角色。'},
+                "model": {"type": "string", "description": 'AI 模型名称，例如 cheap、moderate、deepseek/deepseek-chat。'},
+                "skills": {"type": "string", "description": '要关联的已有技能名称，使用逗号分隔。'},
             }, "required": ["name"]},
             handler=_tool_builder_create_agent,
             risk_level="destructive",
@@ -1809,12 +1759,12 @@ def builtin_tools() -> list[Tool]:
         ),
         Tool(
             name="builder_create_skill",
-            description="Create a new ai.skill. Params: name (required), category, recipe_text (full markdown recipe), trigger_keywords.",
+            description='创建 ai.skill。name 必填，可填写 category、recipe_text（完整 Markdown 操作说明）、trigger_keywords。',
             parameters={"type": "object", "properties": {
-                "name": {"type": "string", "description": "Skill name"},
-                "category": {"type": "string", "description": "Category: general, analysis, accounting, development, infrastructure, communication, research"},
-                "recipe_text": {"type": "string", "description": "Full markdown recipe/instructions for this skill"},
-                "trigger_keywords": {"type": "string", "description": "Comma-separated keywords that trigger this skill"},
+                "name": {"type": "string", "description": '技能技术名称。'},
+                "category": {"type": "string", "description": '分类标识：general、analysis、accounting、development、infrastructure、communication、research。'},
+                "recipe_text": {"type": "string", "description": '此技能的完整 Markdown 操作说明。'},
+                "trigger_keywords": {"type": "string", "description": '触发此技能的关键词，使用逗号分隔。'},
             }, "required": ["name", "recipe_text"]},
             handler=_tool_builder_create_skill,
             risk_level="destructive",
@@ -1822,11 +1772,11 @@ def builtin_tools() -> list[Tool]:
         ),
         Tool(
             name="builder_assign_agent",
-            description="Assign an agent to a quest. Params: coworker_id, agent_id, sequence (optional).",
+            description='将智能体分配给 AI 员工。参数：coworker_id、agent_id、可选 sequence。',
             parameters={"type": "object", "properties": {
                 "coworker_id": {"type": "integer"},
                 "agent_id": {"type": "integer"},
-                "sequence": {"type": "integer", "description": "Order in the agent pipeline (1-based)"},
+                "sequence": {"type": "integer", "description": '智能体在处理流程中的顺序，从 1 开始。'},
             }, "required": ["coworker_id", "agent_id"]},
             handler=_tool_builder_assign_agent,
             risk_level="destructive",
@@ -1834,11 +1784,11 @@ def builtin_tools() -> list[Tool]:
         ),
         Tool(
             name="builder_configure_init_type",
-            description="Configure an init type on a quest. Params: coworker_id, init_type (one of: web_ui,chat,channel,mail,cron,server_action,powerbox,manual,openai_api), config_json (type-specific config).",
+            description='配置 AI 员工的启动方式。参数：coworker_id、init_type（web_ui、chat、channel、mail、cron、server_action、powerbox、manual、openai_api）和 config_json（该启动方式的配置）。',
             parameters={"type": "object", "properties": {
                 "coworker_id": {"type": "integer"},
-                "init_type": {"type": "string", "description": "Init type to configure"},
-                "config": {"type": "string", "description": "JSON config: for powerbox use {\"model_ids\": [\"sale.order\",\"crm.lead\"]}, for mail use {\"alias_name\":\"support\"}"},
+                "init_type": {"type": "string", "description": '要配置的启动方式。'},
+                "config": {"type": "string", "description": 'JSON 配置：快捷操作示例 {"model_ids": ["sale.order","crm.lead"]}；邮件示例 {"alias_name":"support"}。'},
             }, "required": ["coworker_id", "init_type"]},
             handler=_tool_builder_configure_init_type,
             risk_level="destructive",
@@ -1846,7 +1796,7 @@ def builtin_tools() -> list[Tool]:
         ),
         Tool(
             name="builder_link_skill_to_agent",
-            description="Link an existing skill to an agent. Params: agent_id, skill_id.",
+            description='关联已有技能和智能体。参数：agent_id、skill_id。',
             parameters={"type": "object", "properties": {
                 "agent_id": {"type": "integer"},
                 "skill_id": {"type": "integer"},
@@ -1859,7 +1809,7 @@ def builtin_tools() -> list[Tool]:
         # ── Skill Builder tools ──
         Tool(
             name="read_skill",
-            description="Read the full recipe_text from an ai.skill record. Params: skill_id.",
+            description='读取 ai.skill 的完整 recipe_text 操作说明。参数：skill_id。',
             parameters={"type": "object", "properties": {
                 "skill_id": {"type": "integer"},
             }, "required": ["skill_id"]},
@@ -1869,7 +1819,7 @@ def builtin_tools() -> list[Tool]:
         ),
         Tool(
             name="search_github_skills",
-            description="Search GitHub for SKILL.md files matching a query. Returns repos, paths, and raw URLs.",
+            description='在 GitHub 中查找匹配 query 的 SKILL.md 文件，返回仓库、文件路径和原文网址。',
             parameters={"type": "object", "properties": {
                 "query": {"type": "string"},
             }, "required": ["query"]},
@@ -1879,7 +1829,7 @@ def builtin_tools() -> list[Tool]:
         ),
         Tool(
             name="builder_draft_skill",
-            description="Create a temporary draft skill for testing. Params: name (required), recipe_text, category, trigger_keywords.",
+            description='创建用于测试的临时技能草稿。name 必填，可填写 recipe_text、category、trigger_keywords。',
             parameters={"type": "object", "properties": {
                 "name": {"type": "string"},
                 "recipe_text": {"type": "string"},
@@ -1892,7 +1842,7 @@ def builtin_tools() -> list[Tool]:
         ),
         Tool(
             name="builder_test_skill",
-            description="Test a skill by running a prompt through a temporary quest. Params: skill_id, prompt. Returns AI response.",
+            description='使用临时 AI 员工运行 prompt 测试技能。参数：skill_id、prompt，返回 AI 回复。',
             parameters={"type": "object", "properties": {
                 "skill_id": {"type": "integer"},
                 "prompt": {"type": "string"},
@@ -1903,11 +1853,11 @@ def builtin_tools() -> list[Tool]:
         ),
                 Tool(
             name="builder_improve_skill",
-            description="Update a skill based on user feedback. Params: skill_id, feedback, field.",
+            description='根据用户反馈更新技能。参数：skill_id、feedback、field。',
             parameters={"type": "object", "properties": {
                 "skill_id": {"type": "integer"},
                 "feedback": {"type": "string"},
-                "field": {"type": "string", "description": "Field: recipe_text, trigger_keywords, description, category"},
+                "field": {"type": "string", "description": '要修改的字段：recipe_text、trigger_keywords、description、category。'},
             }, "required": ["skill_id", "feedback"]},
             handler=_tool_builder_improve_skill,
             risk_level="destructive",
@@ -1917,13 +1867,13 @@ def builtin_tools() -> list[Tool]:
         # ── Generic Odoo Model Tools (odoo-model-tools change) ──
         Tool(
             name="describe_model",
-            description="Return a model's schema: fields (type/readonly/computed), relations, available action_*/button_* methods, and capabilities (has_okf, has_graph, has_embedding). Use before searching or writing to a model.",
+            description='返回模型结构：字段类型、只读和计算属性，关系，可调用的 action_*、button_* 方法，以及 has_okf、has_graph、has_embedding 能力。查询或写入模型前使用。',
             parameters={
                 "type": "object",
                 "properties": {
                     "model": {
                         "type": "string",
-                        "description": "Odoo model technical name, e.g. crm.lead",
+                        "description": 'Odoo 模型技术名称，例如 crm.lead。',
                         "example": "res.partner",
                         "next_step": (
                             "Call describe_available with your question to "
@@ -1940,20 +1890,14 @@ def builtin_tools() -> list[Tool]:
         Tool(
             name="describe_available",
             description=(
-                "What exists? Given a question in natural language, returns "
-                "the installed models that match — with the fields that "
-                "carry content, time, customer, status and action. Use this "
-                "BEFORE guessing a model name; it is one call instead of "
-                "several ir.model searches, and it names the fields you "
-                "need to filter or sort on."),
+                '根据自然语言问题查找已安装的相关模型，并指出承载内容、时间、客户、状态和操作的字段。猜测模型名或反复搜索 ir.model 之前先调用，直接找到筛选和排序所需字段。'),
             parameters={
                 "type": "object",
                 "properties": {
                     "question": {
                         "type": "string",
                         "description": (
-                            "What you are looking for, e.g. 'mail', "
-                            "'möten', 'fakturor'."),
+                            '要查找的内容，例如邮件、会议、发票。'),
                         "example": "mail från en kund",
                     },
                 },
@@ -1966,12 +1910,12 @@ def builtin_tools() -> list[Tool]:
         ),
         Tool(
             name="odoo_search",
-            description="Search records via the ORM (search_read) with Odoo domain syntax. Returns id/name/display_name/create_date by default; pass fields to get more. Limit defaults to 20.",
+            description='使用 Odoo domain 语法通过 ORM 的 search_read 查询记录。默认返回 id、name、display_name、create_date；可通过 fields 指定其他字段。limit 默认 20。',
             parameters={
                 "type": "object",
                 "properties": {
                     "model": {"type": "string"},
-                    "domain": {"type": "array", "description": "Odoo search domain syntax, e.g. [[\x27state\x27, \x27=\x27, \x27draft\x27]]", "items": {"type": "array"}},
+                    "domain": {"type": "array", "description": 'Odoo 查询条件，例如 [["state", "=", "draft"]]。', "items": {"type": "array"}},
                     "fields": {"type": "array", "items": {"type": "string"}},
                     "limit": {"type": "integer", "default": 20},
                     "offset": {"type": "integer"},
@@ -1985,12 +1929,12 @@ def builtin_tools() -> list[Tool]:
         ),
         Tool(
             name="odoo_create",
-            description="Create a record via the ORM (business layer) — defaults/onchange are applied. Returns id and display_name. Requires approval.",
+            description='通过 ORM 业务层创建记录，应用默认值和 onchange，返回 id、display_name。需要审批。',
             parameters={
                 "type": "object",
                 "properties": {
                     "model": {"type": "string"},
-                    "values": {"type": "object", "description": "Field values"},
+                    "values": {"type": "object", "description": '字段值。'},
                 },
                 "required": ["model", "values"],
             },
@@ -2000,14 +1944,14 @@ def builtin_tools() -> list[Tool]:
         ),
         Tool(
             name="odoo_call_method",
-            description="Call a business method (action_*/button_*) on a record — e.g. action_confirm, action_post. Use instead of writing state directly. Requires approval (HITL) always.",
+            description='调用记录的 action_*、button_* 业务方法，例如 action_confirm、action_post。业务流转应调用方法而非直接写 state。始终需要人工审批（HITL）。',
             parameters={
                 "type": "object",
                 "properties": {
                     "model": {"type": "string"},
                     "id": {"type": "integer"},
-                    "method": {"type": "string", "description": "Method name, must start with action_ or button_ (or be whitelisted)"},
-                    "args": {"type": "object", "description": "Optional keyword arguments"},
+                    "method": {"type": "string", "description": '业务方法名，必须以 action_ 或 button_ 开头，或位于允许列表。'},
+                    "args": {"type": "object", "description": '可选的命名参数。'},
                 },
                 "required": ["model", "id", "method"],
             },
@@ -2017,7 +1961,7 @@ def builtin_tools() -> list[Tool]:
         ),
         Tool(
             name="odoo_write",
-            description="Update safe fields on records. Never write state/move_type/journal_id/amount_* directly — use odoo_call_method for business flows. Requires approval.",
+            description='更新记录中的安全字段。state、move_type、journal_id、amount_* 等业务字段应通过 odoo_call_method 流转，不能直接写入。需要审批。',
             parameters={
                 "type": "object",
                 "properties": {
@@ -2034,28 +1978,21 @@ def builtin_tools() -> list[Tool]:
         Tool(
             name="odoo_attach",
             description=(
-                "Move file bytes between a file path and a binary field on any "
-                "Odoo record — model-agnostic (works for ir.attachment or "
-                "any model with a binary field). Use this to fetch a "
-                "document to disk before working on it, and to store a "
-                "result back. The file content never passes through the "
-                "model context; only the path does. Requires approval when "
-                "writing to an existing record."),
+                '在文件路径与 Odoo 记录的二进制字段间传输文件，适用于 ir.attachment 及其他含二进制字段的模型。先下载到磁盘处理，再写回结果。文件正文保持在模型上下文外，仅传递路径；写入已有记录需要审批。'),
             parameters={
                 "type": "object",
                 "properties": {
                     "model": {"type": "string",
-                              "description": "Odoo model name, e.g. ir.attachment"},
+                              "description": 'Odoo 模型名称，例如 ir.attachment。'},
                     "id": {"type": "integer",
-                           "description": "Record id"},
+                           "description": '记录 ID。'},
                     "field": {"type": "string",
-                              "description": "Binary field, e.g. content / raw"},
+                              "description": '二进制字段，例如 content、raw。'},
                     "path": {"type": "string",
-                             "description": "File path (absolute, or relative "
-                                            "to the agent workdir)"},
+                             "description": '文件绝对路径，或相对于智能体工作目录的路径。'},
                     "direction": {
                         "type": "string", "enum": ["in", "out"],
-                        "description": "'out' = field → path, 'in' = path → field"},
+                        "description": 'out 表示字段写入文件，in 表示文件写回字段。'},
                 },
                 "required": ["model", "id", "field", "path", "direction"],
             },
@@ -2065,7 +2002,7 @@ def builtin_tools() -> list[Tool]:
         ),
         Tool(
             name="odoo_unlink",
-            description="Delete records. USE WITH CAUTION — destructive, always requires human approval (hard stop).",
+            description='删除记录，属于破坏性操作，始终需要人工明确批准，不能绕过审批。',
             parameters={
                 "type": "object",
                 "properties": {
@@ -2080,7 +2017,7 @@ def builtin_tools() -> list[Tool]:
         ),
         Tool(
             name="okf_search",
-            description="Search OKF knowledge concepts (ai.okf.concept) — hybrid vector + full-text search with access filtering. Use for knowledge about processes/context when OKF exists.",
+            description='搜索 ai.okf.concept 知识概念，混合向量和全文检索并按访问权限过滤。在已配置 OKF 时用于查询流程与背景知识。',
             parameters={
                 "type": "object",
                 "properties": {
@@ -2090,13 +2027,7 @@ def builtin_tools() -> list[Tool]:
                     "period": {
                         "type": "string",
                         "description": (
-                            "OPTIONAL. Only needed to override the automatic "
-                            "time window. Swedish relative expressions such as "
-                            "'i veckan', 'senaste månaden' or 'förra året'. "
-                            "Leave empty in most cases: mail already defaults "
-                            "to the last 7 days and calendar to the next 7, "
-                            "and an expression inside the query is understood "
-                            "automatically."),
+                            '可选，仅在覆盖自动时间范围时填写。支持瑞典语相对时间表达，例如 i veckan、senaste månaden、förra året。通常留空：邮件默认过去 7 天，日历默认未来 7 天，查询中的时间表达会自动识别。'),
                     },
                 },
                 "required": ["query"],
@@ -2108,27 +2039,27 @@ def builtin_tools() -> list[Tool]:
         Tool(
             name="delegate_task",
             description=(
-                "Place an assignment with a colleague (ai.coworker) in your department. Use it when the task is outside your own ability but within your department (sideways) or below you (down) — e.g. an accounting coworker asking an operations coworker to check the logs. Delegation NEVER goes upward (that is escalation) or across departments. The assignment carries your trust level and is carried out by the colleague at their own pace (heartbeat); you get the answer from there. See the colleague catalog in the system prompt for valid recipients."
+                '向同部门的 ai.coworker 同事分派任务。仅用于自己能力之外、同级或下级同事可完成的工作，例如请同部门运维同事检查日志；不能向上级委派或跨部门委派，上报属于升级流程。任务携带当前信任等级，由对方通过 Heartbeat 按自己的节奏处理并返回结果。有效收件人见系统提示中的同事目录。'
             ),
             parameters={
                 "type": "object",
                 "properties": {
                     "target_coworker": {
                         "type": "string",
-                        "description": "Mottagarens namn (se kollegakatalogen)",
+                        "description": '接收任务的同事名称，参照同事目录。',
                     },
                     "description": {
                         "type": "string",
-                        "description": "What should be done (required — an empty task rots)",
+                        "description": '明确说明要完成的工作，必填；空说明会导致任务无法执行。',
                     },
                     "name": {
                         "type": "string",
-                        "description": "Kort rubrik (default: description)",
+                        "description": '简短标题，默认使用 description。',
                     },
                     "priority": {
                         "type": "string",
                         "enum": ["0", "1", "2", "3"],
-                        "description": "0=Low, 1=Normal, 2=High, 3=Urgent",
+                        "description": '0=低，1=普通，2=高，3=紧急。',
                     },
                 },
                 "required": ["target_coworker", "description"],
@@ -2140,29 +2071,22 @@ def builtin_tools() -> list[Tool]:
         Tool(
             name="push_notification",
             description=(
-                "Send a push notification to the user who owns this "
-                "session. Use it BEFORE a long job so the user can leave "
-                "the chat, or when a background job finishes. The "
-                "recipient is always the session's user - you cannot "
-                "address anyone else. Returns whether the notification "
-                "could be queued; a user without registered devices gets "
-                "a clear negative answer, not a claim that it was sent."),
+                '向当前会话所属用户发送推送。长任务开始前通知用户可以离开聊天，或用于后台任务完成提醒。收件人固定为会话用户，不能指定其他人。返回是否成功加入队列；没有注册设备时明确返回失败，不声称已发送。'),
             parameters={
                 "type": "object",
                 "properties": {
                     "title": {
                         "type": "string",
-                        "description": "Short heading (max ~60 chars)",
+                        "description": '简短标题，最多约 60 字符。',
                     },
                     "body": {
                         "type": "string",
-                        "description": "One or two sentences of context",
+                        "description": '用一至两句话说明背景。',
                     },
                     "url": {
                         "type": "string",
                         "description": (
-                            "Path opened on click, e.g. /ai/chat. "
-                            "Defaults to /ai/chat."),
+                            '点击通知时打开的路径，例如 /ai/chat，默认也是 /ai/chat。'),
                     },
                 },
                 "required": ["title", "body"],
@@ -2174,55 +2098,34 @@ def builtin_tools() -> list[Tool]:
         Tool(
             name="mail_digest",
             description=(
-                "The user's most important mail, ranked, with a stated "
-                "reason per mail — one call instead of searching the mail "
-                "schema by hand. Importance comes from action_needed (3), "
-                "follow_up_at (2) and customer (1); interest_score is shown "
-                "but does NOT decide the order. Default window is 7 days "
-                "back - 'recent' means a week unless the user says otherwise. "
-                "'missed' lists mail needing action that is older than 7 days "
-                "but within 30; older mail is reported as a count, never "
-                "listed as if current. 'upcoming' returns calendar events in "
-                "the next 7 days: what is waiting is often what makes a mail "
-                "urgent. Use this FIRST for any question about the user's "
-                "mail or inbox."
+                '一次调用获取用户的重要邮件并按重要性排序，逐条说明理由，避免手工查找邮件模型。action_needed 权重 3、follow_up_at 权重 2、customer 权重 1；interest_score 仅展示，不参与排序。默认回看 7 天；missed 列出 7 至 30 天内仍需处理的邮件，更早邮件只统计数量；upcoming 返回未来 7 天的日历活动，以辅助判断邮件紧急性。询问邮箱或邮件时优先使用。'
             ),
             parameters={
                 "type": "object",
                 "properties": {
                     "limit": {
                         "type": "integer", "default": 5,
-                        "description": "How many mail to return (default 5).",
+                        "description": '返回邮件数量，默认 5。',
                     },
                     "since_days": {
                         "type": "integer", "default": 7,
-                        "description": ("How many days back to look. "
-                                        "Default 7 - a week is what 'recent' "
-                                        "means unless the user says "
-                                        "otherwise. 0 = no limit (use with "
-                                        "care on a large inbox)."),
+                        "description": ('回溯天数，默认 7。用户未另行指定时，“最近”表示过去一周。0 表示不限，大型邮箱请谨慎使用。'),
                     },
                     "only_action_needed": {
                         "type": "boolean", "default": False,
-                        "description": "Only mail that requires action.",
+                        "description": '仅返回需要处理的邮件。',
                     },
                     "include_missed": {
                         "type": "boolean", "default": True,
-                        "description": ("Also list mail needing action that "
-                                        "is older than 7 days."),
+                        "description": ('同时列出超过 7 天、仍需处理的邮件。'),
                     },
                     "missed_days": {
                         "type": "integer", "default": 30,
-                        "description": ("How far back 'missed' may reach. "
-                                        "Mail older than this is reported "
-                                        "as a count only, not listed."),
+                        "description": ('missed 查询的最长回溯天数；更早邮件只统计数量，不逐条列出。'),
                     },
                     "lookahead_days": {
                         "type": "integer", "default": 7,
-                        "description": ("Also return calendar events in the "
-                                        "next N days (default 7) - what is "
-                                        "waiting is often what makes a mail "
-                                        "urgent."),
+                        "description": ('同时返回未来 N 天的日历活动，默认 7 天；临近事项有助于判断邮件紧急性。'),
                     },
                 },
                 "required": [],
@@ -2274,9 +2177,8 @@ def _tool_mail_digest(env, limit=5, since_days=7, only_action_needed=False,
 
     if 'user_mail_ai.mail' not in env:
         return _json.dumps({
-            'error': 'user_mail_ai.mail is not installed — no mail to digest.',
-            'hint': 'Install user_mail_ai, or use odoo_search on mail.message '
-                    'for Odoo-internal threads (those are NOT personal mail).',
+            'error': '未安装 user_mail_ai.mail，无法生成邮件摘要。',
+            'hint': '请安装 user_mail_ai；也可使用 odoo_search 查询 mail.message 中的 Odoo 内部讨论，但它们不是个人邮箱邮件。',
         }, ensure_ascii=False)
 
     Mail = env['user_mail_ai.mail'].sudo()
@@ -2507,9 +2409,8 @@ async def _tool_graph_query(env, query: str = "") -> str:
         executor = env['graph.executor']
         if not executor.is_age_available():
             return json.dumps({
-                "error": "Odoo Mind graph is not available. "
-                         "Apache AGE extension may not be installed.",
-                "hint": "Run: salt '*' state.apply postgres.age",
+                "error": 'Odoo Mind 图谱不可用，可能尚未安装 Apache AGE 扩展。',
+                "hint": "执行：salt '*' state.apply postgres.age",
             })
         results = executor.cypher(query.strip(), read_only=True, timeout=10)
         return json.dumps(results, indent=2, default=str)
@@ -2807,7 +2708,7 @@ def _tool_propose_plan(plan: str = "") -> str:
     return json.dumps({
         "plan_received": bool(plan),
         "status": "pending_approval",
-        "note": "Waiting for user to approve this plan before proceeding.",
+        "note": '等待用户批准此计划后继续。',
     })
 
 
@@ -2837,8 +2738,8 @@ the catalog is relevant to the current task."""
 
         if skill_source is None:
             return json.dumps({
-                "error": "no skill source configured",
-                "note": "This environment doesn't support dynamic skill loading.",
+                "error": '尚未配置技能来源。',
+                "note": '当前环境不支持动态加载技能。',
             })
 
         try:
@@ -2863,17 +2764,15 @@ def skill_tools(skill_source: callable | None = None) -> list[Tool]:
         Tool(
             name="load_skill",
             description=(
-                "Load a skill's full instructions and resources by name. "
-                "Use this when a skill from the available skills catalog "
-                "is relevant to the current task. Returns the skill's "
-                "complete instructions and any resource paths."
+                "按名称加载技能的完整操作说明与资源。可用技能目录中有适合当前任务的技能时使用，"
+                "返回完整指令和相关资源路径。"
             ),
             parameters={
                 "type": "object",
                 "properties": {
                     "name": {
                         "type": "string",
-                        "description": "The skill name to load (from the catalog)",
+                        "description": "要加载的技能名称，取自技能目录。",
                     },
                 },
                 "required": ["name"],
@@ -2900,30 +2799,27 @@ def planning_tools(todo_holder: TodoList | None = None) -> list[Tool]:
         Tool(
             name="todo_write",
             description=(
-                "Replace the task list. Provide the FULL list of todos each call "
-                "— never incrementally append. Each todo is an object with: "
-                "'content' (string describing the step) and 'status' "
-                "(one of: pending, in_progress, done). Always keep exactly one "
-                "item in_progress and update statuses as you finish steps. "
-                "Start every complex task with todo_write."
+                "替换整个任务列表，每次提供完整列表，不能只追加一项。每项包含 content 步骤说明和 "
+                "status（pending、in_progress、done）。始终只保留一个 in_progress 步骤，"
+                "完成后及时更新状态。复杂任务开始时先调用 todo_write。"
             ),
             parameters={
                 "type": "object",
                 "properties": {
                     "todos": {
                         "type": "array",
-                        "description": "The full list of todos",
+                        "description": "完整任务列表。",
                         "items": {
                             "type": "object",
                             "properties": {
                                 "content": {
                                     "type": "string",
-                                    "description": "What needs to be done",
+                                    "description": "需要完成的工作。",
                                 },
                                 "status": {
                                     "type": "string",
                                     "enum": ["pending", "in_progress", "done"],
-                                    "description": "Current status of this step",
+                                    "description": "此步骤的当前状态。",
                                 },
                             },
                             "required": ["content", "status"],
@@ -2939,11 +2835,8 @@ def planning_tools(todo_holder: TodoList | None = None) -> list[Tool]:
         Tool(
             name="propose_plan",
             description=(
-                "Propose a plan for the user to review before executing. "
-                "Call this with a clear, structured description of what you "
-                "plan to do — what steps, what changes, what tools you'll use. "
-                "The user will review and approve/deny. Use this in PLAN mode "
-                "after you've finished exploring and are ready to make changes."
+                "执行前向用户提交计划，结构清楚地说明步骤、改动与所用工具，供用户批准或拒绝。"
+                "在 PLAN 模式完成调查、准备开始修改时使用。"
             ),
             parameters={
                 "type": "object",
@@ -2951,9 +2844,7 @@ def planning_tools(todo_holder: TodoList | None = None) -> list[Tool]:
                     "plan": {
                         "type": "string",
                         "description": (
-                            "A structured plan describing what you intend to do, "
-                            "including which tools you'll use and what changes "
-                            "you'll make."
+                            "结构化执行计划，包含要使用的工具和计划进行的改动。"
                         ),
                     },
                 },
@@ -3480,7 +3371,7 @@ def _tool_odoo_create(env, model='', values=None):
                 return json.dumps({
                     "error": f"Unknown res_model: {_rm}",
                     "parameter": "res_model",
-                    "expected": "ett installerat modellnamn (ir.model.model)",
+                    "expected": '已安装模型的技术名称（ir.model.model）。',
                     "actual": _rm,
                     "retryable": False,
                 })
@@ -3567,7 +3458,7 @@ def _tool_odoo_write(env, model='', ids=None, values=None):
     Model = env[model]
     vals = dict(values or {})
     if not vals:
-        return json.dumps({"error": "values is required"})
+        return json.dumps({"error": '必须提供 values 参数。'})
     try:
         fg = Model.fields_get(list(vals.keys()))
     except Exception:
@@ -3895,7 +3786,7 @@ def _tool_okf_search(env, query='', scope='company', limit=10, period=''):
                        'odoo_search on the model that holds the data.'),
         ).to_json()
     if 'ai.okf.concept' not in env:
-        return json.dumps({"error": "OKF not available"})
+        return json.dumps({"error": '知识库服务暂不可用。'})
     try:
         kw = {'query': query, 'limit': limit or 10}
         if period:
@@ -3928,7 +3819,7 @@ def _tool_okf_search(env, query='', scope='company', limit=10, period=''):
                         cw_id = sess.coworker_id.id if sess.exists() else None
                 if not cw_id:
                     return json.dumps({
-                        "error": "coworker scope requires a coworker in the context (default_coworker_id)"})
+                        "error": 'AI 员工范围需要在上下文中提供 default_coworker_id。'})
                 kw['owner_id'] = cw_id
         Concept = env['ai.okf.concept']
         results = Concept._okf_search(**kw)
@@ -4753,11 +4644,11 @@ def specialist_tools(agents) -> list[Tool]:
                     "query": {
                         "type": "string",
                         "minLength": 1,
-                        "description": "The exact task to perform."
+                        "description": "需要完成的具体任务。"
                     },
                     "context": {
                         "type": "string",
-                        "description": "Relevant background for the task (optional)."
+                        "description": "与任务相关的背景，可选。"
                     },
                 },
                 "required": ["query"],
