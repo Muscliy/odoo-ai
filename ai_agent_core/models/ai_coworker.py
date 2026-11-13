@@ -704,7 +704,7 @@ class AICoworker(models.Model):
     @api.depends('alias_name')
     def _compute_alias_display(self):
         # Företagets MAIL-domän — i första hand alias-domänen på själva
-        # mail.alias, sedan mail.catchall.domain → company.alias_domain_name
+        # mail.alias, sedan mail.catchall.domain → company.alias_domain_id.name
         # → domänen i företagets email (info@example.com → example.com).
         for rec in self:
             mail = rec.init_type_ids.filtered(
@@ -715,7 +715,7 @@ class AICoworker(models.Model):
                 (alias.alias_domain if alias else False)
                 or self.env['ir.config_parameter'].sudo().get_param(
                     'mail.catchall.domain')
-                or company.alias_domain_name
+                or company.alias_domain_id.name
                 or (company.email or '').split('@')[-1] or ''
             )
             rec.alias_display = (
