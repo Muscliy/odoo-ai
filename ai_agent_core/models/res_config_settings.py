@@ -778,8 +778,8 @@ class AiBgCronLine(models.TransientModel):
             'type': 'ir.actions.client',
             'tag': 'display_notification',
             'params': {
-                'title': 'Cron Triggered',
-                'message': f'{self.cron_name} runs now.',
+                'title': self.env._('Cron Triggered'),
+                'message': self.env._('{0} runs now.').format(self.cron_name),
                 'type': 'success',
             }
         }

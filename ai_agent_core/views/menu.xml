@@ -4,7 +4,7 @@
     <menuitem id="menu_ai_root" name="AI Orkestrering"
               sequence="90" groups="ai_agent_core.group_ai_officer"
               action="action_ai_orchestration_dashboard"
-              web_icon="ai_agent_core,static/description/icon.png"/>
+              web_icon="ai_agent_core,static/description/app_icon.svg"/>
 
     <!-- Teknisk uppsättning under Settings → Technical (admin).
          Deklareras här (före Organisation/Configuration) eftersom XML

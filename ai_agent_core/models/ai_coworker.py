@@ -809,8 +809,7 @@ class AICoworker(models.Model):
             lambda it: it.init_type == 'mail' and it.enabled)[:1]
         if not mail_it or not mail_it.alias_id:
             raise UserError(
-                'The mail trigger has no active alias. Turn on Mail under '
-                'Triggers and save.')
+                self.env._('The mail trigger has no active alias. Turn on Mail under Triggers and save.'))
         return {
             'name': self.env._('Test the mail flow'),
             'type': 'ir.actions.act_window',
@@ -9527,8 +9526,7 @@ class AICoworker(models.Model):
         description = (description or '').strip()
         if not description:
             raise ValidationError(
-                'delegate_task requires a description of the assignment — an '
-                'empty task would only rot in the recipient queue.')
+                self.env._('delegate_task requires a description of the assignment — an empty task would only rot in the recipient queue.'))
 
         # D3 + D10: riktning och fullständig organisation.
         ok, reason = self._delegation_target_allowed(target)
@@ -9993,8 +9991,7 @@ class AICoworker(models.Model):
         self.ensure_one()
         if not self.env.user.has_access('write'):
             raise ValidationError(
-                'You lack write access on AI Coworkers and cannot turn on '
-                'heartbeat. Ask an administrator to do it.')
+                self.env._('You lack write access on AI Coworkers and cannot turn on heartbeat. Ask an administrator to do it.'))
 
         if not self.active or self.status != 'active':
             raise ValidationError(
@@ -10002,9 +9999,7 @@ class AICoworker(models.Model):
 
         if not self._heartbeat_waker_registered():
             raise ValidationError(
-                'The waker (cron.task ai_heartbeat_dispatch) is not registered '
-                'or is inactive — heartbeat cannot be turned on. Contact an '
-                'administrator.')
+                self.env._('The waker (cron.task ai_heartbeat_dispatch) is not registered or is inactive — heartbeat cannot be turned on. Contact an administrator.'))
 
         # Idempotent: redan operativ → ingen ändring.
         if self.heartbeat_enabled:

@@ -5,7 +5,7 @@
         <field name="name">ai.skill.kanban</field>
         <field name="model">ai.skill</field>
         <field name="arch" type="xml">
-            <kanban class="o_kanban_mobile" color_field="color"
+            <kanban class="o_kanban_mobile o_ai_kanban" color_field="color"
                     quick_create="false" highlight_color="color">
                 <field name="color"/>
                 <field name="image_128"/>
@@ -19,8 +19,15 @@
                     <t t-name="card">
                         <div class="oe_kanban_card">
                             <aside class="col-2 me-1">
+                                <t t-if="record.image_128.raw_value">
                                 <field name="image_128" widget="image"
                                        t-att-alt="record.name.value"/>
+                                </t>
+                                <t t-else="">
+                                    <div class="d-flex align-items-center justify-content-center o_ai_placeholder">
+                                        <svg class="o_ai_placeholder_icon" viewBox="0 0 32 32" aria-hidden="true"><path d="M4 5h9a4 4 0 0 1 4 4v20a5 5 0 0 0-5-4H4zm24 0h-7a4 4 0 0 0-4 4v20a5 5 0 0 1 5-4h6z"/></svg>
+                                    </div>
+                                </t>
                             </aside>
                             <main class="ms-2">
                                 <div class="o_text_overflow d-flex align-items-center">
@@ -32,10 +39,10 @@
                                 <footer>
                                     <div class="d-flex justify-content-between align-items-center w-100">
                                         <div>
-                                            <span class="badge bg-secondary">
+                                            <span class="o_ai_metadata_badge badge bg-secondary">
                                                 <field name="category"/>
                                             </span>
-                                            <span class="badge bg-info ms-1"
+                                            <span class="o_ai_metadata_badge badge bg-info ms-1"
                                                   t-if="record.source_type.raw_value == 'github'">
                                                 <span class="fa fa-github"/> GitHub
                                             </span>
@@ -63,7 +70,7 @@
         <field name="name">ai.skill.list</field>
         <field name="model">ai.skill</field>
         <field name="arch" type="xml">
-            <list string="Skills" multi_edit="1">
+            <list string="Skills" multi_edit="1" class="o_ai_list">
                 <field name="display_name" string="技能名称"/>
                 <field name="name" string="技术标识" optional="hide"/>
                 <field name="category"/>
@@ -110,10 +117,10 @@
         <field name="name">ai.skill.form</field>
         <field name="model">ai.skill</field>
         <field name="arch" type="xml">
-            <form>
+            <form class="o_ai_form">
                 <header>
                     <button name="action_open_skill_builder" type="object"
-                            string="🤖 Build with AI" class="btn-primary"/>
+                            string="Build with AI" class="btn-primary" icon="fa-magic"/>
                 </header>
                 <sheet>
                     <div class="oe_button_box" name="button_box">
@@ -205,7 +212,7 @@
         <field name="name">ai.skill.export.wizard</field>
         <field name="model">ai.skill.export.wizard</field>
         <field name="arch" type="xml">
-            <form string="Export SKILL.md">
+            <form string="Export SKILL.md" class="o_ai_form">
                 <group>
                     <field name="skill_md" widget="text" nolabel="1"
                            colspan="2" height="400"/>
@@ -284,7 +291,7 @@
                                     <div class="d-flex flex-wrap gap-1 align-items-center">
                                         <!-- Category badge (colored) -->
                                         <span t-if="record.category.raw_value"
-                                              class="badge" t-att-class="{
+                                              class="o_ai_metadata_badge badge" t-att-class="{
                                                   'bg-success': record.category.raw_value == 'development',
                                                   'bg-info': record.category.raw_value == 'infrastructure',
                                                   'bg-warning text-dark': record.category.raw_value == 'accounting',
@@ -307,7 +314,7 @@
 
                                         <!-- Source type badge (dold om github, då GitHub-badge visas istället) -->
                                         <span t-if="record.source_type.raw_value and record.source_type.raw_value != 'github'"
-                                              class="badge" t-att-class="{
+                                              class="o_ai_metadata_badge badge" t-att-class="{
                                                   'bg-odoo': record.source_type.raw_value == 'odoo',
                                                   'bg-info': record.source_type.raw_value == 'pi'
                                               }">
@@ -316,7 +323,7 @@
 
                                         <!-- Compatibility badge -->
                                         <span t-if="record.compatibility.raw_value"
-                                              class="badge bg-light text-dark border">
+                                              class="o_ai_metadata_badge badge bg-light text-dark border">
                                             <field name="compatibility"/>
                                         </span>
                                     </div>

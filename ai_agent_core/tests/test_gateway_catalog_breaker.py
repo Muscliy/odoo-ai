@@ -104,6 +104,17 @@ class TestCatalogCacheAndBreaker(common.TransactionCase):
 
     # -- Circuit breaker (D3) --
 
+    def test_missing_optional_config_does_not_trip_breaker(self):
+        """A provider without /config must remain available for chat."""
+        self.provider.provider_type = "deepseek"
+        err = urllib.error.HTTPError(
+            "http://127.0.0.1:9/v1/config", 404, "Not Found", {}, None)
+        with mock.patch("urllib.request.urlopen", side_effect=err) as request:
+            self.assertEqual(self.provider._fetch_config_map(), {})
+            self.assertEqual(self.provider._fetch_config_map(), {})
+        request.assert_called_once()
+        self.assertFalse(self.provider._breaker_active())
+
     def test_rejection_trips_breaker(self):
         """(c) 402 kopplar bort providern."""
         err = urllib.error.HTTPError(

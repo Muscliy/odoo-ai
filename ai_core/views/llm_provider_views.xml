@@ -216,6 +216,7 @@
 
         <menuitem id="menu_ai_root"
                   name="AI Core"
+                  web_icon="ai_core,static/description/app_icon.svg"
                   sequence="90"
                   groups="base.group_user"/>
 

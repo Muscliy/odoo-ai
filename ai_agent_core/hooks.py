@@ -26,17 +26,13 @@ def pre_init_hook_check_conflicts(env):
             "ai_agent_core installation blocked by incompatible modules: %s", rows)
         from odoo.exceptions import UserError
         raise UserError(
-            "ai_agent_core cannot share a database with the legacy ai_agent or OCA ai_tool. "
-            "They define incompatible ai.tool models. Use a separate test database; "
-            "migrate existing AI data and dependent modules before replacing them."
+            env._('ai_agent_core cannot share a database with the legacy ai_agent or OCA ai_tool. They define incompatible ai.tool models. Use a separate test database; migrate existing AI data and dependent modules before replacing them.')
         )
     cr.execute("SELECT 1 FROM pg_extension WHERE extname = 'vector'")
     if not cr.fetchone():
         from odoo.exceptions import UserError
         raise UserError(
-            "ai_agent_core requires the PostgreSQL vector extension. "
-            "Ask the database administrator to enable it in the target database "
-            "before installing this module."
+            env._('ai_agent_core requires the PostgreSQL vector extension. Ask the database administrator to enable it in the target database before installing this module.')
         )
 
 

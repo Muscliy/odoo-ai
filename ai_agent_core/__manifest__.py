@@ -182,6 +182,13 @@
         'data/localize_builtin_content.xml',
     ],
     'assets': {
+        'ai_agent_core.assets_chat': [
+            ('include', 'web._assets_helpers'),
+            ('include', 'web._assets_backend_helpers'),
+            'web/static/src/scss/pre_variables.scss',
+            'web/static/lib/bootstrap/scss/_variables.scss',
+            'ai_agent_core/static/src/scss/chat.scss',
+        ],
         'web.assets_backend': [
             'ai_agent_core/static/src/js/ai_record_context_patch.js',
             'ai_agent_core/static/src/js/many2many_tags_avatar_overflow_patch.js',
@@ -193,6 +200,7 @@
             'ai_agent_core/static/src/js/okf_global_search.js',
             'ai_agent_core/static/src/xml/okf_global_search.xml',
             'ai_agent_core/static/src/css/powerbox.css',
+            'ai_agent_core/static/src/scss/backend.scss',
             'ai_agent_core/static/src/org_chart/*',
         ],
     },

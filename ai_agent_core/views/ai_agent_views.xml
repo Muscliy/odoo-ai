@@ -4,7 +4,7 @@
         <field name="name">ai.agent.kanban</field>
         <field name="model">ai.agent</field>
         <field name="arch" type="xml">
-            <kanban class="o_kanban_mobile" quick_create="false">
+            <kanban class="o_kanban_mobile o_ai_kanban" quick_create="false">
                 <field name="name"/>
                 <field name="ai_role"/>
                 <field name="description"/>
@@ -28,9 +28,9 @@
                                            options="{'preview_image': 'partner_image_128'}" class="d-block position-relative"/>
                                 </t>
                                 <t t-else="">
-                                    <div class="d-flex align-items-center justify-content-center bg-100 bg-gradient"
+                                    <div class="d-flex align-items-center justify-content-center o_ai_placeholder"
                                          style="min-height: 100px;">
-                                        <i class="fa fa-android fa-3x text-secondary opacity-50"/>
+                                        <svg class="o_ai_placeholder_icon" viewBox="0 0 32 32" aria-hidden="true"><circle cx="16" cy="8" r="4"/><circle cx="8" cy="24" r="4"/><circle cx="24" cy="24" r="4"/><path d="m14 12-4 8m8-8 4 8M12 24h8"/></svg>
                                     </div>
                                 </t>
                             </aside>
@@ -44,12 +44,12 @@
                                     </strong>
                                 </div>
                                 <div class="text-muted small mt-0" t-if="record.ai_role.raw_value">
-                                    <i class="fa fa-tag me-1"/><field name="ai_role"/>
+                                    <field name="ai_role"/>
                                 </div>
 
                                 <!-- Description (truncated to 2 lines) -->
                                 <div class="text-muted small mt-1"
-                                     style="max-height: 2.8em; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;"
+                                     style="max-height: 3.2em; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;"
                                      t-if="record.description.raw_value">
                                     <field name="description"/>
                                 </div>
@@ -59,11 +59,12 @@
                                     <div class="d-flex justify-content-between align-items-end w-100">
                                         <!-- Left: model + stats -->
                                         <div class="d-flex flex-wrap gap-1 align-items-center">
-                                            <span t-if="record.model_id.raw_value" class="badge bg-light text-dark border small">
-                                                <i class="fa fa-microchip me-1"/><field name="model_id"/>
+                                            <span t-if="record.model_id.raw_value" class="o_ai_metadata_badge o_ai_model_label badge bg-light text-dark border small"
+                                                  t-att-title="record.model_id.value">
+                                                <field name="model_id"/>
                                             </span>
-                                            <span t-if="record.coworker_count.raw_value" class="badge bg-info small">
-                                                <i class="fa fa-users me-1"/><field name="coworker_count"/>
+                                            <span t-if="record.coworker_count.raw_value" class="o_ai_metadata_badge badge bg-info small">
+                                                <svg class="o_ai_inline_icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="7" r="3"/><path d="M3 21v-3a6 6 0 0 1 12 0v3M17 4a3 3 0 0 1 0 6m1 4a5 5 0 0 1 3 5v2"/></svg><field name="coworker_count"/>
                                             </span>
                                         </div>
 
@@ -88,7 +89,7 @@
         <field name="name">ai.agent.list</field>
         <field name="model">ai.agent</field>
         <field name="arch" type="xml">
-            <list string="AI Agents">
+            <list string="AI Agents" class="o_ai_list">
                 <field name="name"/>
                 <field name="ai_role"/>
                 <field name="model_id"/>
@@ -144,7 +145,7 @@
         <field name="name">ai.agent.form</field>
         <field name="model">ai.agent</field>
         <field name="arch" type="xml">
-            <form>
+            <form class="o_ai_form">
                 <sheet>
                     <div class="oe_button_box" name="button_box">
                         <button name="action_open_session_lines" type="object"
@@ -197,7 +198,7 @@
                         </page>
                         <page string="Memories">
                             <field name="memory_ids">
-                                <list editable="bottom">
+                                <list editable="bottom" class="o_ai_list">
                                     <field name="sequence" widget="handle"/>
                                     <field name="memory_id"/>
                                 </list>

@@ -431,7 +431,7 @@ class AICoworkerSessionLine(models.Model):
         """Sessionsrader får inte raderas (append-only, granskningsbart)."""
         from odoo.exceptions import UserError
         raise UserError(
-            'Session lines are append-only and cannot be deleted.')
+            self.env._('Session lines are append-only and cannot be deleted.'))
 
     # ── Spåret på raden (session-observability) ─────────────────────────
     # Konversationen säger VAD som sades; dessa två samlingar säger VAD SOM

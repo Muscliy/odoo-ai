@@ -491,7 +491,7 @@ msgstr "<strong>已设置上方字段时</strong>，优先使用该设置。"
 #. module: ai_agent_core
 #: model_terms:ir.actions.act_window,help:ai_agent_core.action_ai_okf_dashboard
 msgid "<strong>🧠 Odoo Mind Dashboard</strong>"
-msgstr "<strong>🧠 Odoo 知识看板</strong>"
+msgstr "<strong>🧠 企业知识看板</strong>"
 
 #. module: ai_agent_core
 #: model_terms:ir.ui.view,arch_db:ai_agent_core.view_workspace_activity_suggestion_list
@@ -608,7 +608,7 @@ msgstr "AI 管理员"
 msgid ""
 "AI Administrator — sees Configuration, Settings and the Odoo Mind Dashboard;"
 " manages configuration and manual runs."
-msgstr "AI 管理员可查看配置、设置及 Odoo 知识看板，并管理配置和手动运行。"
+msgstr "AI 管理员可查看配置、设置及 企业知识看板，并管理配置和手动运行。"
 
 #. module: ai_agent_core
 #: model:ir.model,name:ai_agent_core.model_ai_agent
@@ -2542,7 +2542,7 @@ msgstr "桥接模块"
 msgid ""
 "Bridge modules register graph node definitions to map Odoo models to AGE "
 "graph labels."
-msgstr "桥接模块注册图谱节点定义，将 Odoo 模型映射到 AGE 图谱标签。"
+msgstr "桥接模块注册图谱节点定义，将 业务模型映射到 AGE 图谱标签。"
 
 #. module: ai_agent_core
 #. odoo-python
@@ -3108,8 +3108,8 @@ msgid ""
 "last is the current holder (same as pi_session_id). Handover is the only "
 "case where two Pi sessions share one Odoo session."
 msgstr ""
-"参与此 Odoo 会话的所有 Pi 会话 UUID，按时间顺序以逗号分隔，只能追加。首项为来源，末项为当前持有者（等同 "
-"pi_session_id）。仅交接场景允许两个 Pi 会话共享一个 Odoo 会话。"
+"参与此 系统 会话的所有 Pi 会话 UUID，按时间顺序以逗号分隔，只能追加。首项为来源，末项为当前持有者（等同 "
+"pi_session_id）。仅交接场景允许两个 Pi 会话共享一个 系统 会话。"
 
 #. module: ai_agent_core
 #: model:ir.model.fields,help:ai_agent_core.field_ai_coworker_agent__agent_memories_display
@@ -3822,7 +3822,7 @@ msgstr "创建人"
 #. module: ai_agent_core
 #: model:ir.model.fields.selection,name:ai_agent_core.selection__ai_skill__source_type__odoo
 msgid "Created in Odoo"
-msgstr "在 Odoo 中创建"
+msgstr "在 系统 中创建"
 
 #. module: ai_agent_core
 #: model:ir.model.fields,field_description:ai_agent_core.field_ai_access_resolver__create_date
@@ -6344,7 +6344,7 @@ msgstr "这里列出您的 AI 员工。选择一位可查看其职责和各角�
 #. module: ai_agent_core
 #: model:ir.model.fields.selection,name:ai_agent_core.selection__ai_agent__runtime__in_process
 msgid "I Odoo-processen"
-msgstr "在 Odoo 进程中"
+msgstr "在 系统 进程中"
 
 #. module: ai_agent_core
 #. odoo-python
@@ -7209,8 +7209,8 @@ msgid ""
 "coworkers on other Odoo models can get their own strategies without a change"
 " in the core."
 msgstr ""
-"查找会话 res.partner 的已注册解析策略键，例如由 project_ai 注册的 \"project_partner\"。其他 Odoo "
-"模型中的 AI 员工可注册自己的策略，无需修改核心。"
+"查找会话 res.partner 的已注册解析策略键，例如由 project_ai 注册的 \"project_partner\"。其他 业务模型中的 "
+"AI 员工可注册自己的策略，无需修改核心。"
 
 #. module: ai_agent_core
 #: model:ir.model.fields,field_description:ai_agent_core.field_ai_artifact_type__kind
@@ -7897,7 +7897,7 @@ msgstr "本轮操作针对的多选记录 ID 列表（列表视图），格式�
 #. module: ai_agent_core
 #: model:ir.model.fields,help:ai_agent_core.field_workspace_para_container__ref_ids
 msgid "Live Odoo records referenced by this container."
-msgstr "此容器引用的实时 Odoo 记录。"
+msgstr "此容器引用的实时 业务记录。"
 
 #. module: ai_agent_core
 #: model:ir.model.fields,help:ai_agent_core.field_ai_okf_concept__status
@@ -8058,7 +8058,7 @@ msgstr ""
 msgid ""
 "Mapping: graph_property_name → odoo_field_name. Example: {\"title\": "
 "\"name\", \"url\": \"website_url\"}"
-msgstr "映射：图谱属性名 → Odoo 字段名，例如 {\"title\": \"name\", \"url\": \"website_url\"}"
+msgstr "映射：图谱属性名 → 系统 字段名，例如 {\"title\": \"name\", \"url\": \"website_url\"}"
 
 #. module: ai_agent_core
 #: model:ir.model.fields.selection,name:ai_agent_core.selection__ai_coworker_session__month_label__mar
@@ -9651,17 +9651,17 @@ msgstr "10月"
 #: model_terms:ir.ui.view,arch_db:ai_agent_core.view_ai_session_tool_call_search
 #: model_terms:ir.ui.view,arch_db:ai_agent_core.view_ai_skill_search
 msgid "Odoo"
-msgstr "Odoo"
+msgstr "系统"
 
 #. module: ai_agent_core
 #: model:ir.model.fields.selection,name:ai_agent_core.selection__ai_skill__compatibility__odoo
 msgid "Odoo Agent"
-msgstr "Odoo 智能体"
+msgstr "业务智能体"
 
 #. module: ai_agent_core
 #: model:ir.model.fields.selection,name:ai_agent_core.selection__ai_coworker_session_agent_run__kind__odoo_loop
 msgid "Odoo Agent Loop"
-msgstr "Odoo 智能体循环"
+msgstr "业务智能体循环"
 
 #. module: ai_agent_core
 #: model:ir.model.fields,field_description:ai_agent_core.field_ai_coworker__okf_concept_count
@@ -9669,50 +9669,50 @@ msgstr "Odoo 智能体循环"
 #: model_terms:ir.ui.view,arch_db:ai_agent_core.ai_coworker_form
 #: model_terms:ir.ui.view,arch_db:ai_agent_core.res_config_settings_view_form
 msgid "Odoo Mind"
-msgstr "Odoo 知识"
+msgstr "企业知识"
 
 #. module: ai_agent_core
 #: model:ir.actions.act_window,name:ai_agent_core.action_ai_okf_dashboard
 #: model:ir.model,name:ai_agent_core.model_ai_okf_dashboard
 #: model:ir.ui.menu,name:ai_agent_core.menu_ai_okf_dashboard
 msgid "Odoo Mind Dashboard"
-msgstr "Odoo 知识看板"
+msgstr "企业知识看板"
 
 #. module: ai_agent_core
 #: model:ir.model,name:ai_agent_core.model_ai_okf_dashboard_line
 msgid "Odoo Mind Dashboard rad (per kategori)"
-msgstr "Odoo 知识看板行（按分类）"
+msgstr "企业知识看板行（按分类）"
 
 #. module: ai_agent_core
 #: model:ir.ui.menu,name:ai_agent_core.menu_ai_graph
 msgid "Odoo Mind Graph"
-msgstr "Odoo 知识图谱"
+msgstr "企业知识图谱"
 
 #. module: ai_agent_core
 #: model_terms:ir.ui.view,arch_db:ai_agent_core.hr_view_department_form_inherit_ai
 msgid "Odoo Mind-kontext"
-msgstr "Odoo 知识上下文"
+msgstr "企业知识上下文"
 
 #. module: ai_agent_core
 #. odoo-python
 #: code:addons/ai_agent_core/models/ai_okf_concept.py:0
 msgid "Odoo Mind: %s,%s"
-msgstr "Odoo 知识：%s,%s"
+msgstr "企业知识：%s,%s"
 
 #. module: ai_agent_core
 #: model:ir.model.fields,field_description:ai_agent_core.field_graph_node_definition__model_id
 msgid "Odoo Model"
-msgstr "Odoo 模型"
+msgstr "业务模型"
 
 #. module: ai_agent_core
 #: model:ir.model.fields.selection,name:ai_agent_core.selection__ai_access_resolver__source_kind__odoo_record
 msgid "Odoo Record"
-msgstr "Odoo 记录"
+msgstr "业务记录"
 
 #. module: ai_agent_core
 #: model:ir.model.fields,help:ai_agent_core.field_graph_node_definition__name_field
 msgid "Odoo field used as the node name (e.g. \"name\", \"title\")."
-msgstr "用作节点名称的 Odoo 字段，例如 \"name\"、\"title\"。"
+msgstr "用作节点名称的 系统 字段，例如 \"name\"、\"title\"。"
 
 #. module: ai_agent_core
 #: model:ir.model.fields,help:ai_agent_core.field_ai_tool__group_ids
@@ -9721,13 +9721,13 @@ msgid ""
 "HITL via risk_level still applies. Modules create new groups in XML as "
 "needed."
 msgstr ""
-"可使用此工具的 Odoo 权限组（res.groups）。为空时不限制，但仍执行 risk_level 对应的人工确认。模块可按需通过 XML "
+"可使用此工具的 系统 权限组（res.groups）。为空时不限制，但仍执行 risk_level 对应的人工确认。模块可按需通过 XML "
 "创建新权限组。"
 
 #. module: ai_agent_core
 #: model:ir.model.fields.selection,name:ai_agent_core.selection__ai_memory__memory_type__model
 msgid "Odoo-modell"
-msgstr "Odoo 模型"
+msgstr "业务模型"
 
 #. module: ai_agent_core
 #: model:ir.model.fields.selection,name:ai_agent_core.selection__ai_coworker_session__handover_state__offered
@@ -13544,7 +13544,7 @@ msgstr "OKF 元数据标签，仅作分类，不是关联。标签没有可索�
 #. module: ai_agent_core
 #: model:ir.model.fields,help:ai_agent_core.field_graph_node_definition__model_id
 msgid "The Odoo model this definition maps to the AGE graph."
-msgstr "此定义映射到 AGE 图谱的 Odoo 模型。"
+msgstr "此定义映射到 AGE 图谱的 业务模型。"
 
 #. module: ai_agent_core
 #: model:ir.model.fields,help:ai_agent_core.field_ai_coworker_session__pi_session_id
@@ -13553,15 +13553,14 @@ msgid ""
 "finds the same Odoo session. On handover the field switches to the NEW "
 "holder — the history is in pi_session_ids."
 msgstr ""
-"Pi 会话 UUID，与 Pi 会话一一对应。恢复同一 Pi 会话会找到同一 Odoo 会话，交接时改为新持有者，历史保存在 "
-"pi_session_ids。"
+"Pi 会话 UUID，与 Pi 会话一一对应。恢复同一 Pi 会话会找到同一 系统 会话，交接时改为新持有者，历史保存在 pi_session_ids。"
 
 #. module: ai_agent_core
 #: model:ir.model.fields,help:ai_agent_core.field_ai_coworker_session_close_event__pi_session_id
 msgid ""
 "The Pi session's UUID at closure. Stored so a closure can be correlated even"
 " if the Odoo session is later replaced."
-msgstr "结束时的 Pi 会话 UUID，以便 Odoo 会话被替换后仍可追溯。"
+msgstr "结束时的 Pi 会话 UUID，以便 系统 会话被替换后仍可追溯。"
 
 #. module: ai_agent_core
 #: model:ir.model.fields,help:ai_agent_core.field_ai_coworker_session_agent_run__cost_usd
@@ -13604,7 +13603,7 @@ msgid ""
 "The agent the run is attributed to. On the Pi path this is the coworker's "
 "first agent — a dimension for aggregation, not a claim that an agent loop "
 "ran (see `kind`)."
-msgstr "运行归属的智能体。Pi 路径中为 AI 员工的首个智能体，仅作为汇总维度，不代表 Odoo 内执行过智能体循环，参见 kind。"
+msgstr "运行归属的智能体。Pi 路径中为 AI 员工的首个智能体，仅作为汇总维度，不代表 系统 内执行过智能体循环，参见 kind。"
 
 #. module: ai_agent_core
 #: model:ir.model.fields,help:ai_agent_core.field_ai_memory_chunk__memory_id
@@ -13647,7 +13646,7 @@ msgstr "标准操作流程，智能体启用时读取。"
 #. odoo-python
 #: code:addons/ai_agent_core/models/ai_okf_upload.py:0
 msgid "The capability \"%s\" is missing in this Odoo environment — %s."
-msgstr "当前 Odoo 环境缺少能力“%s” — %s。"
+msgstr "当前 系统 环境缺少能力“%s” — %s。"
 
 #. module: ai_agent_core
 #: model:ir.model.fields,help:ai_agent_core.field_ai_tool_capability__description
@@ -15722,7 +15721,7 @@ msgstr "邮件到达别名后的处理方式。process/invoice_ai 会将邮件�
 msgid ""
 "What kind of run the row describes. `pi_generation` is pure generation: no "
 "agent loop executes in Odoo; Pi owns the tool execution."
-msgstr "本行描述的运行类型。pi_generation 为纯生成，Odoo 不执行智能体循环，工具由 Pi 执行。"
+msgstr "本行描述的运行类型。pi_generation 为纯生成，系统 不执行智能体循环，工具由 Pi 执行。"
 
 #. module: ai_agent_core
 #: model:ir.model.fields,help:ai_agent_core.field_ai_agent__identity_id
@@ -15942,7 +15941,7 @@ msgid ""
 "Where the agent loop runs. \"In the Odoo process\" occupies an Odoo worker "
 "during the run; \"External process\" starts the agent as a separate process "
 "and frees the worker immediately."
-msgstr "智能体循环的运行位置。Odoo 进程内运行会占用工作进程；外部进程模式将其独立启动，并立即释放 Odoo 工作进程。"
+msgstr "智能体循环的运行位置。系统 进程内运行会占用工作进程；外部进程模式将其独立启动，并立即释放 系统 工作进程。"
 
 #. module: ai_agent_core
 #: model:ir.model.fields,help:ai_agent_core.field_ai_memory__memory_type
@@ -16417,8 +16416,7 @@ msgid ""
 "memory = Odoo Mind dynamic memory (LLM-generated, ADD-only, owner scope); "
 "knowledge = knowledge injection (curated artifacts, stale policy from the "
 "source)"
-msgstr ""
-"memory = Odoo 知识动态记忆（模型生成、只能追加、按所有者隔离）；knowledge = 知识注入（整理后的资料，过期规则来自来源）"
+msgstr "memory = 企业知识动态记忆（模型生成、只能追加、按所有者隔离）；knowledge = 知识注入（整理后的资料，过期规则来自来源）"
 
 #. module: ai_agent_core
 #: model_terms:ir.ui.view,arch_db:ai_agent_core.ai_provider_kanban
@@ -16461,7 +16459,7 @@ msgid ""
 "via artefakttypens group_ids); attachment = ir.attachment-kontext "
 "(res_model/res_id)"
 msgstr ""
-"odoo_record = 通过 Odoo ORM 授权；external_url = 无 Odoo 记录，按资料类型 group_ids "
+"odoo_record = 通过 系统 ORM 授权；external_url = 无 业务记录，按资料类型 group_ids "
 "授权；attachment = ir.attachment 上下文（res_model/res_id）"
 
 #. module: ai_agent_core
@@ -16620,7 +16618,7 @@ msgstr "{0} 正在运行。"
 #. odoo-python
 #: code:addons/ai_agent_core/controllers/chat_i18n.py:0
 msgid "Öppna vanliga Odoo"
-msgstr "打开 Odoo 后台"
+msgstr "打开 系统 后台"
 
 #. module: ai_agent_core
 #: model_terms:ir.ui.view,arch_db:ai_agent_core.ai_coworker_form
@@ -17096,7 +17094,7 @@ msgstr "🤖 AI 员工范围"
 #. module: ai_agent_core
 #: model_terms:ir.ui.view,arch_db:ai_agent_core.view_ai_okf_dashboard_form
 msgid "🧠 Odoo Mind Dashboard"
-msgstr "🧠 Odoo 知识看板"
+msgstr "🧠 企业知识看板"
 
 #. module: ai_agent_core
 #. odoo-python
@@ -17645,7 +17643,7 @@ msgstr "已同步知识图谱"
 #: code:addons/ai_agent_core/models/ai_coworker.py:0
 #: code:addons/ai_agent_core/models/res_config_settings.py:0
 msgid "Odoo Mind Graph har synkroniserats."
-msgstr "已同步 Odoo 知识图谱。"
+msgstr "已同步 企业知识图谱。"
 
 #. module: ai_agent_core
 #. odoo-python
@@ -18694,6 +18692,56 @@ msgstr "战略索引"
 #: code:addons/ai_agent_core/models/ai_coworker.py:0
 msgid "Ledningssammanfattning"
 msgstr "经营管理摘要"
+
+#. module: ai_agent_core
+#. odoo-python
+#: code:addons/ai_agent_core/controllers/chat_i18n.py:0
+msgid "Ask a question to start chatting with your assistant."
+msgstr "输入问题，开始与助手对话。"
+
+#. module: ai_agent_core
+#. odoo-python
+#: code:addons/ai_agent_core/controllers/chat_i18n.py:0
+msgid "Enter to send"
+msgstr "按 Enter 发送"
+
+#. module: ai_agent_core
+#. odoo-python
+#: code:addons/ai_agent_core/controllers/chat_i18n.py:0
+msgid "Start a conversation"
+msgstr "开始新的对话"
+
+#. module: ai_agent_core
+#. odoo-python
+#: code:addons/ai_agent_core/controllers/chat_i18n.py:0
+msgid "Search conversations..."
+msgstr "搜索对话…"
+
+#. module: ai_agent_core
+#: model_terms:ir.ui.view,arch_db:ai_agent_core.ai_coworker_form
+#: model_terms:ir.ui.view,arch_db:ai_agent_core.view_ai_skill_form
+msgid "Build with AI"
+msgstr "使用 AI 创建"
+
+#. module: ai_agent_core
+#: model_terms:ir.ui.view,arch_db:ai_agent_core.res_config_settings_view_form
+msgid "Redigera"
+msgstr "编辑"
+
+#. module: ai_agent_core
+#: model_terms:ir.ui.view,arch_db:ai_agent_core.res_config_settings_view_form
+msgid "Create suggestions from the web"
+msgstr "根据网页生成建议"
+
+#. module: ai_agent_core
+#: model_terms:ir.ui.view,arch_db:ai_agent_core.res_config_settings_view_form
+msgid "Indexera webbplats"
+msgstr "索引网站"
+
+#. module: ai_agent_core
+#: model_terms:ir.ui.view,arch_db:ai_agent_core.res_config_settings_view_form
+msgid "Indexera personliga minnen nu"
+msgstr "立即索引个人记忆"
 
 #. module: ai_agent_core
 #. odoo-python

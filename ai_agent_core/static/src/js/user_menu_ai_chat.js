@@ -21,7 +21,7 @@ function aiChatItem() {
         id: "ai_chat",
         description: _t("AI Chat"),
         callback: () => {
-            browser.location.href = url;
+            browser.open(url, "_blank", "noopener,noreferrer");
         },
         sequence: 15,
     };

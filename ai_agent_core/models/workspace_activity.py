@@ -261,8 +261,8 @@ class WorkspaceActivitySuggestion(models.Model):
                 return {
                     'type': 'ir.actions.client',
                     'tag': 'display_notification',
-                    'params': {'title': 'Ingen lineage',
-                               'message': 'This suggestion has no linked source concepts or edges.',
+                    'params': {'title': self.env._('Ingen lineage'),
+                               'message': self.env._('This suggestion has no linked source concepts or edges.'),
                                'type': 'info', 'sticky': False},
                 }
             return {

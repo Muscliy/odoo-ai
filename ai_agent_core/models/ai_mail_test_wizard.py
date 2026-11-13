@@ -92,9 +92,9 @@ class AICoworkerMailTestWizard(models.TransientModel):
         """Ladda upp .eml → skapa session → bilagor/minnen → dispatch."""
         self.ensure_one()
         if not self.eml_file:
-            raise UserError('Upload an .eml file first.')
+            raise UserError(self.env._('Upload an .eml file first.'))
         if not self.coworker_id:
-            raise UserError('Choose an AI Coworker.')
+            raise UserError(self.env._('Choose an AI Coworker.'))
 
         data = base64.b64decode(self.eml_file)
         subject, email_from, body, attachments = self._parse_eml(data)
@@ -150,8 +150,8 @@ class AICoworkerMailTestWizard(models.TransientModel):
             'type': 'ir.actions.client',
             'tag': 'display_notification',
             'params': {
-                'title': 'Mail-test klart',
-                'message': f'Session {session.id} skapad — {att_count} bilagor.',
+                'title': self.env._('Mail-test klart'),
+                'message': self.env._('Session {0} skapad — {1} bilagor.').format(session.id, att_count),
                 'sticky': False,
                 'type': 'info',
             },

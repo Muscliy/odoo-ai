@@ -12,9 +12,9 @@
         <field name="name">ai.tool.list</field>
         <field name="model">ai.tool</field>
         <field name="arch" type="xml">
-            <list string="AI Tools">
+            <list string="AI Tools" class="o_ai_list">
                 <field name="name"/>
-                <field name="builtin_name" string="Builtin" widget="badge"
+                <field name="builtin_name" string="Builtin" widget="badge" class="o_ai_metadata_badge"
                        optional="show" decoration-info="builtin_name != False"/>
                 <field name="executor"/>
                 <field name="risk_level" widget="badge"/>
@@ -33,7 +33,7 @@
         <field name="name">ai.tool.form</field>
         <field name="model">ai.tool</field>
         <field name="arch" type="xml">
-            <form string="AI Tool">
+            <form string="AI Tool" class="o_ai_form">
                 <header>
                     <button name="action_test" type="object" string="Test Tool"
                             class="btn-primary"
@@ -137,7 +137,7 @@
         <field name="name">ai.tool.capability.list</field>
         <field name="model">ai.tool.capability</field>
         <field name="arch" type="xml">
-            <list string="Capabilities" editable="bottom">
+            <list string="Capabilities" editable="bottom" class="o_ai_list">
                 <field name="name"/>
                 <field name="member_ids" widget="many2many_tags" string="Tools"/>
                 <field name="active" invisible="1"/>
@@ -149,7 +149,7 @@
         <field name="name">ai.tool.capability.form</field>
         <field name="model">ai.tool.capability</field>
         <field name="arch" type="xml">
-            <form string="Capability">
+            <form string="Capability" class="o_ai_form">
                 <header>
                     <field name="active" widget="boolean_toggle"/>
                 </header>

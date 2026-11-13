@@ -5,7 +5,7 @@
         <field name="name">ai.provider.kanban</field>
         <field name="model">ai.provider</field>
         <field name="arch" type="xml">
-            <kanban class="o_kanban_mobile" quick_create="false">
+            <kanban class="o_kanban_mobile o_ai_kanban" quick_create="false">
                 <field name="name"/>
                 <field name="provider_type"/>
                 <field name="status"/>
@@ -42,15 +42,17 @@
         <field name="name">ai.provider.list</field>
         <field name="model">ai.provider</field>
         <field name="arch" type="xml">
-            <list string="Providers" decoration-info="status=='draft'"
-                  decoration-success="status=='confirmed'" multi_edit="1">
+            <list string="Providers" multi_edit="1" class="o_ai_list">
                 <field name="name"/>
                 <field name="provider_type"/>
                 <field name="base_url" optional="hide"/>
                 <field name="model_count"/>
                 <field name="auto_sync" optional="show"/>
                 <field name="last_checked"/>
-                <field name="status" widget="badge"/>
+                <field name="status" widget="badge"
+                       decoration-success="status=='confirmed'"
+                       decoration-warning="status=='draft'"
+                       decoration-danger="status=='error'"/>
             </list>
         </field>
     </record>
@@ -76,7 +78,7 @@
         <field name="name">ai.provider.form</field>
         <field name="model">ai.provider</field>
         <field name="arch" type="xml">
-            <form>
+            <form class="o_ai_form">
                 <header>
                     <button name="action_test_connection" type="object"
                             string="Test Connection" class="btn-secondary"/>
@@ -123,7 +125,7 @@
         <field name="name">ai.provider.wizard.form</field>
         <field name="model">ai.provider.wizard</field>
         <field name="arch" type="xml">
-            <form string="Discover Provider">
+            <form string="Discover Provider" class="o_ai_form">
                 <group>
                     <field name="name" placeholder="e.g. OpenAI, Anthropic, Bifrost"/>
                     <field name="url" placeholder="e.g. api.openai.com"/>

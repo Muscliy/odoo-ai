@@ -835,8 +835,8 @@ class AISkillExportWizard(models.TransientModel):
             'type': 'ir.actions.client',
             'tag': 'display_notification',
             'params': {
-                'title': 'Copied',
-                'message': 'SKILL.md content ready — use Ctrl+C to copy',
+                'title': self.env._('Copied'),
+                'message': self.env._('SKILL.md content ready — use Ctrl+C to copy'),
                 'type': 'success',
             }
         }

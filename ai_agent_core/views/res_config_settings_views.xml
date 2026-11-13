@@ -8,7 +8,36 @@
             <xpath expr="//form" position="inside">
                 <app data-string="AI Orkestrering" string="AI Orkestrering"
                      name="ai_agent_core" data-icon="fa-microchip"
+                     logo="/ai_agent_core/static/description/app_icon.svg"
                      groups="base.group_system">
+
+                    <block title="Getting Started">
+                        <setting id="agent_default_coworker" string="Default AI Coworker"
+                                 title="Default AI Coworker" company_dependent="1"
+                                 help="Choose the coworker used for new chats. Its linked agent determines the model.">
+                            <field name="ai_default_coworker_id"/>
+                            <details class="mt-2">
+                                <summary>How the default coworker works</summary>
+                                <p class="mb-1 mt-1">
+                                    När du använder AI utan att välja en specifik
+                                    medarbetare — via AI-ikonen, ett API-anrop eller
+                                    en schemalagd körning — används
+                                    <strong>default-medarbetaren</strong>. Den bär hela
+                                    kedjan: agent, kompetenser, verktyg och modell.
+                                </p>
+                                <ul class="mb-1 ps-3">
+                                    <li><strong>The selected coworker</strong> wins when it is set.</li>
+                                    <li><strong>If the field is empty</strong> the first coworker you have access to is used.</li>
+                                    <li><strong>Saknar en medarbetare en egen modell</strong> borrows the default coworker model instead of running without one.</li>
+                                </ul>
+                                <p class="mb-0">
+                                    Modellvalet är inte längre en egen inställning — det
+                                    följer av vilken medarbetare som är default. Vill du
+                                    byta modell byter du modell på den medarbetarens agent.
+                                </p>
+                            </details>
+                        </setting>
+                    </block>
 
                     <!-- ════════════════════════════════════════════
                          Företagsidentitet
@@ -17,22 +46,22 @@
 
                         <!-- Mission -->
                         <setting id="company_mission_setting">
-                            <div class="d-flex align-items-center mb8">
+                            <div class="d-flex flex-wrap align-items-center mb8">
                                 <span class="h5 mb0 me-2 fw-bold">Mission</span>
                                 <span class="text-muted small">— The company reason for being</span>
                             </div>
                             <div class="well well-sm mb8 p-2 bg-light rounded">
                                 <field name="company_mission" readonly="1"
                                        placeholder="No mission set yet..."
-                                       class="d-inline"/>
+                                       class="oe_inline"/>
                             </div>
-                            <div class="d-flex align-items-center gap-2">
+                            <div class="d-flex flex-wrap align-items-center gap-2">
                                 <button type="object" name="action_open_company"
-                                        string="✏️ Redigera" class="oe_link"/>
+                                        string="Redigera" class="oe_link" icon="fa-pencil"/>
                                 <span class="text-muted small mx-2">|</span>
                                 <button type="object" name="action_suggest_mission"
-                                        string="💡 Create suggestions from the web"
-                                        class="oe_link"/>
+                                        string="Create suggestions from the web"
+                                        class="oe_link" icon="fa-lightbulb-o"/>
                                 <span class="text-muted small ms-3">
                                     Senast: <field name="company_mission_last_review" class="d-inline"/>
                                 </span>
@@ -41,22 +70,22 @@
 
                         <!-- Values -->
                         <setting id="company_values_setting">
-                            <div class="d-flex align-items-center mb8">
+                            <div class="d-flex flex-wrap align-items-center mb8">
                                 <span class="h5 mb0 me-2 fw-bold">Values</span>
                                 <span class="text-muted small">— The company core values</span>
                             </div>
                             <div class="well well-sm mb8 p-2 bg-light rounded">
                                 <field name="company_values" readonly="1"
                                        placeholder="No values set yet..."
-                                       class="d-inline"/>
+                                       class="oe_inline"/>
                             </div>
-                            <div class="d-flex align-items-center gap-2">
+                            <div class="d-flex flex-wrap align-items-center gap-2">
                                 <button type="object" name="action_open_company"
-                                        string="✏️ Redigera" class="oe_link"/>
+                                        string="Redigera" class="oe_link" icon="fa-pencil"/>
                                 <span class="text-muted small mx-2">|</span>
                                 <button type="object" name="action_suggest_values"
-                                        string="💡 Create suggestions from the web"
-                                        class="oe_link"/>
+                                        string="Create suggestions from the web"
+                                        class="oe_link" icon="fa-lightbulb-o"/>
                                 <span class="text-muted small ms-3">
                                     Senast: <field name="company_values_last_review" class="d-inline"/>
                                 </span>
@@ -65,12 +94,12 @@
 
                         <!-- Webbplats -->
                         <setting id="company_website_setting"
-                                 title="Website for RAG">
-                            <div class="d-flex align-items-center gap-2 mb4">
+                                 title="Website for RAG" string="Website for RAG">
+                            <div class="d-flex flex-wrap align-items-center gap-2 mb4">
                                 <span class="fw-bold me-2">URL:</span>
                                 <field name="company_website_url_edit"
                                        placeholder="https://example.com"
-                                       class="w-50"/>
+                                       class="flex-grow-1"/>
                             </div>
                             <div class="text-muted small mb4" invisible="not company_website_rag_last_index">
                                 Senaste RAG-index:
@@ -78,9 +107,9 @@
                             </div>
                             <div class="mt8">
                                 <button type="object" name="action_index_website"
-                                        string="🔍 Indexera webbplats" class="btn-primary"/>
+                                        string="Indexera webbplats" class="btn-primary text-nowrap" icon="fa-search"/>
                                 <button type="object" name="action_index_personal_now"
-                                        string="👤 Indexera personliga minnen nu" class="btn-secondary"/>
+                                        string="Indexera personliga minnen nu" class="btn-secondary text-nowrap" icon="fa-user-o"/>
                             </div>
                         </setting>
                     </block>
@@ -88,135 +117,138 @@
                     <!-- ════════════════════════════════════════════
                          Odoo Mind
                          ════════════════════════════════════════════ -->
-                    <block title="Odoo Mind">
+                    <block title="Memory and Knowledge">
                         <setting>
                             <div class="text-muted mb8">
                                 The second brain of the company and its employees
                             </div>
                         </setting>
-                        <setting id="odoo_mind_graph_status" title="Graph Status">
-                            <div class="d-flex align-items-center gap-3">
+                        <setting id="odoo_mind_graph_status" title="Graph Status" string="Graph Status">
+                            <div class="d-flex flex-wrap align-items-center gap-2">
                                 <span>Noder i grafen:
                                     <field name="graph_node_count" class="d-inline fw-bold"/>
                                 </span>
                                 <span>Sync batch:
-                                    <field name="odoomind_sync_batch_size" class="d-inline"/>
+                                    <field name="odoomind_sync_batch_size" class="oe_inline"/>
                                 </span>
                                 <button type="object" name="action_sync_graph_now"
                                         string="Synka nu" icon="fa-refresh"
-                                        class="btn-primary"/>
+                                        class="btn-primary text-nowrap"/>
                             </div>
                         </setting>
 
                         <!-- Company Memory -->
-                        <setting id="company_memory_settings" title="Company Memory">
-                            <div class="d-flex align-items-center gap-3">
+                        <setting id="company_memory_settings" title="Company Memory" string="Company Memory">
+                            <div class="d-flex flex-wrap align-items-center gap-2">
                                 <field name="company_memory_auto_extract"/>
-                                <label for="company_memory_auto_extract" string="Auto-extraction"/>
-                                <span>Konsolidering varje</span>
-                                <field name="company_memory_consolidation_days" class="d-inline"/>
-                                <span>dag(ar)</span>
+                                <label class="flex-shrink-0" for="company_memory_auto_extract" string="Auto-extraction"/>
+                                <span class="flex-shrink-0">Konsolidering varje</span>
+                                <field name="company_memory_consolidation_days" class="oe_inline"/>
+                                <span class="flex-shrink-0">dag(ar)</span>
                             </div>
                         </setting>
 
                         <!-- Personal Memory -->
-                        <setting id="personal_memory_settings" title="Personal Memory">
-                            <div class="d-flex align-items-center gap-3">
+                        <setting id="personal_memory_settings" title="Personal Memory" string="Personal Memory">
+                            <div class="d-flex flex-wrap align-items-center gap-2">
                                 <field name="personal_memory_learning_enabled"/>
-                                <label for="personal_memory_learning_enabled" string="Learn from Discuss"/>
+                                <label class="flex-shrink-0" for="personal_memory_learning_enabled" string="Learn from Discuss"/>
                             </div>
-                            <div class="d-flex align-items-center gap-3 mt4">
+                            <div class="d-flex flex-wrap align-items-center gap-2 mt4">
                                 <field name="personal_memory_auto_nudge"/>
-                                <label for="personal_memory_auto_nudge" string="Auto-nudge"/>
-                                <span>varje</span>
-                                <field name="personal_memory_nudge_interval" class="d-inline"/>
-                                <span>dag(ar)</span>
+                                <label class="flex-shrink-0" for="personal_memory_auto_nudge" string="Auto-nudge"/>
+                                <span class="flex-shrink-0">varje</span>
+                                <field name="personal_memory_nudge_interval" class="oe_inline"/>
+                                <span class="flex-shrink-0">dag(ar)</span>
                             </div>
-                            <div class="d-flex align-items-center gap-3 mt4">
-                                <span>Konsolidering varje</span>
-                                <field name="personal_memory_consolidation_hours" class="d-inline"/>
-                                <span>timme/-ar</span>
+                            <div class="d-flex flex-wrap align-items-center gap-2 mt4">
+                                <span class="flex-shrink-0">Konsolidering varje</span>
+                                <field name="personal_memory_consolidation_hours" class="oe_inline"/>
+                                <span class="flex-shrink-0">timme/-ar</span>
                             </div>
-                            <div class="d-flex align-items-center gap-3 mt4">
-                                <span>Teckenbudget</span>
-                                <field name="personal_memory_char_budget" class="d-inline"/>
-                                <span>tecken — varna vid</span>
-                                <field name="personal_memory_warn_pct" class="d-inline"/>
-                                <span>%</span>
+                            <div class="d-flex flex-wrap align-items-center gap-2 mt4">
+                                <span class="flex-shrink-0">Teckenbudget</span>
+                                <field name="personal_memory_char_budget" class="oe_inline"/>
+                                <span class="flex-shrink-0">tecken</span>
+                            </div>
+                            <div class="d-flex flex-wrap align-items-center gap-2 mt4">
+                                <span class="flex-shrink-0">Warning threshold</span>
+                                <field name="personal_memory_warn_pct" class="oe_inline"/>
+                                <span class="flex-shrink-0">%</span>
                             </div>
                         </setting>
 
                         <!-- AI Coworker Memory -->
-                        <setting id="coworker_memory_settings" title="AI Coworker Memory">
-                            <div class="d-flex align-items-center gap-3">
+                        <setting id="coworker_memory_settings" title="AI Coworker Memory" string="AI Coworker Memory">
+                            <div class="d-flex flex-wrap align-items-center gap-2">
                                 <field name="coworker_memory_retention"/>
-                                <label for="coworker_memory_retention" string="Sessionsminne"/>
+                                <label class="flex-shrink-0" for="coworker_memory_retention" string="Sessionsminne"/>
                             </div>
-                            <div class="d-flex align-items-center gap-3 mt4">
-                                <span>Spara max</span>
-                                <field name="coworker_memory_retention_limit" class="d-inline"/>
-                                <span>sessioner</span>
+                            <div class="d-flex flex-wrap align-items-center gap-2 mt4">
+                                <span class="flex-shrink-0">Spara max</span>
+                                <field name="coworker_memory_retention_limit" class="oe_inline"/>
+                                <span class="flex-shrink-0">sessioner</span>
                             </div>
-                            <div class="d-flex align-items-center gap-3 mt4">
-                                <span>Forget after</span>
-                                <field name="coworker_memory_forget_days" class="d-inline"/>
-                                <span>dag(ar)</span>
+                            <div class="d-flex flex-wrap align-items-center gap-2 mt4">
+                                <span class="flex-shrink-0">Forget after</span>
+                                <field name="coworker_memory_forget_days" class="oe_inline"/>
+                                <span class="flex-shrink-0">dag(ar)</span>
                             </div>
                         </setting>
 
                         <setting id="okf_budget_settings" title="Embedding-budget (OKF)"
-                                 help="The cost is charged to the coworker that performs the indexing (session_line_count/started_mtokens).">
-                            <div class="d-flex align-items-center gap-3">
-                                <label for="company_memory_coworker_id" string="Company-minne indexeras av"/>
+                                 help="The cost is charged to the coworker that performs the indexing (session_line_count/started_mtokens)." string="Embedding-budget (OKF)">
+                            <div class="d-flex flex-wrap align-items-center gap-2">
+                                <label class="flex-shrink-0" for="company_memory_coworker_id" string="Company-minne indexeras av"/>
                                 <field name="company_memory_coworker_id"/>
                             </div>
-                            <div class="d-flex align-items-center gap-3 mt4">
-                                <label for="personal_memory_coworker_id" string="Personligt minne indexeras av"/>
+                            <div class="d-flex flex-wrap align-items-center gap-2 mt4">
+                                <label class="flex-shrink-0" for="personal_memory_coworker_id" string="Personligt minne indexeras av"/>
                                 <field name="personal_memory_coworker_id"/>
                             </div>
                         </setting>
 
                         <setting id="okf_dept_health_settings" title="Department Health Thresholds (OKF)"
-                                 help="The thresholds for red/yellow/green department health — not hardcoded.">
-                            <div class="d-flex align-items-center gap-3">
-                                <label for="health_heartbeat_stale_days" string="Heartbeat stale efter"/>
-                                <field name="health_heartbeat_stale_days" class="d-inline"/>
-                                <span>dagar</span>
+                                 help="The thresholds for red/yellow/green department health — not hardcoded." string="Department Health Thresholds (OKF)">
+                            <div class="d-flex flex-wrap align-items-center gap-2">
+                                <label class="flex-shrink-0" for="health_heartbeat_stale_days" string="Heartbeat stale efter"/>
+                                <field name="health_heartbeat_stale_days" class="oe_inline"/>
+                                <span class="flex-shrink-0">dagar</span>
                             </div>
-                            <div class="d-flex align-items-center gap-3 mt4">
-                                <label for="health_active_ratio" string="Green requires ≥"/>
-                                <field name="health_active_ratio" class="d-inline"/>
-                                <span>% heartbeatar</span>
+                            <div class="d-flex flex-wrap align-items-center gap-2 mt4">
+                                <label class="flex-shrink-0" for="health_active_ratio" string="Green requires ≥"/>
+                                <field name="health_active_ratio" class="oe_inline"/>
+                                <span class="flex-shrink-0">% heartbeatar</span>
                             </div>
-                            <div class="d-flex align-items-center gap-3 mt4">
-                                <label for="health_no_session_days" string="Yellow/red without a session after"/>
-                                <field name="health_no_session_days" class="d-inline"/>
-                                <span>dagar</span>
+                            <div class="d-flex flex-wrap align-items-center gap-2 mt4">
+                                <label class="flex-shrink-0" for="health_no_session_days" string="Yellow/red without a session after"/>
+                                <field name="health_no_session_days" class="oe_inline"/>
+                                <span class="flex-shrink-0">dagar</span>
                             </div>
-                            <div class="d-flex align-items-center gap-3 mt4">
-                                <label for="health_zero_tokens_days" string="Red at 0 tokens after"/>
-                                <field name="health_zero_tokens_days" class="d-inline"/>
-                                <span>dagar</span>
+                            <div class="d-flex flex-wrap align-items-center gap-2 mt4">
+                                <label class="flex-shrink-0" for="health_zero_tokens_days" string="Red at 0 tokens after"/>
+                                <field name="health_zero_tokens_days" class="oe_inline"/>
+                                <span class="flex-shrink-0">dagar</span>
                             </div>
                         </setting>
 
                         <setting id="okf_catalog_settings" title="OKF-katalog (artefakttyper, resolvers, koncept)"
-                                 help="Status of the registrable artifact layer — open the lists to manage.">
-                            <div class="d-flex align-items-center gap-3">
-                                <field name="okf_artifact_type_count" class="d-inline"/>
-                                <span>artefakttyper</span>
+                                 help="Status of the registrable artifact layer — open the lists to manage." string="OKF-katalog (artefakttyper, resolvers, koncept)">
+                            <div class="d-flex flex-wrap align-items-center gap-2">
+                                <field name="okf_artifact_type_count" class="oe_inline"/>
+                                <span class="flex-shrink-0">artefakttyper</span>
                                 <button name="action_open_artifact_types" type="object"
                                         string="Hantera" icon="fa-external-link" class="btn-link"/>
                             </div>
-                            <div class="d-flex align-items-center gap-3 mt4">
-                                <field name="okf_resolver_count" class="d-inline"/>
-                                <span>aktiva access-resolvers</span>
+                            <div class="d-flex flex-wrap align-items-center gap-2 mt4">
+                                <field name="okf_resolver_count" class="oe_inline"/>
+                                <span class="flex-shrink-0">aktiva access-resolvers</span>
                                 <button name="action_open_access_resolvers" type="object"
                                         string="Hantera" icon="fa-external-link" class="btn-link"/>
                             </div>
-                            <div class="d-flex align-items-center gap-3 mt4">
-                                <field name="okf_concept_count" class="d-inline"/>
-                                <span>koncept (ej arkiverade)</span>
+                            <div class="d-flex flex-wrap align-items-center gap-2 mt4">
+                                <field name="okf_concept_count" class="oe_inline"/>
+                                <span class="flex-shrink-0">koncept (ej arkiverade)</span>
                                 <button name="action_open_okf_concepts" type="object"
                                         string="Visa" icon="fa-external-link" class="btn-link"/>
                             </div>
@@ -226,20 +258,20 @@
                     <!-- ════════════════════════════════════════════
                          AI API
                          ════════════════════════════════════════════ -->
-                    <block title="AI API">
+                    <block title="External Services">
                         <!-- Default Provider och Default Model är borttagna.
                              Defaulten är en medarbetare (AI Agents → Default
                              AI Coworker) — inte en lös provider eller modell.
                              Se models/res_config_settings.py för motivering. -->
                         <setting id="ai_google_api_key" title="Google API Key"
-                                 help="For YouTube/Google-based AI tools. Empty → falls back to GOOGLE_API_KEY.">
+                                 help="For YouTube/Google-based AI tools. Empty → falls back to GOOGLE_API_KEY." string="Google API Key">
                             <field name="ai_google_api_key" widget="password"/>
                         </setting>
                     </block>
 
                     <block title="Pi Skills">
                         <setting id="pi_skills_path" title="Pi Skills Path"
-                                 help="Katalog med Pi-skills, en mapp per skill med SKILL.md. Standard: /usr/local/share/pi/skills.">
+                                 help="Katalog med Pi-skills, en mapp per skill med SKILL.md. Standard: /usr/local/share/pi/skills." string="Pi Skills Path">
                             <field name="pi_skills_path"
                                    placeholder="/usr/local/share/pi/skills"/>
                         </setting>
@@ -249,13 +281,13 @@
                          Tool Executor (NATS)
                          ════════════════════════════════════════════ -->
                     <block title="Tool Executor (NATS)">
-                        <setting id="nats_retries" title="Max Retries">
+                        <setting id="nats_retries" title="Max Retries" string="Max Retries">
                             <field name="pi_nats_max_retries"/>
                         </setting>
-                        <setting id="nats_restarts" title="Max Restarts">
+                        <setting id="nats_restarts" title="Max Restarts" string="Max Restarts">
                             <field name="pi_nats_max_restarts"/>
                         </setting>
-                        <setting id="nats_restart_window" title="Restart Window (minutes)">
+                        <setting id="nats_restart_window" title="Restart Window (minutes)" string="Restart Window (minutes)">
                             <field name="pi_nats_restart_window"/>
                         </setting>
                     </block>
@@ -263,48 +295,20 @@
                     <!-- ════════════════════════════════════════════
                          AI Agents
                          ════════════════════════════════════════════ -->
-                    <block title="AI Agents">
-                        <setting id="agent_max_rounds" title="Max Loop Turns">
+                    <block title="Agent Runtime">
+                        <setting id="agent_max_rounds" title="Max Loop Turns" string="Max Loop Turns">
                             <field name="ai_agent_max_rounds"/>
                         </setting>
-                        <setting id="agent_tool_timeout" title="Tool Timeout (s)">
+                        <setting id="agent_tool_timeout" title="Tool Timeout (s)" string="Tool Timeout (s)">
                             <field name="ai_agent_tool_timeout"/>
                         </setting>
-                        <setting id="agent_default_identity" title="Default Identity">
+                        <setting id="agent_default_identity" title="Default Identity" string="Default Identity">
                             <field name="ai_agent_default_identity_id"/>
                         </setting>
-                        <setting id="agent_default_coworker" title="Default AI Coworker"
-                                 help="The AI Coworker preselected in the web chat and used by onboarding when no other is chosen. Per company.">
-                            <!-- Förklaring i klartext (design D7). Syns utan
-                                 hover med flit: mekanismen är osynlig tills
-                                 den går fel, och den som felsöker läser inte
-                                 tooltips. Inga interna parameternamn — de
-                                 hör i Technical-menyn. -->
-                            <div class="well well-sm mb8 p-2 bg-light rounded">
-                                <strong>How the default coworker works</strong>
-                                <p class="mb-1 mt-1">
-                                    När du använder AI utan att välja en specifik
-                                    medarbetare — via AI-ikonen, ett API-anrop eller
-                                    en schemalagd körning — används
-                                    <strong>default-medarbetaren</strong>. Den bär hela
-                                    kedjan: agent, kompetenser, verktyg och modell.
-                                </p>
-                                <ul class="mb-1 ps-3">
-                                    <li><strong>The field above</strong> wins when it is set.</li>
-                                    <li><strong>If the field is empty</strong> the first coworker you have access to is used.</li>
-                                    <li><strong>Saknar en medarbetare en egen modell</strong> borrows the default coworker model instead of running without one.</li>
-                                </ul>
-                                <p class="mb-0">
-                                    Modellvalet är inte längre en egen inställning — det
-                                    följer av vilken medarbetare som är default. Vill du
-                                    byta modell byter du modell på den medarbetarens agent.
-                                </p>
-                            </div>
-                            <field name="ai_default_coworker_id"/>
-                        </setting>
+
                         <setting id="agent_default_tools"
                                  title="Default Tools (nya agenter)"
-                                 help="Which tools new agents get when created without explicit tools. Builtin tools (describe_model, odoo_search and others) appear here after a module update.">
+                                 help="Which tools new agents get when created without explicit tools. Builtin tools (describe_model, odoo_search and others) appear here after a module update." string="Default Tools (nya agenter)">
                             <field name="ai_default_tool_ids" widget="many2many_tags"
                                    options="{'no_create_edit': True}"/>
                         </setting>
@@ -314,7 +318,7 @@
                          Background Jobs
                          ════════════════════════════════════════════ -->
                     <!-- ════════════════════════════════ Heartbeat Settings ════════════════════════════════ -->
-                    <block title="Heartbeat">
+                    <block title="Scheduled Work">
                         <setting id="heartbeat_enabled" help="Turn heartbeat on/off for all coworkers">
                             <field name="heartbeat_enabled"/>
                         </setting>
@@ -332,7 +336,7 @@
                     <block title="Background Jobs">
                         <setting id="bg_jobs_display" string="Konfigurera indexerare">
                             <field name="bg_cron_line_ids" widget="one2many">
-                                <form>
+                                <form class="o_ai_form">
                                     <group>
                                         <field name="cron_id" readonly="1" force_save="1"/>
                                         <field name="cron_name" readonly="1"/>
@@ -346,7 +350,7 @@
                                                 string="Run now" icon="fa-play"/>
                                     </group>
                                 </form>
-                                <list>
+                                <list class="o_ai_list">
                                     <field name="cron_name"/>
                                     <field name="cron_active"/>
                                     <field name="cron_interval_number"/>

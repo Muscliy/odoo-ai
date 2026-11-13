@@ -1,0 +1,74 @@
+// Presentation only: retain native layouts and reserve semantic colors for states.
+.o_ai_kanban, .o_ai_form, .o_ai_list {
+    .badge {
+        padding: 4px 8px;
+        border: 1px solid transparent;
+        border-radius: 6px;
+        font-size: 12px;
+        font-weight: 500;
+        line-height: 1.3;
+    }
+
+    @each $state, $color in (success: $o-success, warning: $o-warning, danger: $o-danger, info: $o-info) {
+        .badge.text-bg-#{$state}, .o_ai_run_status.bg-#{$state} {
+            color: darken($color, 18%) !important;
+            background: rgba($color, .09) !important;
+            border-color: rgba($color, .18);
+        }
+    }
+
+    .o_ai_metadata_badge, .o_ai_metadata_badge .badge {
+        color: rgba($o-main-color-muted, 1) !important;
+        background: $o-gray-100 !important;
+        border-color: $border-color !important;
+        outline: none !important;
+
+        &:focus-visible, &:focus-within {
+            outline: 2px solid $o-brand-primary !important;
+            outline-offset: 2px;
+        }
+
+        .o_field_widget { color: inherit; }
+        .fa { color: inherit; margin-right: 4px; }
+    }
+}
+
+.o_ai_kanban {
+    .o_kanban_record {
+        border-color: $border-color;
+        border-radius: 10px;
+        box-shadow: none;
+    }
+
+    .oe_kanban_card.d-flex.flex-row { flex: 1; }
+    .oe_kanban_card > main { min-width: 0; flex: 1; }
+    .oe_kanban_card strong { font-size: 15px !important; line-height: 1.5; }
+    .oe_kanban_card .text-muted { font-size: 13px; line-height: 1.6; }
+    .o_ai_placeholder { background: $o-gray-100; }
+    .o_ai_inline_icon {
+        width: 14px; height: 14px; margin-right: 4px; vertical-align: -2px;
+        fill: none; stroke: currentColor; stroke-width: 1.7;
+        stroke-linecap: round; stroke-linejoin: round;
+    }
+
+    .o_ai_placeholder_icon {
+        width: 32px;
+        height: 32px;
+        fill: none;
+        stroke: rgba($o-main-color-muted, .7);
+        stroke-width: 1.6;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+    }
+
+    footer {
+        .d-flex { gap: 6px; }
+        .d-flex.flex-wrap { min-width: 0; }
+        .badge { max-width: 100%; }
+        .o_ai_model_label {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+    }
+}

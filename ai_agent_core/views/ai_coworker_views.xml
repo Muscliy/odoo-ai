@@ -5,7 +5,7 @@
         <field name="name">ai.coworker.kanban</field>
         <field name="model">ai.coworker</field>
         <field name="arch" type="xml">
-            <kanban class="o_kanban_mobile" default_group_by="status" quick_create="false">
+            <kanban class="o_kanban_mobile o_ai_kanban" default_group_by="status" quick_create="false">
                 <field name="name"/>
                 <field name="sub_description"/>
                 <field name="status"/>
@@ -31,9 +31,9 @@
                                            options="{'preview_image': 'partner_image_128'}" class="d-block position-relative"/>
                                 </t>
                                 <t t-else="">
-                                    <div class="d-flex align-items-center justify-content-center bg-100 bg-gradient"
+                                    <div class="d-flex align-items-center justify-content-center o_ai_placeholder"
                                          style="min-height: 100px;">
-                                        <i class="fa fa-cubes fa-3x text-secondary opacity-50"/>
+                                        <svg class="o_ai_placeholder_icon" viewBox="0 0 32 32" aria-hidden="true"><circle cx="12" cy="10" r="5"/><path d="M3 28v-4a9 9 0 0 1 18 0v4M23 5a5 5 0 0 1 0 10m2 4a8 8 0 0 1 4 7v2"/></svg>
                                     </div>
                                 </t>
                             </aside>
@@ -49,7 +49,7 @@
 
                                 <!-- Sub description (truncated) -->
                                 <div class="text-muted small mt-0"
-                                     style="max-height: 2.8em; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;"
+                                     style="max-height: 3.2em; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;"
                                      t-if="record.sub_description.raw_value">
                                     <field name="sub_description"/>
                                 </div>
@@ -59,7 +59,7 @@
                                     <div class="d-flex justify-content-between align-items-end w-100">
                                         <!-- Left: badges -->
                                         <div class="d-flex flex-wrap gap-1 align-items-center">
-                                            <span t-if="record.orchestration_mode.raw_value" class="badge"
+                                            <span t-if="record.orchestration_mode.raw_value" class="o_ai_metadata_badge badge"
                                                   t-att-class="{
                                                       'bg-primary': record.orchestration_mode.raw_value == 'single',
                                                       'bg-purple': record.orchestration_mode.raw_value == 'supervisor',
@@ -70,11 +70,11 @@
                                                   }">
                                                 <field name="orchestration_mode"/>
                                             </span>
-                                            <span t-if="record.init_type.raw_value" class="badge bg-light text-dark border small">
+                                            <span t-if="record.init_type.raw_value" class="o_ai_metadata_badge badge bg-light text-dark border small">
                                                 <field name="init_type"/>
                                             </span>
                                             <span t-if="record.last_status.raw_value"
-                                                  class="badge" t-att-class="{
+                                                  class="o_ai_run_status badge" t-att-class="{
                                                       'bg-success': record.last_status.raw_value == 'ok',
                                                       'bg-danger': record.last_status.raw_value == 'error',
                                                       'bg-warning text-dark': record.last_status.raw_value == 'skipped'
@@ -110,7 +110,7 @@
         <field name="name">ai.coworker.list</field>
         <field name="model">ai.coworker</field>
         <field name="arch" type="xml">
-            <list string="AI Medarbetare">
+            <list string="AI Medarbetare" class="o_ai_list">
                 <field name="name"/>
                 <field name="init_type"/>
                 <field name="status" widget="badge"
@@ -150,9 +150,9 @@
         <field name="name">ai.coworker.form</field>
         <field name="model">ai.coworker</field>
         <field name="arch" type="xml">
-            <form string="AI Medarbetare">
+            <form string="AI Medarbetare" class="o_ai_form">
                 <header>
-                    <button name="action_open_builder" type="object" string="🤖 Build with AI" class="btn-primary"/>
+                    <button name="action_open_builder" type="object" string="Build with AI" class="btn-primary" icon="fa-magic"/>
                     <field name="status" widget="statusbar" statusbar_visible="draft,active,done"/>
                 </header>
                 <sheet string="AI Medarbetare">
@@ -439,7 +439,7 @@
 
                         <page string="Agenter" name="agents">
                             <field name="agent_ids">
-                                <list editable="bottom">
+                                <list editable="bottom" class="o_ai_list">
                                     <field name="sequence" widget="handle"/>
                                     <field name="agent_id"/>
                                     <field name="agent_model_id"/>
@@ -468,7 +468,7 @@
 <!--
                         <page string="Sessions" name="sessions">
                             <field name="session_ids">
-                                <list>
+                                <list class="o_ai_list">
                                     <field name="name"/>
                                     <field name="status"/>
                                     <field name="token_input" sum="1"/>

@@ -196,10 +196,10 @@ class AIAgent(models.Model):
 
         if not user:
             raise ValidationError(
-                'An external run requires a resolved user — the system user is never allowed (D5).')
+                self.env._('An external run requires a resolved user — the system user is never allowed (D5).'))
         if user.id == self.env.ref('base.user_root').id:
             raise ValidationError(
-                'An external run may not run as the system user (D5).')
+                self.env._('An external run may not run as the system user (D5).'))
 
         base_url = self.env['ir.config_parameter'].sudo().get_param(
             'web.base.url', 'http://localhost:8069')

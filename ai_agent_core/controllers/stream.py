@@ -1675,7 +1675,13 @@ class AIStreamController(http.Controller):
                     f'</div>'
                 )
 
-        html = (_CHAT_HTML_v3
+        from .chat_i18n import localize_chat_template
+        chat_css = request.env['ir.qweb']._get_asset_links(
+            'ai_agent_core.assets_chat', css=True, js=False)
+        html = (localize_chat_template(_CHAT_HTML_v3, request.env)
+                .replace('<!-- CHAT_STYLES -->', ''.join(
+                    f'<link rel="stylesheet" href="{escape(url, quote=True)}"/>'
+                    for url in chat_css))
                 .replace('<!-- DEFAULT_OPTION -->', default_option)
                 .replace('<!-- QUEST_OPTIONS -->', quest_items)
                 .replace('<!-- WELCOME_TITLE -->', default_qname)

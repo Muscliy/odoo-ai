@@ -102,7 +102,7 @@ class BaseLLMProvider(models.Model):
         impl = PROVIDER_REGISTRY.get(self.provider_type)
         if not impl:
             raise UserError(
-                f"No implementation registered for provider type '{self.provider_type}'"
+                self.env._("No implementation registered for provider type '{0}'").format(self.provider_type)
             )
         return impl
 
@@ -150,8 +150,8 @@ class BaseLLMProvider(models.Model):
                 "type": "ir.actions.client",
                 "tag": "display_notification",
                 "params": {
-                    "title": "Health Check",
-                    "message": f"{self.name}: Connection OK",
+                    "title": self.env._('Health Check'),
+                    "message": self.env._('{0}: Connection OK').format(self.name),
                     "type": "success",
                 },
             }
@@ -161,7 +161,7 @@ class BaseLLMProvider(models.Model):
                 "last_health_check": fields.Datetime.now(),
                 "health_check_message": str(e)[:500],
             })
-            raise UserError(f"Health check failed for {self.name}: {e}")
+            raise UserError(self.env._('Health check failed for {0}: {1}').format(self.name, e))
 
     def action_discover_models(self):
         self.ensure_one()

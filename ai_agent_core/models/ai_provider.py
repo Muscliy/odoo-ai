@@ -51,7 +51,7 @@ class AIProvider(models.Model):
         for rec in self:
             if rec.api_key and any(c in rec.api_key for c in '\r\n'):
                 raise ValidationError(
-                    'The API key must not contain line breaks — paste only the key itself.'
+                    self.env._('The API key must not contain line breaks — paste only the key itself.')
                 )
 
 
@@ -503,7 +503,9 @@ class AIProvider(models.Model):
                                         context=ctx) as resp:
                 data = json.loads(resp.read().decode())
         except urllib.error.HTTPError as e:
-            if e.code in (402, 403, 404):
+            # /config is optional; a missing endpoint does not reject /models
+            # or chat requests (direct providers such as DeepSeek return 404).
+            if e.code in (402, 403):
                 reason = self._rejection_reason(e)
                 self._breaker_trip(e.code, reason)
                 _logger.warning(

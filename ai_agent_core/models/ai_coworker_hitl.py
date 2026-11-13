@@ -81,7 +81,7 @@ class AICoworkerHITL(models.Model):
         if not (user.has_group('base.group_system')
                 or user.id == self.user_id.id):
             raise AccessError(
-                'Only the approver or an admin can decide this HITL request.')
+                self.env._('Only the approver or an admin can decide this HITL request.'))
 
     # ── Livscykel ────────────────────────────────────────────────────
 
@@ -341,7 +341,7 @@ class AICoworkerHITLMixin(models.Model):
             sess_id = self.env.context.get('ai_lineage_session_id') or 0
         if not sess_id:
             raise ValidationError(
-                'A HITL request cannot be created without a session. The run has no ai.coworker.session in context (expected _ai_context_id or ai_lineage_session_id). This is a bug in the caller — not a state to guess around.')
+                self.env._('A HITL request cannot be created without a session. The run has no ai.coworker.session in context (expected _ai_context_id or ai_lineage_session_id). This is a bug in the caller — not a state to guess around.'))
         sess = Sess.browse(int(sess_id)).exists()
         if not sess:
             raise ValidationError(

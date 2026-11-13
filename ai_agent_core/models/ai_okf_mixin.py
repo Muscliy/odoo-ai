@@ -1466,12 +1466,12 @@ class AIOkfMixin(models.AbstractModel):
             'tag': 'display_notification',
             'params': {
                 'type': 'success' if concept else 'warning',
-                'title': 'OKF',
+                'title': self.env._('OKF'),
                 'message': (
-                    'Concept saved.'
+                    self.env._('Concept saved.')
                     if concept else
-                    'No concept was created — the text is empty or the '
-                    'record was removed. See the log.'),
+                    self.env._('No concept was created — the text is empty or the '
+                    'record was removed. See the log.')),
                 'sticky': False,
             },
         }
