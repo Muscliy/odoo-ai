@@ -3376,7 +3376,7 @@ def _persist_stream_answer(env, session_id, answer, reasoning='',
             # det är modellens tanke, och den hör i `reasoning`-fältet.
             # Nu skrivs markören, som är avsiktligt synlig: motsatsen (tyst
             # bortfall) är själva buggen.
-            content = _NO_ANSWER_MARKER
+            content = env._('(inget svar)')
         seq = _next_session_sequence(env, session.id)
         # ── Boka turens VERKLIGA usage på raden (3.2) ──────────────────
         # Tidigare skapades raden utan tokenfält → token_input/output = 0
