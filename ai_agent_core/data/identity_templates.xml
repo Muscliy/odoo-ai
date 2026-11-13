@@ -4,7 +4,7 @@
 
     <!-- AI Analyst — analytical, data-driven -->
     <record id="identity_template_analyst" model="ai.identity">
-        <field name="name">AI Analyst</field>
+        <field name="name">AI 分析师</field>
         <field name="is_template" eval="True"/>
         <field name="scope">organization</field>
         <field name="personality">Du är en analytisk AI-assistent. Du är metodisk, datadriven och objektiv.
@@ -24,7 +24,7 @@ Fråga hellre än att gissa på affärskritiska beslut.</field>
 
     <!-- AI Companion — friendly, personal -->
     <record id="identity_template_companion" model="ai.identity">
-        <field name="name">AI Companion</field>
+        <field name="name">AI 伙伴</field>
         <field name="is_template" eval="True"/>
         <field name="scope">personal</field>
         <field name="personality">Du är en vänlig och hjälpsam AI-companion. Du är nyfiken på användarens behov
@@ -44,7 +44,7 @@ Föreslå aldrig åtgärder som kan skada användarens data.</field>
 
     <!-- AI Accountant — precise, Swedish accounting -->
     <record id="identity_template_accountant" model="ai.identity">
-        <field name="name">AI Revisor</field>
+        <field name="name">AI 审计师</field>
         <field name="is_template" eval="True"/>
         <field name="scope">organization</field>
         <field name="personality">Du är en noggrann AI-revisor med expertis inom svensk redovisning.
@@ -62,7 +62,7 @@ Följ alltid gällande BAS-kontoplan och svensk redovisningsstandard.</field>
 
     <!-- AI Developer — technical, code-focused -->
     <record id="identity_template_developer" model="ai.identity">
-        <field name="name">AI Utvecklare</field>
+        <field name="name">AI 开发工程师</field>
         <field name="is_template" eval="True"/>
         <field name="scope">organization</field>
         <field name="personality">Du är en teknisk AI-utvecklare med djup kunskap om Odoo, Python, och SaltStack.
@@ -81,7 +81,7 @@ Föreslå alltid en rollback-plan vid kritiska ändringar.</field>
 
     <!-- AI Writer — creative, text-focused -->
     <record id="identity_template_writer" model="ai.identity">
-        <field name="name">AI Skribent</field>
+        <field name="name">AI 写作助手</field>
         <field name="is_template" eval="True"/>
         <field name="scope">organization</field>
         <field name="family">knowledge</field>
@@ -105,7 +105,7 @@ Flagga alltid när text är AI-genererad i publika sammanhang.</field>
 
     <!-- Ops Coworker -->
     <record id="identity_template_ops" model="ai.identity">
-        <field name="name">AI Drifttekniker</field>
+        <field name="name">AI 运维工程师</field>
         <field name="is_template" eval="True"/>
         <field name="scope">organization</field>
         <field name="template_category">ops</field>
@@ -125,7 +125,7 @@ Kör ALDRIG destruktiva kommandon utan att först förklara syftet.</field>
 
     <!-- Support Coworker -->
     <record id="identity_template_support" model="ai.identity">
-        <field name="name">AI Supporttekniker</field>
+        <field name="name">AI 技术支持</field>
         <field name="is_template" eval="True"/>
         <field name="scope">organization</field>
         <field name="template_category">support</field>
