@@ -3,6 +3,7 @@
 
 import logging
 from odoo import models, fields, api
+from .builtin_localization import find_builtin
 
 _logger = logging.getLogger(__name__)
 
@@ -149,7 +150,7 @@ class AISkill(models.Model):
     def action_open_session_lines(self):
         """Open coworker session lines produced by this skill (stat button)."""
         return {
-            'name': 'Agenter', 'type': 'ir.actions.act_window',
+            'name': self.env._('Agenter'), 'type': 'ir.actions.act_window',
             'res_model': 'ai.coworker.session.line', 'view_mode': 'list,form',
             'views': [[False, 'list'], [False, 'form']],
             'domain': [('skill_id', '=', self.id)],
@@ -458,8 +459,7 @@ class AISkill(models.Model):
     def action_open_skill_builder(self):
         """Open Skill Builder chat for this skill."""
         self.ensure_one()
-        builder = self.env['ai.coworker'].search(
-            [('name', '=', 'Skill Builder')], limit=1)
+        builder = find_builtin(self.env, 'Skill Builder')
         if not builder:
             return {'type': 'ir.actions.act_url', 'url': '/ai/chat', 'target': 'new'}
         url = f'/ai/chat?coworker_id={builder.id}'

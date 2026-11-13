@@ -206,7 +206,7 @@ class Department(models.Model):
             coworkers = dept.ai_coworker_ids
             if not coworkers:
                 dept.health = 'red'
-                dept.health_reason = 'Inga AI-medarbetare i avdelningen.'
+                dept.health_reason = self.env._('Inga AI-medarbetare i avdelningen.')
                 continue
 
             total = len(coworkers)
@@ -228,16 +228,16 @@ class Department(models.Model):
             reasons = []
             if heartbeating / total < active_ratio:
                 reasons.append(
-                    'Endast %d/%d heartbeatar (krav ≥ %d%%)'
+                    self.env._('Endast %d/%d heartbeatar (krav ≥ %d%%)')
                     % (heartbeating, total, int(active_ratio * 100)))
             if active_count == 0:
-                reasons.append('Inga coworkers med status=active')
+                reasons.append(self.env._('Inga coworkers med status=active'))
             if with_session == 0:
-                reasons.append('No session in %d days' % no_session_days)
+                reasons.append(self.env._('No session in %d days') % no_session_days)
             if with_tokens == 0:
-                reasons.append('0 tokens in %d days' % zero_tokens_days)
+                reasons.append(self.env._('0 tokens in %d days') % zero_tokens_days)
             if not has_objective:
-                reasons.append('No department goals (OKR)')
+                reasons.append(self.env._('No department goals (OKR)'))
 
             if heartbeating / total >= active_ratio and active_count > 0 \
                     and with_session > 0 and with_tokens > 0 and has_objective:
@@ -246,7 +246,7 @@ class Department(models.Model):
                 dept.health = 'red'
             else:
                 dept.health = 'yellow'
-            dept.health_reason = '; '.join(reasons) if reasons else 'Allt ser bra ut.'
+            dept.health_reason = '; '.join(reasons) if reasons else self.env._('Allt ser bra ut.')
 
     def _okf_context_domain(self):
         """Domän för avdelningens kontexturval (task 7.5).

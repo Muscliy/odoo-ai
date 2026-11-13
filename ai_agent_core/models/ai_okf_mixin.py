@@ -931,12 +931,12 @@ class AIOkfMixin(models.AbstractModel):
             return None
         session = self.env['ai.coworker.session'].sudo().search([
             ('coworker_id', '=', coworker.id),
-            ('name', '=', 'OKF-sammanfattning'),
+            ('name', '=', self.env._('OKF-sammanfattning')),
         ], limit=1)
         if not session:
             session = self.env['ai.coworker.session'].sudo().create({
                 'coworker_id': coworker.id,
-                'name': 'OKF-sammanfattning',
+                'name': self.env._('OKF-sammanfattning'),
             })
         return session
 
@@ -1930,7 +1930,7 @@ class AIOkfMixin(models.AbstractModel):
         ctx['okf_debug_view'] = True
         return {
             'type': 'ir.actions.act_window',
-            'name': 'OKF: %s,%s' % (model, res_id),
+            'name': self.env._('OKF: %s,%s') % (model, res_id),
             'res_model': model,
             'res_id': res_id,
             'view_mode': 'form',
@@ -1949,7 +1949,7 @@ class AIOkfMixin(models.AbstractModel):
         ], order='id desc')
         return {
             'type': 'ir.actions.act_window',
-            'name': 'OKF-koncept: %s' % source_ref,
+            'name': self.env._('OKF-koncept: %s') % source_ref,
             'res_model': 'ai.okf.concept',
             'view_mode': 'list,form',
             'domain': [('id', 'in', concepts.ids)],

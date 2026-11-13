@@ -68,11 +68,12 @@ class AIKaizenReport(models.Model):
              '{department: {nudge_type: {delivered, opened, converted, trend}}}')
 
     @api.depends('coworker_id.name', 'week_start')
+    @api.depends_context('lang')
     def _compute_display_name(self):
         for r in self:
             quest_name = r.coworker_id.name if r.coworker_id else '?'
             week = r.week_start.isoformat() if r.week_start else '?'
-            r.display_name = f'Kaizen: {quest_name} — vecka {week}'
+            r.display_name = self.env._('Kaizen: %(name)s — week %(week)s', name=quest_name, week=week)
 
     def generate_weekly_report(self, quest=None):
         """Cron: generate kaizen reports for all (or one) active quests."""
@@ -595,7 +596,7 @@ class AIKaizenFinding(models.Model):
         """Apply approved skill suggestion to the orchestration skill (HITL)."""
         self.ensure_one()
         if self.status != 'approved':
-            raise ValueError('Only approved findings can be applied to skills.')
+            raise ValueError(self.env._('Only approved findings can be applied to skills.'))
         if not self.skill_suggestion:
             return False
         import json

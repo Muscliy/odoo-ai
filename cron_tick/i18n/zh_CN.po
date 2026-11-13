@@ -1,0 +1,984 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* cron_tick
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-13 05:45+0000\n"
+"PO-Revision-Date: 2026-11-13 06:00+0000\n"
+"Last-Translator: Yabo\n"
+"Language-Team: Chinese (Simplified)\n"
+"Language: zh_CN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#. module: cron_tick
+#. odoo-python
+#: code:addons/cron_tick/models/cron_task.py:0
+msgid "%s ran in %s ms."
+msgstr "%s 运行耗时 %s 毫秒。"
+
+#. module: cron_tick
+#: model:ir.model.fields,field_description:cron_tick.field_cron_task__message_needaction
+msgid "Action Needed"
+msgstr "待处理"
+
+#. module: cron_tick
+#: model:ir.model.fields,field_description:cron_tick.field_cron_task__active
+#: model_terms:ir.ui.view,arch_db:cron_tick.view_cron_task_search
+msgid "Active"
+msgstr "有效"
+
+#. module: cron_tick
+#: model:ir.model.fields,field_description:cron_tick.field_cron_task__activity_ids
+msgid "Activities"
+msgstr "活动"
+
+#. module: cron_tick
+#: model:ir.model.fields,field_description:cron_tick.field_cron_task__activity_exception_decoration
+msgid "Activity Exception Decoration"
+msgstr "活动异常标示"
+
+#. module: cron_tick
+#: model:ir.model.fields,field_description:cron_tick.field_cron_task__activity_state
+msgid "Activity State"
+msgstr "活动状态"
+
+#. module: cron_tick
+#: model:ir.model.fields,field_description:cron_tick.field_cron_task__activity_type_icon
+msgid "Activity Type Icon"
+msgstr "活动类型图标"
+
+#. module: cron_tick
+#. odoo-python
+#: code:addons/cron_tick/models/cron_task.py:0
+msgid "Already running (%s) — not started."
+msgstr "正在运行（%s），未再次启动。"
+
+#. module: cron_tick
+#: model:ir.model.fields,field_description:cron_tick.field_cron_task__message_attachment_count
+msgid "Attachment Count"
+msgstr "附件数量"
+
+#. module: cron_tick
+#: model:ir.model.fields,field_description:cron_tick.field_cron_task__cadence
+#: model_terms:ir.ui.view,arch_db:cron_tick.view_cron_task_search
+msgid "Cadence"
+msgstr "调度周期"
+
+#. module: cron_tick
+#: model:ir.model.fields,field_description:cron_tick.field_cron_task__cadence_label
+msgid "Cadence Label"
+msgstr "调度周期标签"
+
+#. module: cron_tick
+#: model:ir.model.fields,field_description:cron_tick.field_cron_task__create_uid
+#: model:ir.model.fields,field_description:cron_tick.field_cron_task_log__create_uid
+msgid "Created by"
+msgstr "创建人"
+
+#. module: cron_tick
+#: model:ir.model.fields,field_description:cron_tick.field_cron_task__create_date
+#: model:ir.model.fields,field_description:cron_tick.field_cron_task_log__create_date
+msgid "Created on"
+msgstr "创建日期"
+
+#. module: cron_tick
+#: model:ir.ui.menu,name:cron_tick.menu_cron_task_log
+msgid "Cron Runs"
+msgstr "定时运行"
+
+#. module: cron_tick
+#: model:ir.ui.menu,name:cron_tick.menu_cron_task_root
+msgid "Cron Tasks"
+msgstr "定时任务"
+
+#. module: cron_tick
+#: model:ir.actions.server,name:cron_tick.cron_min_ir_actions_server
+msgid "Cron: Tick (5 min)"
+msgstr "定时调度（每5分钟）"
+
+#. module: cron_tick
+#: model:ir.actions.server,name:cron_tick.cron_daily_ir_actions_server
+msgid "Cron: Tick (daily)"
+msgstr "定时调度（每天）"
+
+#. module: cron_tick
+#: model:ir.actions.server,name:cron_tick.cron_hour_ir_actions_server
+msgid "Cron: Tick (hourly)"
+msgstr "定时调度（每小时）"
+
+#. module: cron_tick
+#: model:ir.actions.server,name:cron_tick.cron_month_ir_actions_server
+msgid "Cron: Tick (monthly)"
+msgstr "定时调度（每月）"
+
+#. module: cron_tick
+#: model:ir.actions.server,name:cron_tick.cron_week_ir_actions_server
+msgid "Cron: Tick (weekly)"
+msgstr "定时调度（每周）"
+
+#. module: cron_tick
+#: model_terms:ir.ui.view,arch_db:cron_tick.view_cron_task_search
+msgid "Custom interval"
+msgstr "自定义间隔"
+
+#. module: cron_tick
+#: model:ir.model.fields.selection,name:cron_tick.selection__cron_task__cadence__daily
+#: model_terms:ir.ui.view,arch_db:cron_tick.view_cron_task_search
+msgid "Daily"
+msgstr "每天"
+
+#. module: cron_tick
+#: model_terms:ir.ui.view,arch_db:cron_tick.view_cron_task_log_search
+msgid "Day"
+msgstr "天"
+
+#. module: cron_tick
+#: model:ir.model.fields.selection,name:cron_tick.selection__cron_task__interval_type__days
+msgid "Days"
+msgstr "天"
+
+#. module: cron_tick
+#: model_terms:ir.ui.view,arch_db:cron_tick.view_cron_task_form
+msgid "Deactivated"
+msgstr "已停用"
+
+#. module: cron_tick
+#. odoo-python
+#: code:addons/cron_tick/models/cron_task.py:0
+msgid ""
+"Deactivated automatically after %(count)s consecutive failures. Last error: "
+"%(error)s"
+msgstr "连续失败 %(count)s 次后自动停用。最近错误：%(error)s"
+
+#. module: cron_tick
+#: model:ir.model.fields,help:cron_tick.field_cron_task__active
+msgid ""
+"Deactivated automatically after `max_failures` consecutive failures. Re-"
+"activate to resume scheduling."
+msgstr "连续失败达到 max_failures 次后自动停用，重新启用即可恢复调度。"
+
+#. module: cron_tick
+#: model:ir.model.fields,field_description:cron_tick.field_cron_task__display_name
+#: model:ir.model.fields,field_description:cron_tick.field_cron_task_log__display_name
+msgid "Display Name"
+msgstr "显示名称"
+
+#. module: cron_tick
+#: model:ir.model.fields,field_description:cron_tick.field_cron_task_log__duration_ms
+msgid "Duration Ms"
+msgstr "耗时（毫秒）"
+
+#. module: cron_tick
+#: model:ir.model.fields.selection,name:cron_tick.selection__cron_task_log__status__error
+msgid "Error"
+msgstr "错误"
+
+#. module: cron_tick
+#: model:ir.model.fields.selection,name:cron_tick.selection__cron_task__cadence__min
+#: model_terms:ir.ui.view,arch_db:cron_tick.view_cron_task_search
+msgid "Every 5 minutes"
+msgstr "每5分钟"
+
+#. module: cron_tick
+#: model_terms:ir.actions.act_window,help:cron_tick.action_cron_task_log
+msgid ""
+"Every run of a scheduled task leaves a record here — scheduled,\n"
+"                webhook or manual. Records older than\n"
+"                <code>cron_tick.log_retention_days</code> (default 90 days) are\n"
+"                removed by the daily <code>cron_log_cleanup</code> task."
+msgstr ""
+"每次定时、Webhook 或手动运行都会在此生成记录。超过 <code>cron_tick.log_retention_days</code>（默认 "
+"90 天）的记录由每日 <code>cron_log_cleanup</code> 任务清理。"
+
+#. module: cron_tick
+#: model_terms:ir.ui.view,arch_db:cron_tick.view_cron_task_form
+msgid "Execution"
+msgstr "执行"
+
+#. module: cron_tick
+#: model_terms:ir.ui.view,arch_db:cron_tick.view_cron_task_log_search
+#: model_terms:ir.ui.view,arch_db:cron_tick.view_cron_task_search
+msgid "Failed"
+msgstr "失败"
+
+#. module: cron_tick
+#: model:ir.model.fields,field_description:cron_tick.field_cron_task__failure_count
+msgid "Failure Count"
+msgstr "失败次数"
+
+#. module: cron_tick
+#. odoo-python
+#: code:addons/cron_tick/models/cron_task.py:0
+msgid "First failure in a new streak: %s"
+msgstr "新一轮连续失败中的首次错误：%s"
+
+#. module: cron_tick
+#: model:ir.model.fields,field_description:cron_tick.field_cron_task__message_follower_ids
+msgid "Followers"
+msgstr "关注者"
+
+#. module: cron_tick
+#: model:ir.model.fields,field_description:cron_tick.field_cron_task__message_partner_ids
+msgid "Followers (Partners)"
+msgstr "关注者（合作伙伴）"
+
+#. module: cron_tick
+#: model:ir.model.fields,help:cron_tick.field_cron_task__activity_type_icon
+msgid "Font awesome icon e.g. fa-tasks"
+msgstr "Font Awesome图标，例如：fa-tasks"
+
+#. module: cron_tick
+#: model:ir.model.fields,field_description:cron_tick.field_cron_task__has_message
+msgid "Has Message"
+msgstr "有消息"
+
+#. module: cron_tick
+#: model:ir.model.fields.selection,name:cron_tick.selection__cron_task__cadence__hour
+#: model_terms:ir.ui.view,arch_db:cron_tick.view_cron_task_search
+msgid "Hourly"
+msgstr "每小时"
+
+#. module: cron_tick
+#: model:ir.model.fields.selection,name:cron_tick.selection__cron_task__interval_type__hours
+msgid "Hours"
+msgstr "小时"
+
+#. module: cron_tick
+#: model:ir.model.fields,field_description:cron_tick.field_cron_task__id
+#: model:ir.model.fields,field_description:cron_tick.field_cron_task_log__id
+msgid "ID"
+msgstr "编号"
+
+#. module: cron_tick
+#: model:ir.model.fields,field_description:cron_tick.field_cron_task__activity_exception_icon
+msgid "Icon"
+msgstr "图标"
+
+#. module: cron_tick
+#: model:ir.model.fields,help:cron_tick.field_cron_task__activity_exception_icon
+msgid "Icon to indicate an exception activity."
+msgstr "指示异常活动的图标。"
+
+#. module: cron_tick
+#: model_terms:ir.ui.view,arch_db:cron_tick.view_cron_task_form
+msgid "Identity"
+msgstr "身份"
+
+#. module: cron_tick
+#: model:ir.model.fields,help:cron_tick.field_cron_task__message_needaction
+msgid "If checked, new messages require your attention."
+msgstr "如果勾选此项，则需要查看新消息。"
+
+#. module: cron_tick
+#: model:ir.model.fields,help:cron_tick.field_cron_task__message_has_error
+msgid "If checked, some messages have a delivery error."
+msgstr "如果勾选此项， 某些消息将出现发送错误。"
+
+#. module: cron_tick
+#: model_terms:ir.ui.view,arch_db:cron_tick.view_cron_task_search
+msgid "Inactive"
+msgstr "无效的"
+
+#. module: cron_tick
+#: model:ir.model.fields,field_description:cron_tick.field_cron_task__interval_number
+msgid "Interval Number"
+msgstr "间隔数值"
+
+#. module: cron_tick
+#: model:ir.model.fields,field_description:cron_tick.field_cron_task__interval_type
+msgid "Interval Type"
+msgstr "间隔类型"
+
+#. module: cron_tick
+#: model_terms:ir.ui.view,arch_db:cron_tick.view_cron_task_search
+msgid "Interval unit"
+msgstr "间隔单位"
+
+#. module: cron_tick
+#: model:ir.model.fields,field_description:cron_tick.field_cron_task__message_is_follower
+msgid "Is Follower"
+msgstr "是关注者"
+
+#. module: cron_tick
+#: model:ir.model.fields,field_description:cron_tick.field_cron_task__is_locked
+msgid "Is Locked"
+msgstr "是否锁定"
+
+#. module: cron_tick
+#: model:ir.model.fields,field_description:cron_tick.field_cron_task__is_overdue
+msgid "Is Overdue"
+msgstr "是否逾期"
+
+#. module: cron_tick
+#: model_terms:ir.ui.view,arch_db:cron_tick.view_cron_task_log_search
+msgid "Last 7 days"
+msgstr "最近7天"
+
+#. module: cron_tick
+#: model:ir.model.fields,field_description:cron_tick.field_cron_task__last_duration_ms
+msgid "Last Duration Ms"
+msgstr "最近耗时（毫秒）"
+
+#. module: cron_tick
+#: model:ir.model.fields,field_description:cron_tick.field_cron_task__last_error
+msgid "Last Error"
+msgstr "上次错误"
+
+#. module: cron_tick
+#: model:ir.model.fields,field_description:cron_tick.field_cron_task__last_run
+msgid "Last Run"
+msgstr "最后运行"
+
+#. module: cron_tick
+#: model:ir.model.fields,field_description:cron_tick.field_cron_task__write_uid
+#: model:ir.model.fields,field_description:cron_tick.field_cron_task_log__write_uid
+msgid "Last Updated by"
+msgstr "最后更新人"
+
+#. module: cron_tick
+#: model:ir.model.fields,field_description:cron_tick.field_cron_task__write_date
+#: model:ir.model.fields,field_description:cron_tick.field_cron_task_log__write_date
+msgid "Last Updated on"
+msgstr "最后更新时间"
+
+#. module: cron_tick
+#: model_terms:ir.ui.view,arch_db:cron_tick.view_cron_task_form
+msgid "Last error"
+msgstr "最近错误"
+
+#. module: cron_tick
+#: model:ir.model.fields.selection,name:cron_tick.selection__cron_task_log__status__locked
+#: model_terms:ir.ui.view,arch_db:cron_tick.view_cron_task_log_search
+msgid "Locked"
+msgstr "已锁定"
+
+#. module: cron_tick
+#: model:ir.model.fields,field_description:cron_tick.field_cron_task__locked_at
+msgid "Locked At"
+msgstr "锁定时间"
+
+#. module: cron_tick
+#: model:ir.model.fields,field_description:cron_tick.field_cron_task__locked_by
+msgid "Locked By"
+msgstr "锁定者"
+
+#. module: cron_tick
+#: model:ir.model.fields.selection,name:cron_tick.selection__cron_task_log__trigger__manual
+#: model_terms:ir.ui.view,arch_db:cron_tick.view_cron_task_log_search
+msgid "Manual"
+msgstr "手动"
+
+#. module: cron_tick
+#: model:ir.model.fields,field_description:cron_tick.field_cron_task__max_failures
+msgid "Max Failures"
+msgstr "失败次数上限"
+
+#. module: cron_tick
+#: model:ir.model.fields,help:cron_tick.field_cron_task_log__duration_ms
+msgid "Measured run time. 0 for locked/skipped runs."
+msgstr "实际运行耗时，锁定或跳过的运行记为 0。"
+
+#. module: cron_tick
+#: model:ir.model.fields,field_description:cron_tick.field_cron_task__message_has_error
+msgid "Message Delivery error"
+msgstr "消息发送错误"
+
+#. module: cron_tick
+#: model:ir.model.fields,field_description:cron_tick.field_cron_task__message_ids
+msgid "Messages"
+msgstr "消息"
+
+#. module: cron_tick
+#: model:ir.model.fields,field_description:cron_tick.field_cron_task__method_name
+msgid "Method Name"
+msgstr "方法名称"
+
+#. module: cron_tick
+#: model:ir.model.fields,help:cron_tick.field_cron_task__method_name
+msgid ""
+"Method name on the model, e.g. \"_sync_from_filesystem\". Called without "
+"arguments."
+msgstr "模型上的方法名，例如 \"_sync_from_filesystem\"，调用时不传参数。"
+
+#. module: cron_tick
+#: model:ir.model.fields.selection,name:cron_tick.selection__cron_task__interval_type__minutes
+msgid "Minutes"
+msgstr "分钟"
+
+#. module: cron_tick
+#: model:ir.model.fields,field_description:cron_tick.field_cron_task__model_name
+msgid "Model Name"
+msgstr "模型名称"
+
+#. module: cron_tick
+#: model:ir.model.fields,field_description:cron_tick.field_cron_task__module
+#: model:ir.model.fields,field_description:cron_tick.field_cron_task_log__module
+#: model_terms:ir.ui.view,arch_db:cron_tick.view_cron_task_log_search
+#: model_terms:ir.ui.view,arch_db:cron_tick.view_cron_task_search
+msgid "Module"
+msgstr "模块"
+
+#. module: cron_tick
+#: model_terms:ir.actions.act_window,help:cron_tick.action_cron_task
+msgid ""
+"Modules register their tasks as data XML. The engine runs\n"
+"                them via five tick crons — one per cadence. A task may set\n"
+"                a custom interval instead of a cadence; it is then checked\n"
+"                by the 5-minute tick."
+msgstr "模块通过 XML 数据注册任务，由五个对应周期的定时调度器执行。任务也可使用自定义间隔，届时由每5分钟调度器检查。"
+
+#. module: cron_tick
+#: model:ir.model.fields.selection,name:cron_tick.selection__cron_task__cadence__month
+#: model_terms:ir.ui.view,arch_db:cron_tick.view_cron_task_search
+msgid "Monthly"
+msgstr "每月"
+
+#. module: cron_tick
+#: model:ir.model.fields.selection,name:cron_tick.selection__cron_task__interval_type__months
+msgid "Months"
+msgstr "月"
+
+#. module: cron_tick
+#: model:ir.model.fields,field_description:cron_tick.field_cron_task__my_activity_date_deadline
+msgid "My Activity Deadline"
+msgstr "我的活动截止时间"
+
+#. module: cron_tick
+#: model:ir.model.fields,field_description:cron_tick.field_cron_task__name
+msgid "Name"
+msgstr "名称"
+
+#. module: cron_tick
+#: model:ir.model.fields,field_description:cron_tick.field_cron_task__activity_date_deadline
+msgid "Next Activity Deadline"
+msgstr "下一活动截止日期"
+
+#. module: cron_tick
+#: model:ir.model.fields,field_description:cron_tick.field_cron_task__activity_summary
+msgid "Next Activity Summary"
+msgstr "下一活动摘要"
+
+#. module: cron_tick
+#: model:ir.model.fields,field_description:cron_tick.field_cron_task__activity_type_id
+msgid "Next Activity Type"
+msgstr "下一活动类型"
+
+#. module: cron_tick
+#: model_terms:ir.actions.act_window,help:cron_tick.action_cron_task_log
+msgid "No runs recorded yet"
+msgstr "暂无运行记录"
+
+#. module: cron_tick
+#: model_terms:ir.actions.act_window,help:cron_tick.action_cron_task
+msgid "No scheduled tasks"
+msgstr "暂无定时任务"
+
+#. module: cron_tick
+#: model:ir.model.fields,field_description:cron_tick.field_cron_task__message_needaction_counter
+msgid "Number of Actions"
+msgstr "操作数量"
+
+#. module: cron_tick
+#: model:ir.model.fields,help:cron_tick.field_cron_task__max_failures
+msgid ""
+"Number of consecutive failures before the task is automatically deactivated."
+msgstr "任务自动停用前允许的连续失败次数。"
+
+#. module: cron_tick
+#: model:ir.model.fields,field_description:cron_tick.field_cron_task__message_has_error_counter
+msgid "Number of errors"
+msgstr "错误数量"
+
+#. module: cron_tick
+#: model:ir.model.fields,help:cron_tick.field_cron_task__message_needaction_counter
+msgid "Number of messages requiring action"
+msgstr "需要采取行动的消息数量"
+
+#. module: cron_tick
+#: model:ir.model.fields,help:cron_tick.field_cron_task__message_has_error_counter
+msgid "Number of messages with delivery error"
+msgstr "发送错误的消息的数量"
+
+#. module: cron_tick
+#: model:ir.model.fields,help:cron_tick.field_cron_task__run_log_count
+msgid "Number of run log records for this task."
+msgstr "此任务的运行日志数量。"
+
+#. module: cron_tick
+#: model:ir.model.fields.selection,name:cron_tick.selection__cron_task_log__status__ok
+msgid "OK"
+msgstr "正常"
+
+#. module: cron_tick
+#: model_terms:ir.ui.view,arch_db:cron_tick.view_cron_task_search
+msgid "Overdue"
+msgstr "逾期"
+
+#. module: cron_tick
+#. odoo-python
+#: code:addons/cron_tick/models/cron_task.py:0
+msgid "Ran in %s ms."
+msgstr "运行耗时 %s 毫秒。"
+
+#. module: cron_tick
+#. odoo-python
+#: code:addons/cron_tick/models/cron_task.py:0
+msgid "Re-activated manually by %s."
+msgstr "%s 已手动重新启用。"
+
+#. module: cron_tick
+#: model_terms:ir.ui.view,arch_db:cron_tick.view_cron_task_form
+msgid "Readable name"
+msgstr "显示名称"
+
+#. module: cron_tick
+#: model:ir.model.fields,help:cron_tick.field_cron_task__name
+msgid "Readable name shown in the list."
+msgstr "列表中显示的可读名称。"
+
+#. module: cron_tick
+#: model:ir.model.fields,field_description:cron_tick.field_cron_task__activity_user_id
+msgid "Responsible User"
+msgstr "责任用户"
+
+#. module: cron_tick
+#: model_terms:ir.ui.view,arch_db:cron_tick.view_cron_task_log_form
+msgid "Result"
+msgstr "结果"
+
+#. module: cron_tick
+#: model_terms:ir.ui.view,arch_db:cron_tick.view_cron_task_log_form
+msgid "Run"
+msgstr "运行"
+
+#. module: cron_tick
+#: model:ir.model.fields,field_description:cron_tick.field_cron_task_log__run_at
+msgid "Run At"
+msgstr "运行时间"
+
+#. module: cron_tick
+#. odoo-python
+#: code:addons/cron_tick/models/cron_task.py:0
+#: model:ir.actions.act_window,name:cron_tick.action_cron_task_log
+#: model_terms:ir.ui.view,arch_db:cron_tick.view_cron_task_log_list
+msgid "Run Log"
+msgstr "运行日志"
+
+#. module: cron_tick
+#: model:ir.model.fields,field_description:cron_tick.field_cron_task__run_log_count
+msgid "Run Log Count"
+msgstr "运行日志数量"
+
+#. module: cron_tick
+#: model_terms:ir.ui.view,arch_db:cron_tick.view_cron_task_log_form
+msgid "Run Log Entry"
+msgstr "运行日志条目"
+
+#. module: cron_tick
+#: model:ir.model.fields,field_description:cron_tick.field_cron_task_log__user_id
+msgid "Run by"
+msgstr "运行人"
+
+#. module: cron_tick
+#: model:ir.model.fields,help:cron_tick.field_cron_task__interval_number
+msgid ""
+"Run every N `interval_type` units, measured from the last run. Use this instead of `cadence` when the task needs an interval the five cadences cannot express (15 minutes, 6 hours, 14 days).\n"
+"\n"
+"The task is checked by the \"interval\" tick every 5 minutes, so the effective granularity is 5 minutes — the same as ir.cron."
+msgstr ""
+"以上次运行为起点，每 N 个 interval_type 单位运行一次。无法用标准周期表示的间隔（如15分钟、6小时、14天）可使用此项代替 cadence。\n"
+"\n"
+"每5分钟调度器会检查自定义间隔，实际粒度为5分钟，与 ir.cron 一致。"
+
+#. module: cron_tick
+#: model_terms:ir.ui.view,arch_db:cron_tick.view_cron_task_form
+msgid "Run history"
+msgstr "运行历史"
+
+#. module: cron_tick
+#: model_terms:ir.ui.view,arch_db:cron_tick.view_cron_task_form
+msgid "Run now"
+msgstr "立即运行"
+
+#. module: cron_tick
+#: model:ir.model.fields,help:cron_tick.field_cron_task__sequence
+msgid "Run order within the cadence. Lower value runs first."
+msgstr "同一周期内的运行顺序，数值越小越先运行。"
+
+#. module: cron_tick
+#: model_terms:ir.ui.view,arch_db:cron_tick.view_cron_task_search
+msgid "Running"
+msgstr "运行中"
+
+#. module: cron_tick
+#: model_terms:ir.ui.view,arch_db:cron_tick.view_cron_task_form
+msgid "Runs"
+msgstr "运行"
+
+#. module: cron_tick
+#: model:ir.model.fields.selection,name:cron_tick.selection__cron_task_log__trigger__tick
+#: model_terms:ir.ui.view,arch_db:cron_tick.view_cron_task_log_search
+msgid "Scheduled"
+msgstr "定时"
+
+#. module: cron_tick
+#: model:ir.model,name:cron_tick.model_cron_task
+#: model_terms:ir.ui.view,arch_db:cron_tick.view_cron_task_form
+msgid "Scheduled Task"
+msgstr "定时任务"
+
+#. module: cron_tick
+#: model:ir.model,name:cron_tick.model_cron_task_log
+msgid "Scheduled Task Run Log"
+msgstr "定时任务运行日志"
+
+#. module: cron_tick
+#: model:ir.actions.act_window,name:cron_tick.action_cron_task
+#: model_terms:ir.ui.view,arch_db:cron_tick.view_cron_task_list
+msgid "Scheduled Tasks"
+msgstr "定时任务"
+
+#. module: cron_tick
+#: model_terms:ir.ui.view,arch_db:cron_tick.view_cron_task_log_search
+msgid "Search Run Log"
+msgstr "搜索运行日志"
+
+#. module: cron_tick
+#: model_terms:ir.ui.view,arch_db:cron_tick.view_cron_task_search
+msgid "Search Scheduled Tasks"
+msgstr "搜索定时任务"
+
+#. module: cron_tick
+#: model:ir.model.fields,field_description:cron_tick.field_cron_task__sequence
+msgid "Sequence"
+msgstr "序列"
+
+#. module: cron_tick
+#: model:ir.model.fields,help:cron_tick.field_cron_task_log__user_id
+msgid "Set for manual runs — who pressed \"Run now\"."
+msgstr "手动运行时填写，即点击“立即运行”的用户。"
+
+#. module: cron_tick
+#: model:ir.model.fields,help:cron_tick.field_cron_task_log__text
+msgid ""
+"Short description of what happened. The error message for a failed run."
+msgstr "运行情况的简短说明，失败时为错误消息。"
+
+#. module: cron_tick
+#: model:ir.model.fields.selection,name:cron_tick.selection__cron_task_log__status__skipped
+#: model_terms:ir.ui.view,arch_db:cron_tick.view_cron_task_log_search
+msgid "Skipped"
+msgstr "已跳过"
+
+#. module: cron_tick
+#: model:ir.model.fields,help:cron_tick.field_cron_task__timeout_seconds
+msgid ""
+"Soft time limit. The engine measures the run time and logs a warning when "
+"the limit is exceeded. Python threads cannot be aborted safely — the limit "
+"is therefore measuring, not aborting. A task that consistently exceeds the "
+"limit should be moved to queue_job."
+msgstr "软时间限制，超过后记录告警。Python 线程无法安全中止，因此仅测量而不强制终止；持续超时的任务应移到 queue_job。"
+
+#. module: cron_tick
+#: model:ir.model.fields,help:cron_tick.field_cron_task__technical_name
+msgid ""
+"Stable identifier. Used by event-driven triggering "
+"(/cron/trigger/<technical_name>) and for daily spread. Never change it on a "
+"task already in production."
+msgstr "稳定标识，用于 /cron/trigger/<technical_name> 事件触发和每日错峰调度。生产任务开始使用后不得修改。"
+
+#. module: cron_tick
+#: model:ir.model.fields,field_description:cron_tick.field_cron_task_log__status
+#: model_terms:ir.ui.view,arch_db:cron_tick.view_cron_task_log_search
+msgid "Status"
+msgstr "状态"
+
+#. module: cron_tick
+#: model:ir.model.fields,help:cron_tick.field_cron_task__activity_state
+msgid ""
+"Status based on activities\n"
+"Overdue: Due date is already passed\n"
+"Today: Activity date is today\n"
+"Planned: Future activities."
+msgstr ""
+"基于活动的状态\n"
+"逾期：超出到期日期\n"
+"今天：活动日期是今天\n"
+"计划：未来活动。"
+
+#. module: cron_tick
+#: model_terms:ir.ui.view,arch_db:cron_tick.view_cron_task_log_search
+msgid "Successful"
+msgstr "成功"
+
+#. module: cron_tick
+#: model:ir.model.fields,field_description:cron_tick.field_cron_task_log__task_id
+#: model_terms:ir.ui.view,arch_db:cron_tick.view_cron_task_log_search
+msgid "Task"
+msgstr "任务"
+
+#. module: cron_tick
+#: model:ir.model.fields,field_description:cron_tick.field_cron_task_log__task_name
+msgid "Task Name"
+msgstr "任务名称"
+
+#. module: cron_tick
+#. odoo-python
+#: code:addons/cron_tick/models/cron_task.py:0
+msgid "Task executed"
+msgstr "任务已执行"
+
+#. module: cron_tick
+#: model:ir.model.fields,field_description:cron_tick.field_cron_task__technical_name
+#: model:ir.model.fields,field_description:cron_tick.field_cron_task_log__technical_name
+msgid "Technical Name"
+msgstr "技术名称"
+
+#. module: cron_tick
+#: model:ir.model.fields,help:cron_tick.field_cron_task__model_name
+msgid ""
+"Technical model name, e.g. \"ai.skill\". Resolved at run time — therefore "
+"robust against modules being uninstalled."
+msgstr "技术模型名，例如 \"ai.skill\"，运行时解析，可处理所属模块已卸载的情况。"
+
+#. module: cron_tick
+#: model:ir.model.fields,field_description:cron_tick.field_cron_task_log__text
+#: model_terms:ir.ui.view,arch_db:cron_tick.view_cron_task_log_form
+msgid "Text"
+msgstr "文本"
+
+#. module: cron_tick
+#: model:ir.model.fields,help:cron_tick.field_cron_task_log__trigger_detail
+msgid "The cadence for a tick run (\"daily\"), or the user for a manual run."
+msgstr "定时运行时的周期（如 \"daily\"），或手动运行时的用户。"
+
+#. module: cron_tick
+#. odoo-python
+#: code:addons/cron_tick/models/cron_task.py:0
+msgid "The method \"%s\" does not exist on the model \"%s\" (task %s)."
+msgstr "方法“%s”不存在于模型“%s”上（任务 %s）。"
+
+#. module: cron_tick
+#. odoo-python
+#: code:addons/cron_tick/models/cron_task.py:0
+msgid "The model \"%s\" does not exist (task %s). The module may be uninstalled."
+msgstr "模型“%s”不存在（任务 %s），所属模块可能已卸载。"
+
+#. module: cron_tick
+#: model:ir.model.fields,help:cron_tick.field_cron_task__module
+msgid ""
+"The module that owns the task. On uninstall the XML record is removed and "
+"the task disappears."
+msgstr "任务所属模块，卸载时 XML 记录及任务会随之删除。"
+
+#. module: cron_tick
+#. odoo-python
+#: code:addons/cron_tick/models/cron_task.py:0
+msgid ""
+"The task \"%s\" failed:\n"
+"%s"
+msgstr ""
+"任务“%s”失败：\n"
+"%s"
+
+#. module: cron_tick
+#. odoo-python
+#: code:addons/cron_tick/models/cron_task.py:0
+msgid "The task \"%s\" has an interval type but no interval number."
+msgstr "任务“%s”已设置间隔类型，但未设置间隔数值。"
+
+#. module: cron_tick
+#. odoo-python
+#: code:addons/cron_tick/models/cron_task.py:0
+msgid "The task \"%s\" has both a cadence and an interval. Set one of them."
+msgstr "任务“%s”同时设置了调度周期和自定义间隔，请只保留一项。"
+
+#. module: cron_tick
+#. odoo-python
+#: code:addons/cron_tick/models/cron_task.py:0
+msgid "The task \"%s\" has neither a cadence nor an interval. Set one of them."
+msgstr "任务“%s”未设置调度周期或自定义间隔，请至少设置一项。"
+
+#. module: cron_tick
+#. odoo-python
+#: code:addons/cron_tick/models/cron_task.py:0
+msgid "The task \"%s\" is already running (%s). Try again when it has finished."
+msgstr "任务“%s”正在运行（%s），请在结束后重试。"
+
+#. module: cron_tick
+#: model:ir.model.constraint,message:cron_tick.constraint_cron_task_technical_name_uniq
+msgid "The technical name must be unique — it is the identity of the task."
+msgstr "技术名称是任务标识，必须唯一。"
+
+#. module: cron_tick
+#: model:ir.model.fields,field_description:cron_tick.field_cron_task__timeout_seconds
+msgid "Timeout Seconds"
+msgstr "超时时间（秒）"
+
+#. module: cron_tick
+#: model_terms:ir.ui.view,arch_db:cron_tick.view_cron_task_log_search
+msgid "Today"
+msgstr "今天"
+
+#. module: cron_tick
+#: model:ir.model.fields,field_description:cron_tick.field_cron_task_log__trigger
+#: model_terms:ir.ui.view,arch_db:cron_tick.view_cron_task_log_search
+msgid "Trigger"
+msgstr "触发方式"
+
+#. module: cron_tick
+#: model:ir.model.fields,field_description:cron_tick.field_cron_task_log__trigger_detail
+msgid "Trigger Detail"
+msgstr "触发详情"
+
+#. module: cron_tick
+#: model:ir.model.fields,help:cron_tick.field_cron_task__is_overdue
+msgid "True when the task has not run within three cadence intervals."
+msgstr "超过三个调度周期未运行时为 True。"
+
+#. module: cron_tick
+#: model:ir.model.fields,help:cron_tick.field_cron_task__activity_exception_decoration
+msgid "Type of the exception activity on record."
+msgstr "记录中异常活动的类型。"
+
+#. module: cron_tick
+#: model:ir.model.fields,help:cron_tick.field_cron_task__interval_type
+msgid "Unit for `interval_number`."
+msgstr "interval_number 的单位。"
+
+#. module: cron_tick
+#. odoo-python
+#: code:addons/cron_tick/models/cron_task_log.py:0
+msgid "Unknown task"
+msgstr "未知任务"
+
+#. module: cron_tick
+#: model:ir.model.fields.selection,name:cron_tick.selection__cron_task_log__trigger__webhook
+#: model_terms:ir.ui.view,arch_db:cron_tick.view_cron_task_log_search
+msgid "Webhook"
+msgstr "网络回调（Webhook）"
+
+#. module: cron_tick
+#: model:ir.model.fields.selection,name:cron_tick.selection__cron_task__cadence__week
+#: model_terms:ir.ui.view,arch_db:cron_tick.view_cron_task_search
+msgid "Weekly"
+msgstr "每周"
+
+#. module: cron_tick
+#: model:ir.model.fields.selection,name:cron_tick.selection__cron_task__interval_type__weeks
+msgid "Weeks"
+msgstr "周"
+
+#. module: cron_tick
+#: model_terms:ir.ui.view,arch_db:cron_tick.view_cron_task_form
+msgid "What runs"
+msgstr "执行内容"
+
+#. module: cron_tick
+#: model_terms:ir.ui.view,arch_db:cron_tick.view_cron_task_form
+msgid "When"
+msgstr "时间"
+
+#. module: cron_tick
+#: model:ir.model.fields,help:cron_tick.field_cron_task_log__run_at
+msgid "When the run started."
+msgstr "运行开始的时间。"
+
+#. module: cron_tick
+#: model:ir.model.fields,help:cron_tick.field_cron_task_log__trigger
+msgid "Which of the three run paths started the run."
+msgstr "启动本次运行的触发方式。"
+
+#. module: cron_tick
+#: model:ir.model.fields,help:cron_tick.field_cron_task__cadence
+msgid ""
+"Which tick cron runs the task. The cadence is a FIELD — a name prefix in the technical name does not affect execution.\n"
+"\n"
+"Leave empty when `interval_number`/`interval_type` are set: a task uses EITHER a cadence OR an interval, never both."
+msgstr ""
+"执行此任务的定时调度周期，由字段决定，技术名称前缀不影响执行。\n"
+"\n"
+"设置 interval_number/interval_type 时请留空。周期和自定义间隔只能二选一。"
+
+#. module: cron_tick
+#: model:ir.model.fields,help:cron_tick.field_cron_task__locked_by
+msgid ""
+"Who is running the task right now (e.g. \"tick:min\" or \"webhook\"). Empty "
+"= free."
+msgstr "当前运行者，例如 \"tick:min\"、\"webhook\"；为空表示空闲。"
+
+#. module: cron_tick
+#: model:ir.model,name:cron_tick.model_cron_tick_poison_probe
+msgid "cron_tick test probe (poisons the transaction)"
+msgstr "cron_tick 测试探针（故意使事务失败）"
+
+#. module: cron_tick
+#: model_terms:ir.ui.view,arch_db:cron_tick.view_cron_task_form
+msgid "e.g. _sync_from_filesystem"
+msgstr "例如：_sync_from_filesystem"
+
+#. module: cron_tick
+#: model_terms:ir.ui.view,arch_db:cron_tick.view_cron_task_form
+msgid "e.g. ai.skill"
+msgstr "例如：ai.skill"
+
+#. module: cron_tick
+#: model_terms:ir.ui.view,arch_db:cron_tick.view_cron_task_form
+msgid "e.g. skill_sync"
+msgstr "例如：skill_sync"
+
+#. module: cron_tick
+#: model:ir.model.fields,help:cron_tick.field_cron_task_log__status
+msgid ""
+"ok = the method returned without error.\n"
+"error = the method raised; see the text.\n"
+"locked = another session was running the task; the method was not called.\n"
+"skipped = the engine decided not to run it (nothing to clean up, task inactive)."
+msgstr ""
+"ok = 方法执行成功。\n"
+"error = 方法抛出异常，详见说明。\n"
+"locked = 其他会话正在执行，本次未调用方法。\n"
+"skipped = 调度器决定不运行，例如无待清理内容或任务未启用。"
+
+#. module: cron_tick
+#. odoo-python
+#: code:addons/cron_tick/models/cron_task.py:0
+msgid "task_id"
+msgstr "task_id"
+
+#. module: cron_tick
+#. odoo-python
+#: code:addons/cron_tick/models/cron_task.py:0
+msgid "unknown"
+msgstr "未知"
+
+#. module: cron_tick
+#: model:ir.model.fields,field_description:cron_tick.field_cron_task__activity_calendar_event_id
+msgid "Next Activity Calendar Event"
+msgstr "下一次活动的日历事件"
+
+#. module: cron_tick
+#: model:ir.model.fields,field_description:cron_tick.field_cron_task__rating_ids
+msgid "Ratings"
+msgstr "评分"
+
+#. module: cron_tick
+#: model:ir.model.fields,field_description:cron_tick.field_cron_task__website_message_ids
+msgid "Website Messages"
+msgstr "网站消息"
+
+#. module: cron_tick
+#: model:ir.model.fields,help:cron_tick.field_cron_task__website_message_ids
+msgid "Website communication history"
+msgstr "网站沟通历史"
+
+#. module: cron_tick
+#: model:ir.model.fields,field_description:sms.field_cron_task__message_has_sms_error
+msgid "SMS Delivery error"
+msgstr "短信发送错误"

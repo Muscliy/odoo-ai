@@ -287,3 +287,5 @@ from . import test_tool_call_quality
 from . import test_turn_quality_verdict
 
 from . import test_odoo19_port
+
+from . import test_ui_chinese

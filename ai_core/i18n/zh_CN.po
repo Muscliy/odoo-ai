@@ -1,0 +1,391 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* ai_core
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-13 05:45+0000\n"
+"PO-Revision-Date: 2026-11-13 06:00+0000\n"
+"Last-Translator: Yabo\n"
+"Language-Team: Chinese (Simplified)\n"
+"Language: zh_CN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+#. module: ai_core
+#: model:ir.ui.menu,name:ai_core.menu_ai_root
+msgid "AI Core"
+msgstr "AI 核心"
+
+#. module: ai_core
+#: model:ir.model.fields,help:ai_core.field_llm_session_line__duration_ms
+msgid "API call duration in milliseconds"
+msgstr "API 调用耗时（毫秒）"
+
+#. module: ai_core
+#: model:ir.model.fields,field_description:ai_core.field_llm_model__asr
+#: model_terms:ir.ui.view,arch_db:ai_core.view_llm_model_search
+msgid "ASR"
+msgstr "语音识别"
+
+#. module: ai_core
+#: model:ir.model.fields,field_description:ai_core.field_llm_model__active
+msgid "Active"
+msgstr "有效"
+
+#. module: ai_core
+#: model:ir.model.fields,field_description:ai_core.field_llm_session_line__agent_id
+msgid "Agent"
+msgstr "智能体"
+
+#. module: ai_core
+#: model:ir.model.fields,field_description:ai_core.field_llm_provider__api_key
+msgid "Api Key"
+msgstr "API 密钥"
+
+#. module: ai_core
+#: model:ir.model.fields,field_description:ai_core.field_llm_provider__base_url
+msgid "Base Url"
+msgstr "基础地址"
+
+#. module: ai_core
+#: model:ir.model.fields,field_description:ai_core.field_llm_session_line__cached_tokens
+msgid "Cached Tokens"
+msgstr "缓存词元"
+
+#. module: ai_core
+#: model_terms:ir.ui.view,arch_db:ai_core.view_llm_model_form
+msgid "Capabilities"
+msgstr "能力"
+
+#. module: ai_core
+#: model_terms:ir.ui.view,arch_db:ai_core.view_llm_provider_form
+msgid "Check Health"
+msgstr "检查健康状态"
+
+#. module: ai_core
+#: model:ir.model.fields,field_description:ai_core.field_llm_model__context_window
+msgid "Context Window"
+msgstr "上下文窗口"
+
+#. module: ai_core
+#: model:ir.model.fields,field_description:ai_core.field_llm_model__context_window_display
+msgid "Context Window Display"
+msgstr "上下文窗口显示"
+
+#. module: ai_core
+#: model:ir.model.fields,field_description:ai_core.field_llm_session_line__cost_currency
+msgid "Cost Currency"
+msgstr "成本币种"
+
+#. module: ai_core
+#: model:ir.model.fields,field_description:ai_core.field_llm_session_line__cost_usd
+msgid "Cost Usd"
+msgstr "成本（美元）"
+
+#. module: ai_core
+#: model:ir.model.fields,field_description:ai_core.field_llm_session_line__quest_id
+msgid "Coworker"
+msgstr "AI 员工"
+
+#. module: ai_core
+#: model:ir.model.fields,field_description:ai_core.field_llm_model__created_date
+msgid "Created Date"
+msgstr "创建日期"
+
+#. module: ai_core
+#: model:ir.model.fields,field_description:ai_core.field_llm_model__create_uid
+#: model:ir.model.fields,field_description:ai_core.field_llm_provider__create_uid
+#: model:ir.model.fields,field_description:ai_core.field_llm_session_line__create_uid
+msgid "Created by"
+msgstr "创建人"
+
+#. module: ai_core
+#: model:ir.model.fields,field_description:ai_core.field_llm_model__create_date
+#: model:ir.model.fields,field_description:ai_core.field_llm_provider__create_date
+#: model:ir.model.fields,field_description:ai_core.field_llm_session_line__create_date
+msgid "Created on"
+msgstr "创建日期"
+
+#. module: ai_core
+#: model_terms:ir.ui.view,arch_db:ai_core.view_llm_provider_form
+msgid "Disabled"
+msgstr "已禁用"
+
+#. module: ai_core
+#: model_terms:ir.ui.view,arch_db:ai_core.view_llm_provider_form
+msgid "Discover"
+msgstr "发现"
+
+#. module: ai_core
+#: model:ir.model.fields,field_description:ai_core.field_llm_model__display_name
+#: model:ir.model.fields,field_description:ai_core.field_llm_provider__display_name
+#: model:ir.model.fields,field_description:ai_core.field_llm_session_line__display_name
+msgid "Display Name"
+msgstr "显示名称"
+
+#. module: ai_core
+#: model:ir.model.fields,field_description:ai_core.field_llm_session_line__duration_ms
+msgid "Duration Ms"
+msgstr "耗时（毫秒）"
+
+#. module: ai_core
+#: model:ir.model.fields,field_description:ai_core.field_llm_model__embedding
+#: model_terms:ir.ui.view,arch_db:ai_core.view_llm_model_search
+msgid "Embedding"
+msgstr "向量嵌入"
+
+#. module: ai_core
+#: model:ir.model.fields,field_description:ai_core.field_llm_model__embedding_dimensions
+msgid "Embedding Dims"
+msgstr "嵌入维度"
+
+#. module: ai_core
+#: model:ir.model.fields.selection,name:ai_core.selection__llm_provider__last_health_status__error
+msgid "Error"
+msgstr "错误"
+
+#. module: ai_core
+#: model:ir.model.fields,field_description:ai_core.field_llm_session_line__error_message
+msgid "Error Message"
+msgstr "错误消息"
+
+#. module: ai_core
+#: model:ir.model.fields,field_description:ai_core.field_llm_model__extra_metadata
+msgid "Extra Metadata"
+msgstr "附加元数据"
+
+#. module: ai_core
+#: model_terms:ir.ui.view,arch_db:ai_core.view_llm_provider_form
+msgid "Health"
+msgstr "健康状态"
+
+#. module: ai_core
+#. odoo-python
+#: code:addons/ai_core/models/base_provider.py:0
+msgid "Health Check"
+msgstr "健康检查"
+
+#. module: ai_core
+#: model:ir.model.fields,field_description:ai_core.field_llm_provider__health_check_message
+msgid "Health Check Message"
+msgstr "健康检查消息"
+
+#. module: ai_core
+#. odoo-python
+#: code:addons/ai_core/models/base_provider.py:0
+msgid "Health check failed for {0}: {1}"
+msgstr "{0} 的健康检查失败：{1}"
+
+#. module: ai_core
+#: model:ir.model.fields,help:ai_core.field_llm_provider__provider_label
+msgid "Human-readable label"
+msgstr "便于阅读的标签"
+
+#. module: ai_core
+#: model:ir.model.fields,field_description:ai_core.field_llm_model__id
+#: model:ir.model.fields,field_description:ai_core.field_llm_provider__id
+#: model:ir.model.fields,field_description:ai_core.field_llm_session_line__id
+msgid "ID"
+msgstr "编号"
+
+#. module: ai_core
+#: model:ir.model.fields,field_description:ai_core.field_llm_session_line__input_tokens
+msgid "Input Tokens"
+msgstr "输入词元"
+
+#. module: ai_core
+#: model:ir.model.fields,field_description:ai_core.field_llm_provider__is_enabled
+msgid "Is Enabled"
+msgstr "已启用"
+
+#. module: ai_core
+#: model:ir.model.fields,field_description:ai_core.field_llm_session_line__is_error
+msgid "Is Error"
+msgstr "是否错误"
+
+#. module: ai_core
+#: model:ir.model,name:ai_core.model_llm_model
+msgid "LLM Model"
+msgstr "大模型"
+
+#. module: ai_core
+#: model:ir.actions.act_window,name:ai_core.action_llm_model
+msgid "LLM Models"
+msgstr "大模型"
+
+#. module: ai_core
+#: model:ir.model,name:ai_core.model_llm_provider
+msgid "LLM Provider"
+msgstr "大模型服务商"
+
+#. module: ai_core
+#: model:ir.actions.act_window,name:ai_core.action_llm_provider
+msgid "LLM Providers"
+msgstr "大模型服务商"
+
+#. module: ai_core
+#: model:ir.model,name:ai_core.model_llm_session_line
+msgid "LLM Session Line"
+msgstr "模型会话消息"
+
+#. module: ai_core
+#: model:ir.model.fields,field_description:ai_core.field_llm_provider__last_health_check
+msgid "Last Health Check"
+msgstr "最近健康检查"
+
+#. module: ai_core
+#: model:ir.model.fields,field_description:ai_core.field_llm_provider__last_health_status
+msgid "Last Health Status"
+msgstr "最近健康状态"
+
+#. module: ai_core
+#: model:ir.model.fields,field_description:ai_core.field_llm_model__write_uid
+#: model:ir.model.fields,field_description:ai_core.field_llm_provider__write_uid
+#: model:ir.model.fields,field_description:ai_core.field_llm_session_line__write_uid
+msgid "Last Updated by"
+msgstr "最后更新人"
+
+#. module: ai_core
+#: model:ir.model.fields,field_description:ai_core.field_llm_model__write_date
+#: model:ir.model.fields,field_description:ai_core.field_llm_provider__write_date
+#: model:ir.model.fields,field_description:ai_core.field_llm_session_line__write_date
+msgid "Last Updated on"
+msgstr "最后更新时间"
+
+#. module: ai_core
+#: model:ir.model.fields,help:ai_core.field_llm_provider__api_key
+msgid ""
+"Leave empty to read from odoo.conf key 'llm_{provider_type}_api_key' or env "
+"var 'LLM_{PROVIDER_TYPE}_API_KEY'."
+msgstr ""
+"为空时从 odoo.conf 的 'llm_{provider_type}_api_key' 或环境变量 "
+"'LLM_{PROVIDER_TYPE}_API_KEY' 读取。"
+
+#. module: ai_core
+#: model_terms:ir.ui.view,arch_db:ai_core.view_llm_provider_form
+msgid "Leave empty to use odoo.conf"
+msgstr "为空时使用 odoo.conf 配置"
+
+#. module: ai_core
+#: model:ir.model.fields,field_description:ai_core.field_llm_model__license
+#: model_terms:ir.ui.view,arch_db:ai_core.view_llm_model_search
+msgid "License"
+msgstr "许可证"
+
+#. module: ai_core
+#: model:ir.model.fields,help:ai_core.field_llm_model__context_window
+msgid "Max tokens in context window"
+msgstr "上下文窗口的最大词元数"
+
+#. module: ai_core
+#: model:ir.model.fields,field_description:ai_core.field_llm_session_line__model_name
+msgid "Model Name"
+msgstr "模型名称"
+
+#. module: ai_core
+#: model:ir.ui.menu,name:ai_core.menu_ai_models
+#: model_terms:ir.ui.view,arch_db:ai_core.view_llm_provider_form
+msgid "Models"
+msgstr "模型"
+
+#. module: ai_core
+#: model:ir.model.fields,field_description:ai_core.field_llm_model__name
+#: model:ir.model.fields,field_description:ai_core.field_llm_provider__name
+msgid "Name"
+msgstr "名称"
+
+#. module: ai_core
+#. odoo-python
+#: code:addons/ai_core/models/base_provider.py:0
+msgid "No implementation registered for provider type '{0}'"
+msgstr "服务商类型“{0}”尚未注册实现"
+
+#. module: ai_core
+#: model:ir.model.fields.selection,name:ai_core.selection__llm_provider__last_health_status__ok
+msgid "OK"
+msgstr "正常"
+
+#. module: ai_core
+#: model:ir.model.fields,field_description:ai_core.field_llm_session_line__output_tokens
+msgid "Output Tokens"
+msgstr "输出词元"
+
+#. module: ai_core
+#: model:ir.model.fields,help:ai_core.field_llm_provider__base_url
+msgid "Override default API endpoint."
+msgstr "覆盖默认 API 地址。"
+
+#. module: ai_core
+#: model_terms:ir.ui.view,arch_db:ai_core.view_llm_model_search
+msgid "Provider"
+msgstr "服务商"
+
+#. module: ai_core
+#: model:ir.model.fields,field_description:ai_core.field_llm_provider__provider_label
+msgid "Provider Label"
+msgstr "服务商标签"
+
+#. module: ai_core
+#: model:ir.model.fields,field_description:ai_core.field_llm_model__provider_type
+#: model:ir.model.fields,field_description:ai_core.field_llm_provider__provider_type
+#: model:ir.model.fields,field_description:ai_core.field_llm_session_line__provider_type
+msgid "Provider Type"
+msgstr "服务商类型"
+
+#. module: ai_core
+#: model:ir.ui.menu,name:ai_core.menu_ai_providers
+msgid "Providers"
+msgstr "服务商"
+
+#. module: ai_core
+#: model:ir.model.fields,field_description:ai_core.field_llm_session_line__session_id
+msgid "Session"
+msgstr "会话"
+
+#. module: ai_core
+#: model:ir.actions.act_window,name:ai_core.action_llm_session_line
+#: model:ir.ui.menu,name:ai_core.menu_ai_session_lines
+msgid "Session Lines"
+msgstr "会话消息"
+
+#. module: ai_core
+#: model:ir.model.fields,field_description:ai_core.field_llm_model__streaming
+msgid "Streaming"
+msgstr "流式响应"
+
+#. module: ai_core
+#: model:ir.model.fields,field_description:ai_core.field_llm_model__tools
+msgid "Tools"
+msgstr "工具"
+
+#. module: ai_core
+#: model:ir.model.fields,field_description:ai_core.field_llm_session_line__total_tokens
+msgid "Total Tokens"
+msgstr "词元总数"
+
+#. module: ai_core
+#: model:ir.model.fields.selection,name:ai_core.selection__llm_provider__last_health_status__unknown
+msgid "Unknown"
+msgstr "未知"
+
+#. module: ai_core
+#: model:ir.model.fields,field_description:ai_core.field_llm_model__vision
+#: model_terms:ir.ui.view,arch_db:ai_core.view_llm_model_search
+msgid "Vision"
+msgstr "视觉"
+
+#. module: ai_core
+#: model_terms:ir.ui.view,arch_db:ai_core.view_llm_provider_form
+msgid "e.g. https://api.berget.ai/v1/"
+msgstr "例如：https://api.berget.ai/v1/"
+
+#. module: ai_core
+#. odoo-python
+#: code:addons/ai_core/models/base_provider.py:0
+msgid "{0}: Connection OK"
+msgstr "{0}：连接正常"

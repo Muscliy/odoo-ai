@@ -84,7 +84,7 @@ class ResUsers(models.Model):
         """Smartknapp: öppna användarens egna mål (Min Profil)."""
         self.ensure_one()
         return {
-            'name': 'Personal Goals',
+            'name': self.env._('Personal Goals'),
             'type': 'ir.actions.act_window',
             'res_model': 'ai.personal.goal',
             'view_mode': 'list,form',
@@ -106,7 +106,7 @@ class ResUsers(models.Model):
         """
         self.ensure_one()
         return {
-            'name': 'Personligt minne',
+            'name': self.env._('Personligt minne'),
             'type': 'ir.actions.act_window',
             'res_model': 'ai.okf.concept',
             'view_mode': 'list,form',

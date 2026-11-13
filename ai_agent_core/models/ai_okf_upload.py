@@ -226,7 +226,7 @@ class AIOkfUpload(models.Model):
         self.ensure_one()
         attach = self.attachment_id
         if not attach:
-            return '', 'Bilagan saknas.'
+            return '', self.env._('Bilagan saknas.')
         if attach.file_size and attach.file_size > 50 * 1024 * 1024:
             return '', 'The file is too large (max 50 MB).'
 
@@ -525,8 +525,8 @@ class AIOkfUpload(models.Model):
         Arkiverar dem ur kön i stället för att radera — historiken är
         beviset på vad som hände (ADD-only).
         """
-        hopeless = ('Binary file is not indexed', 'Bilagan saknas.',
-                    'The file is too large')
+        hopeless = (self.env._('Binary file is not indexed'), self.env._('Bilagan saknas.'),
+                    self.env._('The file is too large'))
 
         def _is_hopeless(rec):
             msg = rec.error_message or ''

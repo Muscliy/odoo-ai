@@ -73,8 +73,8 @@ class AIOnboardingWizard(models.TransientModel):
 
         modules = onboarding.detected_modules or {}
         res['detected_modules_text'] = '\n'.join(
-            f'• {m}: {d.get("description", "")}'
-            for m, d in modules.items()) or 'No known modules'
+            f'• {m}: {self.env._(d.get("description", ""))}'
+            for m, d in modules.items()) or self.env._('No known modules')
         res['website_summary'] = (onboarding.website_summary or '')[:500]
 
         if onboarding.state in ('draft', 'scanning'):
@@ -105,8 +105,8 @@ class AIOnboardingWizard(models.TransientModel):
         onboarding = self.onboarding_id
         modules = onboarding.detected_modules or {}
         self.detected_modules_text = '\n'.join(
-            f'• {m}: {d.get("description", "")}'
-            for m, d in modules.items()) or 'No known modules'
+            f'• {m}: {self.env._(d.get("description", ""))}'
+            for m, d in modules.items()) or self.env._('No known modules')
         self.website_summary = (onboarding.website_summary or '')[:500]
 
         if onboarding.state == 'proposal':
@@ -132,7 +132,7 @@ class AIOnboardingWizard(models.TransientModel):
             target['current_question'] = q['question']
             target['current_question_id'] = q['id']
             target['question_options'] = '\n'.join(
-                f'• {o}' for o in q.get('options', [])) or 'Fritt svar'
+                f'• {o}' for o in q.get('options', [])) or self.env._('Fritt svar')
             target['question_index'] = len(answered) + 1
             target['total_questions'] = len(questions)
         else:
@@ -143,18 +143,19 @@ class AIOnboardingWizard(models.TransientModel):
             target['total_questions'] = len(questions)
 
     def _build_proposal_text(self, onboarding, res=None):
-        proposal = onboarding.proposal_json or {}
+        from ..models.ui_localization import localize_template
+        proposal = localize_template(onboarding.proposal_json or {}, self.env._)
         lines = []
         if proposal.get('mission'):
-            lines.append(f'🎯 Mission:\n{proposal["mission"]}\n')
+            lines.append(self.env._('🎯 Mission:\n%(text)s\n', text=proposal['mission']))
         if proposal.get('values'):
-            lines.append(f'💎 Values:\n{proposal["values"]}\n')
-        lines.append('🏢 Avdelningar:')
+            lines.append(self.env._('💎 Values:\n%(text)s\n', text=proposal['values']))
+        lines.append(self.env._('🏢 Avdelningar:'))
         for dept in proposal.get('departments', []):
             lines.append(f'\n• {dept.get("name")}:')
             for cw in dept.get('coworkers', []):
                 lines.append(f'    🤖 {cw.get("name")} — {cw.get("description", "")}')
-        lines.append('\n🥅 Goals:')
+        lines.append(self.env._('\n🥅 Goals:'))
         for goal in proposal.get('company_goals', []):
             lines.append(f'• {goal.get("name")}')
         text = '\n'.join(lines)
@@ -164,10 +165,13 @@ class AIOnboardingWizard(models.TransientModel):
 
     def _build_created_summary(self, onboarding):
         return (
-            f'✅ {len(onboarding.created_department_ids)} departments\n'
-            f'✅ {len(onboarding.created_coworker_ids)} AI coworkers\n'
-            f'✅ {len(onboarding.created_goal_ids)} goals\n'
-            f'✅ {len(onboarding.created_task_ids)} tasks'
+            self.env._(
+                '✅ %(departments)s departments\n✅ %(coworkers)s AI coworkers\n'
+                '✅ %(goals)s goals\n✅ %(tasks)s tasks',
+                departments=len(onboarding.created_department_ids),
+                coworkers=len(onboarding.created_coworker_ids),
+                goals=len(onboarding.created_goal_ids), tasks=len(onboarding.created_task_ids),
+            )
         )
 
     # ════════════════════════════════════════════

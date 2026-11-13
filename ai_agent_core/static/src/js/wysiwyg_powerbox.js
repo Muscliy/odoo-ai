@@ -261,7 +261,7 @@ async function runViaComposerService(plugin) {
 async function promptAndRun(plugin, quest, initialText) {
     const { resModel, resId } = getRecordContext(plugin);
     const prompt = window.prompt(
-        _t(`Prompt for "${quest.name}":\n\nWhat should the coworker do with the text?`),
+        _t('Prompt for "%s":\n\nWhat should the coworker do with the text?', quest.name),
         initialText || ""
     );
     if (prompt === null) return;

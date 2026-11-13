@@ -217,7 +217,7 @@ class WorkspaceActivitySuggestion(models.Model):
         })
         return {
             'type': 'ir.actions.act_window',
-            'name': 'Omplanera',
+            'name': self.env._('Omplanera'),
             'res_model': self._name,
             'res_id': self.id,
             'view_mode': 'form',
@@ -267,7 +267,7 @@ class WorkspaceActivitySuggestion(models.Model):
                 }
             return {
                 'type': 'ir.actions.act_window',
-                'name': 'Why? — source concepts',
+                'name': self.env._('Why? — source concepts'),
                 'res_model': 'ai.okf.concept',
                 'view_mode': 'list,form',
                 'views': [[False, 'list'], [False, 'form']],
@@ -275,12 +275,12 @@ class WorkspaceActivitySuggestion(models.Model):
             }
         return {
             'type': 'ir.actions.act_window',
-            'name': 'Why? — lineage chain',
+            'name': self.env._('Why? — lineage chain'),
             'res_model': 'ai.lineage.link',
             'view_mode': 'list,form',
             'views': [[False, 'list'], [False, 'form']],
             'domain': [('id', 'in', edge_ids)],
-            'help': 'The chain: ACTION ← SUGGESTION ← SESSION ← CONCEPT ← SOURCE',
+            'help': self.env._('The chain: ACTION ← SUGGESTION ← SESSION ← CONCEPT ← SOURCE'),
         }
 
     # ── Materialisering: förslag → riktigt Odoo-objekt ──

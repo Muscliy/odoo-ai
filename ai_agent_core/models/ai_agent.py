@@ -136,7 +136,7 @@ class AIAgent(models.Model):
     def action_open_session_lines(self):
         """Open coworker session lines produced by this agent (stat button)."""
         return {
-            'name': 'Agenter', 'type': 'ir.actions.act_window',
+            'name': self.env._('Agenter'), 'type': 'ir.actions.act_window',
             'res_model': 'ai.coworker.session.line', 'view_mode': 'list,form',
             'views': [[False, 'list'], [False, 'form']],
             'domain': [('agent_id', '=', self.id)],
@@ -336,7 +336,7 @@ class AIAgent(models.Model):
             ('agent_id', '=', self.id)
         ]).mapped("coworker_id").ids
         return {
-            'name': 'Quests', 'type': 'ir.actions.act_window',
+            'name': self.env._('Quests'), 'type': 'ir.actions.act_window',
             'res_model': 'ai.coworker', 'view_mode': 'kanban,list,form',
             'views': [[False, 'kanban'], [False, 'list'], [False, 'form']],
             'target': 'current', 'domain': [('id', 'in', quest_ids)],

@@ -2221,7 +2221,7 @@ class AICoworkerSession(models.Model):
     def action_open_attachments(self):
         """Öppna sessionens bilagor (ir.attachment)."""
         return {
-            'name': 'Bilagor',
+            'name': self.env._('Bilagor'),
             'type': 'ir.actions.act_window',
             'res_model': 'ir.attachment',
             'view_mode': 'list,form',
@@ -2272,7 +2272,7 @@ class AICoworkerSession(models.Model):
         """Öppna sessionens HITL-requests (godkännanden)."""
         self.ensure_one()
         return {
-            'name': 'HITL-requests',
+            'name': self.env._('HITL-requests'),
             'type': 'ir.actions.act_window',
             'res_model': 'ai.coworker.hitl',
             'view_mode': 'list,form',
@@ -2283,7 +2283,7 @@ class AICoworkerSession(models.Model):
 
     def action_get_lines(self):
         return {
-            'name': 'Messages', 'type': 'ir.actions.act_window',
+            'name': self.env._('Messages'), 'type': 'ir.actions.act_window',
             'res_model': 'ai.coworker.session.line', 'view_mode': 'list,form',
             'views': [[False, 'list'], [False, 'form']],
             'target': 'current',
@@ -2845,13 +2845,13 @@ class AICoworkerSession(models.Model):
         if self.handover_state not in ('offered', 'claimed'):
             from odoo.exceptions import UserError
             raise UserError(
-                'The session has no pending handover to claim '
-                '(state=%s).' % self.handover_state)
+                self.env._('The session has no pending handover to claim '
+                '(state=%s).') % self.handover_state)
         if self.handover_by and self.handover_by != self.env.user:
             from odoo.exceptions import UserError
             raise UserError(
-                'Handover happens within the same user. This session '
-                'belongs to %s.' % self.handover_by.name)
+                self.env._('Handover happens within the same user. This session '
+                'belongs to %s.') % self.handover_by.name)
 
         # Atomiskt lås FÖRE varje skrivning (D5). Misslyckas låset
         # returnerar vi False utan att ha rört sessionen.

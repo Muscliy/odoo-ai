@@ -138,11 +138,12 @@ class AICoworkerMailTestWizard(models.TransientModel):
         self.write({
             'state': 'done',
             'result': (
-                f'Session {session.id} skapad: {session.name}\n'
-                f'Avsändare: {email_from or "unknown"}\n'
-                f'Bilagor: {att_count} st → ir.attachment + session-minnen\n\n'
-                'Öppna sessionen (Odoo Mind → Sessions) för att se mailet, '
-                'bilagorna och svaret i chatter:n.'
+                self.env._(
+                    'Session %(id)s created: %(name)s\nSender: %(sender)s\n'
+                    'Attachments: %(count)s → attachments and session memories\n\n'
+                    'Open the session (Odoo Mind → Sessions) to see the email, attachments and reply.',
+                    id=session.id, name=session.name, sender=email_from or self.env._('Unknown'), count=att_count,
+                )
             ),
         })
         return {

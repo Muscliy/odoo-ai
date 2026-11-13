@@ -218,12 +218,12 @@ class WorkspaceParaContainer(models.Model):
                 atype,
                 'lessons:%s:%s' % (rec.user_id.id, rec.name.lower()),
                 summary,
-                title='Lessons learned: %s' % rec.name,
+                title=self.env._('Lessons learned: %s') % rec.name,
                 owner_user_id=rec.user_id.id or self.env.uid,
                 generated_by='project_close', status='stable')
             concept.distill_l2_l3(
-                l2='Experiences from %s summarised from %d linked references.' % (rec.name, len(rec.ref_ids)),
-                l3='Lessons learned: %s' % rec.name,
+                l2=self.env._('Experiences from %s summarised from %d linked references.') % (rec.name, len(rec.ref_ids)),
+                l3=self.env._('Lessons learned: %s') % rec.name,
                 generated_by='project_close')
         return True
 

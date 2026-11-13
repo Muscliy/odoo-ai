@@ -1,0 +1,122 @@
+[
+  {
+    "xmlid": "ai_agent_core.skill_mail_invoice",
+    "name": "Mail: Leverantörsfaktura → account.move",
+    "description": "供应商发票处理：读取邮件及附件，识别票据信息，并创建正确的供应商账单 account.move（in_invoice）。",
+    "source_description_sha256": "d2bbc2cb647dd8146d9b6537326b5c5e0831e50476d57ea0b5fc5e2fa47fd9a5"
+  },
+  {
+    "xmlid": "ai_agent_core.skill_mail_partner",
+    "name": "Mail: Hitta/skapa res.partner",
+    "description": "邮件发件人识别：根据发件人的邮箱和名称，在 res.partner 中查找或创建正确的联系人。",
+    "source_description_sha256": "2f793c45105017a3c5b39e327426cf266969dac195dcc20f72b6608f7ff7a674"
+  },
+  {
+    "xmlid": "ai_agent_core.skill_partner_enrichment",
+    "name": "Partner: Berika företagsuppgifter",
+    "description": "客户资料补全：通过网页检索查找企业网站、行业和公司介绍，先给出建议和依据，经用户批准后再更新 res.partner。",
+    "source_description_sha256": "8c2a354e226961e38477f33ce6de963d4775d96e23f1681374899f7e570d37f1"
+  },
+  {
+    "xmlid": "ai_agent_core.skill_git_identity",
+    "name": "git-identitet vid Odoo-kodpush",
+    "description": "Git 身份配置：在提交或推送 Odoo 代码前，核对当前 Odoo 用户的邮箱或 GitHub SSH 密钥身份，正确设置 user.name 和 user.email。",
+    "source_description_sha256": "4f32d81532823d3b0b3e4fcaab05e4a4169ee8f8b3ddb2e04e88173bfef519ad"
+  },
+  {
+    "xmlid": "ai_agent_core.skill_vertel_openspec",
+    "name": "vertel-openspec",
+    "description": "OpenSpec 变更规划：说明如何使用 openspec/specs 中的现行规范及 openspec/changes 中的变更提案来规划开发任务。",
+    "source_description_sha256": "532cce3d1528809f4ec07d3cc6fe093fc9a1d04f0a334cf2647b5e853956b9d1"
+  },
+  {
+    "xmlid": "ai_agent_core.skill_odoo_core",
+    "name": "odoo-core",
+    "description": "Odoo 业务操作：覆盖客户关系、销售、财务、库存、采购、制造和项目等核心流程，说明各项操作应使用的工具及人工审批要求。",
+    "source_description_sha256": "832b55cba0c19b45e8b4c7537607f4c003dbc3d20c7ef0994658a6735f01424f"
+  },
+  {
+    "xmlid": "ai_agent_core.skill_office_dokument",
+    "name": "office-dokument",
+    "description": "办公文档处理：读取、创建和修改 Word、Excel、演示文稿、开放文档及 PDF，支持扫描件文字识别；通过 odoo_attach 获取和交付文件。",
+    "source_description_sha256": "734ea8a6982747590f7c6b5c066d3ab01cbe44cc13f6d589d0b5c3cd3de6e0a0"
+  },
+  {
+    "xmlid": "ai_agent_core.skill_okf_summarize",
+    "name": "okf-summarize",
+    "description": "知识索引摘要：将较长文本整理为简短且便于检索的摘要，保留事实、名称、数字、日期和原意。",
+    "source_description_sha256": "64d9ae20753c039975ec607ee01ba5d22838b18d4aae97d7110bc807fe5f6889"
+  },
+  {
+    "xmlid": "ai_agent_core.skill_orchestration_supervisor",
+    "name": "orchestration.supervisor",
+    "description": "多智能体协调：将任务委派给领域专员，评估回复、逐步完善问题，并综合形成最终答案。",
+    "source_description_sha256": "c6ed28bb4567e03d40aeaf0617bd78e9992107bcfe9690948aa40a0f8e1cf505"
+  },
+  {
+    "xmlid": "ai_agent_core.skill_push_notification",
+    "name": "push-notification",
+    "description": "任务完成通知：判断何时应立即发送推送，何时应安排后台任务；避免重复提醒或发送打扰用户的消息。",
+    "source_description_sha256": "f7ca79f3c00b19fbb0ded78dda1f9d1c938f08109d5dd9aebff720d6e792d410"
+  },
+  {
+    "xmlid": "ai_agent_core.skill_vertel_skills",
+    "name": "vertel-skills",
+    "description": "技能使用说明：解释本 AI 平台的技能是什么、如何启用、有哪些可用技能，以及如何提出新技能需求。",
+    "source_description_sha256": "1ed1604036101a76e01f58c4b1e92016681809bc61fcd784ef4a882d65935540"
+  },
+  {
+    "xmlid": "ai_agent_core.skill_vertel_clicktest",
+    "name": "vertel-clicktest",
+    "description": "自动点击测试：介绍 odoo.clicktest/odoo.canary 的测试运行、结果文件、测试容器和运行周期，适用于排查网页自动化测试问题。",
+    "source_description_sha256": "c08802357d91442df76e438a80493f253237f5d65a90e4d7e5df27f05521eae7"
+  },
+  {
+    "xmlid": "ai_agent_core.skill_vertel_infra",
+    "name": "vertel-infra",
+    "description": "Vertel 基础设施说明：介绍其 SaltStack 仓库、文档、配置、凭据管理、高可用节点和 LXD 容器。仅在处理该环境的基础设施问题时使用。",
+    "source_description_sha256": "6f3bee37b8b41c4a2d7c5a181d29f07d1d759886509c5420bc9cb5ad253440f0"
+  },
+  {
+    "xmlid": "ai_agent_core.skill_news_briefing",
+    "name": "news-briefing",
+    "description": "新闻简报：筛选并按重要程度排列 7–10 条新闻，支持每日摘要缓存、主题过滤和根据用户兴趣调整内容。",
+    "source_description_sha256": "f747894cbcd0fe8192b275b3edf9a3e91697d148319c1cc4ccda56c6b66e5807"
+  },
+  {
+    "xmlid": "ai_agent_core.skill_news_sources",
+    "name": "news-sources",
+    "description": "新闻来源管理：提供共享新闻订阅源（RSS），供新闻助手读取；用户个人关注的来源保存在个人记忆中。",
+    "source_description_sha256": "e7d734dcb5040cd02fae4ff97a0f5b4f45fd062632696bb5a854e70a355d3f2f"
+  },
+  {
+    "xmlid": "ai_agent_core.skill_youtube_channels",
+    "name": "youtube-channels",
+    "description": "YouTube 频道浏览：查看最新上传、列出频道视频或在指定频道内搜索；支持频道名称和 @账号。",
+    "source_description_sha256": "d4a12dfa4540edcc747034c9374f63f30a20aa8ab74c313fef7a66fe641a0614"
+  },
+  {
+    "xmlid": "ai_agent_core.skill_youtube_full",
+    "name": "youtube-full",
+    "description": "YouTube 综合工具：将字幕提取、视频搜索、频道浏览和播放列表查询整合为一项技能。",
+    "source_description_sha256": "f518269e80a53654fc4fbc2c1fa7560b8e5045645b1e910779edb824615092e4"
+  },
+  {
+    "xmlid": "ai_agent_core.skill_youtube_playlist",
+    "name": "youtube-playlist",
+    "description": "YouTube 播放列表：获取播放列表中的视频，适用于整理或分析整套视频内容。",
+    "source_description_sha256": "b185f4bccb33b9dd6885c691d5e60cb506f6da882f4f79fd1763841fe798facf"
+  },
+  {
+    "xmlid": "ai_agent_core.skill_youtube_search",
+    "name": "youtube-search",
+    "description": "YouTube 内容搜索：按主题查找视频、教程和频道，帮助用户发现需要的内容。",
+    "source_description_sha256": "771b23761684015e0509e5abd1906c70f549f84932e3ac2065310e4a22763c11"
+  },
+  {
+    "xmlid": "ai_agent_core.skill_youtube_transcript",
+    "name": "youtube-transcript",
+    "description": "YouTube 视频文字提取：用户提供视频链接后，提取字幕并根据需要整理、总结、翻译或分析。",
+    "source_description_sha256": "3cc0b61a19ac86350967df679dd904eb8f4b75cb30dbd3e76b55f48d4a266beb"
+  }
+]

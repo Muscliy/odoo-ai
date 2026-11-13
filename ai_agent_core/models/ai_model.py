@@ -219,7 +219,7 @@ class AIModel(models.Model):
     def action_open_llms(self):
         """Open agents using this model (stat button)."""
         return {
-            'name': 'Agenter',
+            'name': self.env._('Agenter'),
             'type': 'ir.actions.act_window',
             'res_model': 'ai.agent',
             'view_mode': 'list,form',
@@ -230,7 +230,7 @@ class AIModel(models.Model):
     def action_open_session_lines(self):
         """Open coworker session lines using this model (stat button)."""
         return {
-            'name': 'Sessioner',
+            'name': self.env._('Sessioner'),
             'type': 'ir.actions.act_window',
             'res_model': 'ai.coworker.session.line',
             'view_mode': 'list,form',

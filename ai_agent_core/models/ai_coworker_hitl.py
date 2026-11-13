@@ -345,7 +345,7 @@ class AICoworkerHITLMixin(models.Model):
         sess = Sess.browse(int(sess_id)).exists()
         if not sess:
             raise ValidationError(
-                'HITL-request: session %s finns inte (raderad?).' % sess_id)
+                self.env._('HITL-request: session %s finns inte (raderad?).') % sess_id)
         return sess
 
     def _request_hitl(self, action_type, summary, context=None,
@@ -408,7 +408,7 @@ class AICoworkerHITLMixin(models.Model):
         self.ensure_one()
         return {
             'type': 'ir.actions.act_window',
-            'name': 'HITL-requests — %s' % self.name,
+            'name': self.env._('HITL-requests — %s') % self.name,
             'res_model': 'ai.coworker.hitl',
             'view_mode': 'list,form',
             'views': [[False, 'list'], [False, 'form']],
@@ -440,7 +440,7 @@ class ResUsersHITL(models.Model):
         self.ensure_one()
         return {
             'type': 'ir.actions.act_window',
-            'name': 'My HITL Approvals',
+            'name': self.env._('My HITL Approvals'),
             'res_model': 'ai.coworker.hitl',
             'view_mode': 'list,form',
             'views': [[False, 'list'], [False, 'form']],

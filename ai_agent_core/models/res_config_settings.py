@@ -358,11 +358,13 @@ class ResConfigSettings(models.TransientModel):
                 failures = cron.failure_count or 0
                 fail_mark = ' ❌' if failures > 0 else ''
                 lines.append(
-                    f"[{'x' if cron.active else ' '}] {cron.cron_name}"
-                    f" — varje {cron.interval_number} {cron.interval_type}"
-                    f"{fail_mark} ({failures} fel)"
+                    f"[{'x' if cron.active else ' '}] {self.env._(cron.cron_name)}"
+                    + self.env._(' — every %(number)s %(unit)s%(mark)s (%(failures)s failures)',
+                        number=cron.interval_number,
+                        unit=dict(cron._fields['interval_type']._description_selection(self.env)).get(cron.interval_type, cron.interval_type),
+                        mark=fail_mark, failures=failures)
                 )
-            r.bg_status_summary = '\n'.join(lines) if lines else 'Inga cron-jobb hittades'
+            r.bg_status_summary = '\n'.join(lines) if lines else self.env._('Inga cron-jobb hittades')
 
     @api.model
     def get_values(self):
@@ -447,10 +449,12 @@ class ResConfigSettings(models.TransientModel):
             failures = cron.failure_count or 0
             fail_mark = ' ❌' if failures > 0 else ''
             lines.append(
-                f"[{'x' if cron.active else ' '}] {cron.cron_name}"
-                f" — varje {cron.interval_number} {cron.interval_type}"
-                f"{fail_mark} ({failures} fel)")
-        res['bg_status_summary'] = '\n'.join(lines) if lines else 'Inga cron-jobb hittades'
+                f"[{'x' if cron.active else ' '}] {self.env._(cron.cron_name)}"
+                + self.env._(' — every %(number)s %(unit)s%(mark)s (%(failures)s failures)',
+                    number=cron.interval_number,
+                    unit=dict(cron._fields['interval_type']._description_selection(self.env)).get(cron.interval_type, cron.interval_type),
+                    mark=fail_mark, failures=failures))
+        res['bg_status_summary'] = '\n'.join(lines) if lines else self.env._('Inga cron-jobb hittades')
 
         # Background jobs — per-cron rader (task 7.15)
         all_names = [c[1] for c in BG_CRON_NAMES] + \
@@ -607,57 +611,57 @@ class ResConfigSettings(models.TransientModel):
         company = self.env.company
         if not company.website_rag_attachment_id:
             return self._notify(
-                'Ingen RAG',
-                'Index the website first before creating suggestions.',
+                self.env._('Ingen RAG'),
+                self.env._('Index the website first before creating suggestions.'),
                 'warning')
         company._suggest_identity()
         return self._notify(
-            'Mission uppdaterad',
-            'The mission was updated based on the website content.')
+            self.env._('Mission uppdaterad'),
+            self.env._('The mission was updated based on the website content.'))
 
     def action_suggest_values(self):
         """Suggest values only from website RAG."""
         company = self.env.company
         if not company.website_rag_attachment_id:
             return self._notify(
-                'Ingen RAG',
-                'Index the website first before creating suggestions.',
+                self.env._('Ingen RAG'),
+                self.env._('Index the website first before creating suggestions.'),
                 'warning')
         company._suggest_identity()
         return self._notify(
-            'Values uppdaterade',
-            'The values were updated based on the website content.')
+            self.env._('Values uppdaterade'),
+            self.env._('The values were updated based on the website content.'))
 
     def action_index_website(self):
         company = self.env.company
         if not company.partner_id.website:
             return self._notify(
-                'Ingen webbplats',
-                'The company has no website configured on the partner.',
+                self.env._('Ingen webbplats'),
+                self.env._('The company has no website configured on the partner.'),
                 'warning')
         company._index_website()
         return self._notify(
-            'Webbplats indexerad',
-            'Webbplatsen har crawlat och sparats som RAG.')
+            self.env._('Webbplats indexerad'),
+            self.env._('Webbplatsen har crawlat och sparats som RAG.'))
 
     def action_sync_graph_now(self):
         defn = self.env['graph.node.definition'].search([], limit=1)
         if defn:
             defn._sync_all()
         return self._notify(
-            'Graph synkad',
-            'Odoo Mind Graph har synkroniserats.')
+            self.env._('Graph synkad'),
+            self.env._('Odoo Mind Graph har synkroniserats.'))
 
     def action_index_personal_now(self):
         """Kör nu: indexera personliga minneskällor (roll + mål)."""
         try:
             result = self.env['ai.okf.concept']._index_all_personal_sources()
             return self._notify(
-                'Personliga minnen indexerade',
-                'Roles: %(roles)s · Goals: %(goals)s' % result)
+                self.env._('Personliga minnen indexerade'),
+                self.env._('Roles: %(roles)s · Goals: %(goals)s') % result)
         except Exception as e:
             return self._notify(
-                'Indexering misslyckades', str(e), type_='danger')
+                self.env._('Indexering misslyckades'), str(e), type_='danger')
 
     def action_toggle_cron(self, cron_key, active):
         """Toggle a cron job on/off by its key in BG_CRON_NAMES."""
@@ -698,7 +702,7 @@ class ResConfigSettings(models.TransientModel):
         """Öppna OKF-artefakttyperna."""
         return {
             'type': 'ir.actions.act_window',
-            'name': 'OKF Artefakttyper',
+            'name': self.env._('OKF Artefakttyper'),
             'res_model': 'ai.artifact.type',
             'view_mode': 'list,form',
             'views': [[False, 'list'], [False, 'form']],
@@ -710,7 +714,7 @@ class ResConfigSettings(models.TransientModel):
         """Öppna OKF-access-resolvarna."""
         return {
             'type': 'ir.actions.act_window',
-            'name': 'OKF Access Resolvers',
+            'name': self.env._('OKF Access Resolvers'),
             'res_model': 'ai.access.resolver',
             'view_mode': 'list,form',
             'views': [[False, 'list'], [False, 'form']],
@@ -722,7 +726,7 @@ class ResConfigSettings(models.TransientModel):
         """Öppna OKF-koncepten (dashboard)."""
         return {
             'type': 'ir.actions.act_window',
-            'name': 'OKF Koncept',
+            'name': self.env._('OKF Koncept'),
             'res_model': 'ai.okf.concept',
             'view_mode': 'list,form',
             'views': [[False, 'list'], [False, 'form']],

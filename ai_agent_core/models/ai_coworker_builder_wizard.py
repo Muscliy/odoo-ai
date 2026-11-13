@@ -6,6 +6,7 @@ Contains an iframe loading /ai/chat with the Quest Builder quest.
 """
 
 from odoo import models, fields, api
+from .builtin_localization import find_builtin
 
 
 class AICoworkerBuilderWizard(models.TransientModel):
@@ -21,8 +22,7 @@ class AICoworkerBuilderWizard(models.TransientModel):
     def _compute_chat_url(self):
         for wiz in self:
             # Find Quest Builder quest
-            builder = self.env['ai.coworker'].search(
-                [('name', '=', 'Quest Builder')], limit=1)
+            builder = find_builtin(self.env, 'Quest Builder')
             if not builder:
                 wiz.chat_url = '/ai/chat?embedded=1'
                 continue
@@ -36,7 +36,7 @@ class AICoworkerBuilderWizard(models.TransientModel):
         self.ensure_one()
         return {
             'type': 'ir.actions.act_window',
-            'name': 'Quest Builder',
+            'name': self.env._('Quest Builder'),
             'res_model': 'ai.coworker.builder.wizard',
             'view_mode': 'form',
             'views': [[False, 'form']],

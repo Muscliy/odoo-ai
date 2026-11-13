@@ -43,7 +43,7 @@ class AiSearchSource(models.Model):
         for rec in self:
             if rec.backend and rec.backend not in known:
                 raise ValidationError(
-                    'Unknown backend key: %s. Known: %s' % (
+                    self.env._('Unknown backend key: %s. Known: %s') % (
                         rec.backend, ', '.join(sorted(known))))
 
     @api.model
@@ -77,7 +77,7 @@ class AiSearchSource(models.Model):
             },
             {
                 'code': 'ai_memory',
-                'name': 'Minnesrader',
+                'name': self.env._('Minnesrader'),
                 'backend': 'ai_memory',
                 'sequence': 20,
                 'is_wired': True,
@@ -86,7 +86,7 @@ class AiSearchSource(models.Model):
             },
             {
                 'code': 'graph',
-                'name': 'Kunskapsgraf (AGE)',
+                'name': self.env._('Kunskapsgraf (AGE)'),
                 'backend': 'graph',
                 'sequence': 30,
                 'is_wired': False,
@@ -95,7 +95,7 @@ class AiSearchSource(models.Model):
             },
             {
                 'code': 'documents',
-                'name': 'Dokument-RAG',
+                'name': self.env._('Dokument-RAG'),
                 'backend': 'documents',
                 'sequence': 40,
                 'is_wired': False,

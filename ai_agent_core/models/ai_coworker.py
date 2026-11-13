@@ -3,6 +3,7 @@
 
 import json, logging, re, uuid, base64, hashlib
 from odoo import models, fields, api, _
+from .builtin_localization import find_builtin
 from odoo.exceptions import UserError, ValidationError
 from odoo import SUPERUSER_ID
 
@@ -154,19 +155,20 @@ class AICoworker(models.Model):
     )
 
     @api.depends('orchestration_mode')
+    @api.depends_context('lang')
     def _compute_orchestration_mode_help(self):
         help_text = {
-            'single': 'One agent does it all — a single assistant or specialist.',
-            'supervisor': 'A hidden supervisor delegates to specialists and '
-                          'synthesises the answer (invisible team).',
-            'buzz': 'A visible team in a Discuss channel — agents with their '
-                    'own identities that get @mentioned and cooperate.',
-            'linear': 'Sequential pipeline — each agent answer becomes the next '
-                      'agent prompt (ordered by sequence).',
-            'conference': 'All agents get the same question — the best answer wins '
-                          '(majority, confidence or synthesis).',
-            'automation': 'Scheduled, headless execution without human '
-                          'interaction (AUTO permission).',
+            'single': self.env._('One agent does it all — a single assistant or specialist.'),
+            'supervisor': self.env._('A hidden supervisor delegates to specialists and '
+                          'synthesises the answer (invisible team).'),
+            'buzz': self.env._('A visible team in a Discuss channel — agents with their '
+                    'own identities that get @mentioned and cooperate.'),
+            'linear': self.env._('Sequential pipeline — each agent answer becomes the next '
+                      'agent prompt (ordered by sequence).'),
+            'conference': self.env._('All agents get the same question — the best answer wins '
+                          '(majority, confidence or synthesis).'),
+            'automation': self.env._('Scheduled, headless execution without human '
+                          'interaction (AUTO permission).'),
         }
         for rec in self:
             rec.orchestration_mode_help = help_text.get(
@@ -447,11 +449,11 @@ class AICoworker(models.Model):
             self._seed_memory_settings()
             return {
                 'warning': {
-                    'title': 'Identity copied',
+                    'title': self.env._('Identity copied'),
                     'message': (
-                        'A personal copy of "%s" was created for this quest. '
+                        self.env._('A personal copy of "%s" was created for this quest. '
                         'The copy evolves independently of the original '
-                        'template.'
+                        'template.')
                     ) % self.identity_id.name,
                 }
             }
@@ -728,6 +730,8 @@ class AICoworker(models.Model):
                 lambda it: it.init_type == 'mail')[:1]
             rec.mail_alias_ids = mail.alias_id if mail else False
 
+    @api.depends('name')
+    @api.depends_context('lang')
     def _compute_manual_call_instructions(self):
         """Instruktioner för att anropa medarbetaren från kod (init manual)."""
         for rec in self:
@@ -741,34 +745,37 @@ class AICoworker(models.Model):
             except Exception:
                 pass  # best-effort: tyst fallback — se etiketteringsregeln
             ref = ref or f"env['ai.coworker'].browse({eid})"
-            code = (
+            code = self.env._(
                 '# Example 1 — simple run (a session is created automatically)\n'
-                f'result = {ref}.run("Your question here")\n'
+                'result = %(ref)s.run("Your question here")\n'
                 '\n'
                 '# Example 2 — with your own session (tracked in Odoo Mind)\n'
                 'sess = env["ai.coworker.session"].create({\n'
-                f'    "coworker_id": {eid},\n'
+                '    "coworker_id": %(eid)s,\n'
                 '    "status": "active",\n'
                 '    "name": "My Task",\n'
                 '})\n'
-                f'result = {ref}.run("Your question here", session=sess)\n'
+                'result = %(ref)s.run("Your question here", session=sess)\n'
                 '\n'
                 '# Example 3 — server action code (runs on the selected records)\n'
-                f'coworker = {ref}\n'
+                'coworker = %(ref)s\n'
                 'coworker.run("Analyse " + records.display_name, records=records)\n'
                 '\n'
                 '# NOTE: for tools that write (odoo_create/odoo_write) in automated flows:\n'
-                f'result = {ref}.with_context(_ai_auto_approve=True).run("Your question")\n'
+                'result = %(ref)s.with_context(_ai_auto_approve=True).run("Your question")\n',
+                ref=ref, eid=eid,
             )
-
             escaped = code.replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;')
+            name = (rec.name or '').replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;')
             rec.manual_call_instructions = (
                 '<div style="font-size:13px;line-height:1.5">'
-                + f'<p><strong>Call {rec.name} from code</strong> — use one of the examples below:</p>'
+                + self.env._('<p><strong>Call %(name)s from code</strong> — use one of the examples below:</p>', name=name)
                 + '<pre style="background:#f5f5f5;padding:8px;border-radius:4px;font-size:12px;overflow:auto"><code>'
                 + escaped + '</code></pre>'
-                + f'<p><strong>Alternative call path:</strong> generic webhook '
-                f'<code>POST /ai/webhook/{eid}</code> with Authorization: Bearer &lt;webhook_secret&gt; and a JSON payload.</p>'
+                + self.env._(
+                    '<p><strong>Alternative call path:</strong> generic webhook '
+                    '<code>POST /ai/webhook/%(eid)s</code> with Authorization: Bearer &lt;webhook_secret&gt; '
+                    'and a JSON payload.</p>', eid=eid)
                 + '</div>'
             )
 
@@ -782,7 +789,7 @@ class AICoworker(models.Model):
                 'type': 'ir.actions.act_window_close',
             }
         return {
-            'name': 'Mail-alias',
+            'name': self.env._('Mail-alias'),
             'type': 'ir.actions.act_window',
             'res_model': 'mail.alias',
             'view_mode': 'form',
@@ -805,7 +812,7 @@ class AICoworker(models.Model):
                 'The mail trigger has no active alias. Turn on Mail under '
                 'Triggers and save.')
         return {
-            'name': 'Test the mail flow',
+            'name': self.env._('Test the mail flow'),
             'type': 'ir.actions.act_window',
             'res_model': 'ai.coworker.mail.test.wizard',
             'view_mode': 'form',
@@ -6274,8 +6281,8 @@ class AICoworker(models.Model):
         body = (task.description or '').strip() or (task.name or '').strip()
         if not body:
             raise ValidationError(
-                'Task %s has neither a description nor a name — cannot build a '
-                'job prompt.' % (task.id,))
+                self.env._('Task %s has neither a description nor a name — cannot build a '
+                'job prompt.') % (task.id,))
         parts = [body]
         goal = task.goal_id
         if goal:
@@ -6366,16 +6373,16 @@ class AICoworker(models.Model):
 
         if not user:
             raise ValidationError(
-                'External run: no user could be resolved for coworker %s '
+                self.env._('External run: no user could be resolved for coworker %s '
                 '(trigger type %s). Set the field "Owner (automatic runs)" on '
                 'the coworker — that is who receives the session experience. '
-                'The system user is never used (D5).'
+                'The system user is never used (D5).')
                 % (self.display_name, init_type or 'unknown'))
         if user.id == root.id or user.login in ('__system__', 'system'):
             raise ValidationError(
-                'An external run may not run as the system user (D5). '
+                self.env._('An external run may not run as the system user (D5). '
                 'Coworker %s (trigger type %s) has no real user — set the '
-                'field "Owner (automatic runs)".'
+                'field "Owner (automatic runs)".')
                 % (self.display_name, init_type or 'unknown'))
         return user
 
@@ -6504,9 +6511,9 @@ class AICoworker(models.Model):
                 if missing else 'no agent is linked'
             )
             raise ValidationError(
-                'Coworker "%s" cannot run: no LLM provider could be resolved '
+                self.env._('Coworker "%s" cannot run: no LLM provider could be resolved '
                 '(%s). Set the "Model" field on the agent, or set the '
-                'ai_agent_core.default_model_id system parameter.'
+                'ai_agent_core.default_model_id system parameter.')
                 % (self.name, detail))
 
         return provider, model_rec
@@ -6671,7 +6678,7 @@ class AICoworker(models.Model):
 
     def action_get_agents(self):
         return {
-            'name': 'Agents', 'type': 'ir.actions.act_window',
+            'name': self.env._('Agents'), 'type': 'ir.actions.act_window',
             'res_model': 'ai.agent', 'view_mode': 'kanban,list,form',
             'views': [[False, 'kanban'], [False, 'list'], [False, 'form']],
             'target': 'current',
@@ -6681,8 +6688,7 @@ class AICoworker(models.Model):
     def action_open_builder(self):
         """Open Quest Builder chat for this quest."""
         self.ensure_one()
-        builder = self.env['ai.coworker'].search(
-            [('name', '=', 'Quest Builder')], limit=1)
+        builder = find_builtin(self.env, 'Quest Builder')
         if not builder:
             return {'type': 'ir.actions.act_url', 'url': '/ai/chat', 'target': 'new'}
         url = f'/ai/chat?coworker_id={builder.id}'
@@ -6733,7 +6739,7 @@ class AICoworker(models.Model):
         (coworker-session-smart-button D1/D2).
         """
         return {
-            'name': 'Sessions', 'type': 'ir.actions.act_window',
+            'name': self.env._('Sessions'), 'type': 'ir.actions.act_window',
             'res_model': 'ai.coworker.session', 'view_mode': 'list,form',
             'views': [[False, 'list'], [False, 'form']],
             'search_view_id': self.env.ref(
@@ -6752,7 +6758,7 @@ class AICoworker(models.Model):
         """
         self.ensure_one()
         return {
-            'name': 'Minne — %s' % self.name,
+            'name': self.env._('Minne — %s') % self.name,
             'type': 'ir.actions.act_window',
             'res_model': 'ai.okf.concept',
             'view_mode': 'list,form',
@@ -6780,7 +6786,7 @@ class AICoworker(models.Model):
         from datetime import date
         month_start = date(date.today().year, date.today().month, 1)
         return {
-            'name': 'Session Lines', 'type': 'ir.actions.act_window',
+            'name': self.env._('Session Lines'), 'type': 'ir.actions.act_window',
             'res_model': 'ai.coworker.session.line',
             'view_mode': 'list,form,pivot',
             'views': [[False, 'list'], [False, 'form'], [False, 'pivot']],
@@ -6801,7 +6807,7 @@ class AICoworker(models.Model):
         if 'ai.coworker.session.object' not in self.env:
             return {'type': 'ir.actions.act_window_close'}
         return {
-            'name': 'Objects', 'type': 'ir.actions.act_window',
+            'name': self.env._('Objects'), 'type': 'ir.actions.act_window',
             'res_model': 'ai.coworker.session.object',
             'view_mode': 'list,form',
             'views': [[False, 'list'], [False, 'form']],
@@ -6886,7 +6892,7 @@ class AICoworker(models.Model):
         today = date.today()
         month_start = date(today.year, today.month, 1)
         return {
-            'name': f'Usage — {self.name}',
+            'name': self.env._('Usage — %(name)s', name=self.name),
             'type': 'ir.actions.act_window',
             'res_model': 'ai.coworker.session.line',
             'view_mode': 'list,pivot',
@@ -7318,11 +7324,12 @@ class AICoworker(models.Model):
                         return
                     target_user = self.user_id or session.user_id
                     self.env['workspace.activity.suggestion']._create_suggestion(
-                        summary=f'Approval required: {tool_name}',
+                        summary=self.env._('Approval required: %(tool)s', tool=tool_name),
                         detail=(
-                            f'The coworker {self.name} wanted to run {tool_name} '
-                            f'with {args} but was denied ({reason}). '
-                            f'Carry out the action manually or through approval.'
+                            self.env._(
+                                'The coworker %(name)s wanted to run %(tool)s with %(args)s '
+                                'but was denied (%(reason)s). Carry out the action manually or through approval.',
+                                name=self.name, tool=tool_name, args=args, reason=reason)
                         ),
                         suggestion_type='mail.activity',
                         source='coworker',
@@ -9528,14 +9535,14 @@ class AICoworker(models.Model):
         # D3 + D10: riktning och fullständig organisation.
         ok, reason = self._delegation_target_allowed(target)
         if not ok:
-            raise ValidationError('Delegation denied: %s' % reason)
+            raise ValidationError(self.env._('Delegation denied: %s') % reason)
 
         # D5: mottagbarhet.
         ok, reason = target._is_receptive()
         if not ok:
             raise ValidationError(
-                'Delegation denied: %s Choose another colleague, or wait until '
-                'the recipient is back.' % reason)
+                self.env._('Delegation denied: %s Choose another colleague, or wait until '
+                'the recipient is back.') % reason)
 
         # Heartbeat-operativ (schemalagt-arbete 5.2): en mottagare vars
         # heartbeat inte är operativ får inget uppdrag — det skulle ruttna
@@ -9546,9 +9553,9 @@ class AICoworker(models.Model):
         hb_ok, hb_reason = target._heartbeat_operational()
         if not hb_ok:
             raise ValidationError(
-                'Delegation denied: %s The task would sit in a queue nobody '
+                self.env._('Delegation denied: %s The task would sit in a queue nobody '
                 'drains. Turn on heartbeat for the coworker (requires write '
-                'access), or choose another colleague.' % hb_reason)
+                'access), or choose another colleague.') % hb_reason)
 
         # D2: djup-taket — ny session per steg nollställer annars rundräknare.
         depth = self._delegation_depth() + 1
@@ -9559,8 +9566,8 @@ class AICoworker(models.Model):
             max_depth = 3
         if depth > max_depth:
             raise ValidationError(
-                'Delegation denied: max depth (%d) reached. The chain would '
-                'grow without bound (each step is a new session).' % max_depth)
+                self.env._('Delegation denied: max depth (%d) reached. The chain would '
+                'grow without bound (each step is a new session).') % max_depth)
 
         # D8: dygnskvot per (beställare, mottagare).
         try:
@@ -9572,8 +9579,8 @@ class AICoworker(models.Model):
             quota = 10
         if self._delegation_quota_used(target) >= quota:
             raise ValidationError(
-                'Delegation denied: the daily quota (%d) against %s is reached. '
-                'Try again tomorrow.' % (quota, target.name))
+                self.env._('Delegation denied: the daily quota (%d) against %s is reached. '
+                'Try again tomorrow.') % (quota, target.name))
 
         # D2: beställarens tillitssteg frystes vid skapandet.
         trust = 0
@@ -9993,7 +10000,7 @@ class AICoworker(models.Model):
 
         if not self.active or self.status != 'active':
             raise ValidationError(
-                '%s is not active — activate the coworker first.' % self.name)
+                self.env._('%s is not active — activate the coworker first.') % self.name)
 
         if not self._heartbeat_waker_registered():
             raise ValidationError(

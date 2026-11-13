@@ -69,8 +69,9 @@ class AIOrgReview(models.Model):
     display_name = fields.Char(compute='_compute_display_name')
 
     @api.depends('agent_id.name', 'period', 'period_start')
+    @api.depends_context('lang')
     def _compute_display_name(self):
         for r in self:
             agent = r.agent_id.name or '?'
-            period = dict(r._fields['period'].selection).get(r.period, '?')
-            r.display_name = f'Review: {agent} — {period} {r.period_start}'
+            period = dict(r._fields['period']._description_selection(self.env)).get(r.period, '?')
+            r.display_name = self.env._('Review: %(name)s — %(period)s %(date)s', name=agent, period=period, date=r.period_start)

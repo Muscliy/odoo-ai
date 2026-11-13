@@ -220,18 +220,18 @@ class AIOkfDashboard(models.TransientModel):
                 # Hälsa (spec odoo-mind-dashboard)
                 if failures:
                     health, reason = 'red', \
-                        '%d failed cron runs' % failures
+                        self.env._('%d failed cron runs') % failures
                 elif t.model_id and total == 0:
                     health, reason = 'red', \
-                        'bridge aktiv men 0 koncept'
+                        self.env._('bridge aktiv men 0 koncept')
                 elif type_crons and not last_run:
-                    health, reason = 'yellow', 'indexer cron has not run'
+                    health, reason = 'yellow', self.env._('indexer cron has not run')
                 elif dirty or stale:
                     bits = []
                     if dirty:
-                        bits.append('%d dirty' % dirty)
+                        bits.append(self.env._('%d dirty') % dirty)
                     if stale:
-                        bits.append('%d stale' % stale)
+                        bits.append(self.env._('%d stale') % stale)
                     health, reason = 'yellow', '; '.join(bits)
                 else:
                     health, reason = 'green', 'OK'
@@ -289,10 +289,10 @@ class AIOkfDashboard(models.TransientModel):
                 result = executor.cypher(
                     "MATCH (n:OdooPartner) RETURN count(n) AS cnt", read_only=True)
                 cnt = result[0][0] if result else '?'
-                rec.graph_status = '✅ Aktiv'
+                rec.graph_status = self.env._('✅ Aktiv')
                 rec.graph_version = 'AGE %s' % cnt
             except Exception:
-                rec.graph_status = '⬜ Ej aktiv'
+                rec.graph_status = self.env._('⬜ Ej aktiv')
                 rec.graph_version = ''
 
             # Cron-status (OKF-indexerare + övriga AI-crons)
@@ -305,11 +305,11 @@ class AIOkfDashboard(models.TransientModel):
             for cron in crons:
                 failures = cron.failure_count or 0
                 mark = ' ❌' if failures else ''
-                lines.append('[%s] %s — varje %s %s%s' % (
+                lines.append(self.env._('[%s] %s — varje %s %s%s') % (
                     'x' if cron.active else ' ',
-                    cron.cron_name or cron.code[:50],
-                    cron.interval_number, cron.interval_type, mark))
-            rec.cron_status = '\n'.join(lines) if lines else 'Inga OKF-crons'
+                    self.env._(cron.cron_name) if cron.cron_name else cron.code[:50],
+                    cron.interval_number, dict(cron._fields['interval_type']._description_selection(self.env)).get(cron.interval_type, cron.interval_type), mark))
+            rec.cron_status = '\n'.join(lines) if lines else self.env._('Inga OKF-crons')
             rec.queue_status = self._format_queue_status()
 
     @api.model
@@ -331,7 +331,7 @@ class AIOkfDashboard(models.TransientModel):
             return ''
         rows = [s for s in stats if s['dirty']]
         if not rows:
-            return 'The queue is empty — every indexed model is up to date.'
+            return self.env._('The queue is empty — every indexed model is up to date.')
         rows.sort(key=lambda s: s['dirty'], reverse=True)
         lines = []
         for s in rows:
@@ -339,12 +339,12 @@ class AIOkfDashboard(models.TransientModel):
             if age is None:
                 age_txt = '—'
             elif age >= 86400:
-                age_txt = '%d d' % (age // 86400)
+                age_txt = self.env._('%d d') % (age // 86400)
             elif age >= 3600:
-                age_txt = '%d h' % (age // 3600)
+                age_txt = self.env._('%d h') % (age // 3600)
             else:
-                age_txt = '%d min' % max(1, age // 60)
-            lines.append('%s%-32s %8d left  (of %d, oldest %s)' % (
+                age_txt = self.env._('%d min') % max(1, age // 60)
+            lines.append(self.env._('%s%-32s %8d left  (of %d, oldest %s)') % (
                 '★ ' if s['priority'] else '  ',
                 s['model'], s['dirty'], s['total'], age_txt))
         return '\n'.join(lines)

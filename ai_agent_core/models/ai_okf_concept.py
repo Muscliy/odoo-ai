@@ -2726,7 +2726,7 @@ class AIOkfConcept(models.Model):
             ('res_id', '=', self.id),
             ('activity_type_id', '=',
              self.env.ref('mail.mail_activity_data_todo').id),
-            ('summary', '=', 'AI: organisera i PARA (projekt/area)?'),
+            ('summary', '=', self.env._('AI: organisera i PARA (projekt/area)?')),
         ], limit=1)
         if existing:
             return existing
@@ -2738,7 +2738,7 @@ class AIOkfConcept(models.Model):
                 ('kind', '=', 'resource'),
             ], limit=1) or self.env['workspace.para.container'].create({
                 'user_id': self.owner_user_id.id,
-                'name': 'Resources',
+                'name': self.env._('Resources'),
                 'kind': 'resource',
             })
             return self.action_place_in_para(container.id)
@@ -2757,8 +2757,8 @@ class AIOkfConcept(models.Model):
         try:
             return self.activity_schedule(
                 'mail.mail_activity_data_todo',
-                summary='AI: organisera i PARA (projekt/area)?',
-                note='The concept is in your inbox. Place it in a project or an area to activate activity suggestions.',
+                summary=self.env._('AI: organisera i PARA (projekt/area)?'),
+                note=self.env._('The concept is in your inbox. Place it in a project or an area to activate activity suggestions.'),
                 user_id=self.owner_user_id.id or self.env.uid,
             )
         except Exception:

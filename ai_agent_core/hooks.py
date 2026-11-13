@@ -904,8 +904,11 @@ def post_init_hook(env):
         _logger.warning(
             'channel_registry: kunde inte registrera kanalerna: %s', e)
 
+    from .models.builtin_localization import (
+        find_builtin, localize_builtin_coworkers, localize_skill_descriptions)
+
     # Quest Builder
-    if not env['ai.coworker'].search_count([('name', '=', 'Quest Builder')]):
+    if not find_builtin(env, 'Quest Builder'):
         env['ai.coworker'].create({
             'name': 'Quest Builder',
             'description': BUILDER_SYSTEM_PROMPT,
@@ -921,7 +924,7 @@ def post_init_hook(env):
         _logger.info('Quest Builder already exists — skipping')
 
     # Skill Builder
-    if not env['ai.coworker'].search_count([('name', '=', 'Skill Builder')]):
+    if not find_builtin(env, 'Skill Builder'):
         env['ai.coworker'].create({
             'name': 'Skill Builder',
             'description': SKILL_BUILDER_PROMPT,
@@ -935,6 +938,9 @@ def post_init_hook(env):
         _logger.info('Created Skill Builder quest')
     else:
         _logger.info('Skill Builder already exists — skipping')
+
+    localize_builtin_coworkers(env)
+    localize_skill_descriptions(env)
 
     # ════════════════════════════════════════════
     # AGE Graph initialization (Odoo Mind)

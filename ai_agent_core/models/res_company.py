@@ -98,7 +98,7 @@ class ResCompany(models.Model):
         """
         self.ensure_one()
         return {
-            'name': 'Company Memory',
+            'name': self.env._('Company Memory'),
             'type': 'ir.actions.act_window',
             'res_model': 'ai.okf.concept',
             'view_mode': 'list,form',

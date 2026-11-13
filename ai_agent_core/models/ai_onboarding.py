@@ -78,11 +78,12 @@ class AIOnboarding(models.Model):
     display_name = fields.Char(compute='_compute_display_name')
 
     @api.depends('ceo_user_id.name', 'state', 'create_date')
+    @api.depends_context('lang')
     def _compute_display_name(self):
         for r in self:
             ceo = r.ceo_user_id.name or '?'
-            state = dict(r._fields['state'].selection).get(r.state, '?')
-            r.display_name = f'Onboarding: {ceo} — {state}'
+            state = dict(r._fields['state']._description_selection(self.env)).get(r.state, '?')
+            r.display_name = self.env._('Onboarding: %(name)s — %(state)s', name=ceo, state=state)
 
     # ════════════════════════════════════════════
     # FAS 1: SKANNA
@@ -92,21 +93,21 @@ class AIOnboarding(models.Model):
     def detect_modules(self):
         """Skanna installerade Odoo-moduler och mappa till affärsdomäner."""
         module_map = {
-            'account': 'Ekonomi & Redovisning',
-            'crm': 'Sales process — leads & pipeline',
-            'sale': 'Order & Offerter',
-            'project': 'Projekt & Uppgifter',
-            'stock': 'Lagerhantering',
-            'mrp': 'Tillverkning — stycklistor & produktion',
-            'fleet': 'Fleet & Mileage Log',
-            'maintenance': 'Maintenance — equipment & schedules',
-            'hr': 'HR — employees, leave, recruitment',
-            'marketing': 'Marketing — campaigns & leads',
-            'helpdesk': 'Support — tickets & SLA',
-            'website': 'Webbplats',
-            'mgmtsystem': 'Ledningssystem — avvikelser & risker',
-            'purchase': 'Purchasing',
-            'point_of_sale': 'Kassa',
+            'account': self.env._('Ekonomi & Redovisning'),
+            'crm': self.env._('Sales process — leads & pipeline'),
+            'sale': self.env._('Order & Offerter'),
+            'project': self.env._('Projekt & Uppgifter'),
+            'stock': self.env._('Lagerhantering'),
+            'mrp': self.env._('Tillverkning — stycklistor & produktion'),
+            'fleet': self.env._('Fleet & Mileage Log'),
+            'maintenance': self.env._('Maintenance — equipment & schedules'),
+            'hr': self.env._('HR — employees, leave, recruitment'),
+            'marketing': self.env._('Marketing — campaigns & leads'),
+            'helpdesk': self.env._('Support — tickets & SLA'),
+            'website': self.env._('Webbplats'),
+            'mgmtsystem': self.env._('Ledningssystem — avvikelser & risker'),
+            'purchase': self.env._('Purchasing'),
+            'point_of_sale': self.env._('Kassa'),
         }
         detected = {}
         for module, description in module_map.items():
@@ -191,8 +192,8 @@ class AIOnboarding(models.Model):
             for q in qgroup.get('questions', [])[:3]:  # Max 3 per modul
                 questions.append({
                     'id': q.get('id'),
-                    'question': q.get('question'),
-                    'options': q.get('options', []),
+                    'question': self.env._(q['question']) if q.get('question') else '',
+                    'options': [self.env._(option) for option in q.get('options', [])],
                     'if_yes': q.get('if_yes'),
                     'if_none': q.get('if_none'),
                 })
@@ -218,6 +219,15 @@ class AIOnboarding(models.Model):
         """Fas 2b: Spara ett svar och gå vidare."""
         self.ensure_one()
         answers = dict(self.answers or {})
+        # Keep proposal-rule keys stable when an option is displayed in Chinese.
+        structure = self.template_id.structure_json or {} if self.template_id else {}
+        for group in structure.get('interview_questions', []):
+            for question in group.get('questions', []):
+                if question.get('id') == question_id:
+                    for option in question.get('options', []):
+                        if self.env._(option) == answer:
+                            answer = option
+                            break
         answers[question_id] = answer
         self.write({'answers': answers})
 
@@ -275,6 +285,8 @@ class AIOnboarding(models.Model):
             'departments': list(departments.values()),
             'company_goals': company_goals,
         }
+        from .ui_localization import localize_template
+        proposal = localize_template(proposal, self.env._)
         self.write({
             'state': 'proposal',
             'proposal_json': proposal,
@@ -284,16 +296,16 @@ class AIOnboarding(models.Model):
     def _default_department_for_question(self, question_id):
         """Mappa fråga till standardavdelning."""
         q_to_dept = {
-            'account_moms': 'Ekonomi',
-            'account_invoices': 'Ekonomi',
-            'account_bookkeeping': 'Ekonomi',
-            'hr_payroll': 'Personal',
-            'crm_leads': 'Sales',
-            'sale_offers': 'Sales',
-            'project_count': 'Projekt',
-            'project_timesheets': 'Projekt',
+            'account_moms': self.env._('Ekonomi'),
+            'account_invoices': self.env._('Ekonomi'),
+            'account_bookkeeping': self.env._('Ekonomi'),
+            'hr_payroll': self.env._('Personal'),
+            'crm_leads': self.env._('Sales'),
+            'sale_offers': self.env._('Sales'),
+            'project_count': self.env._('Projekt'),
+            'project_timesheets': self.env._('Projekt'),
         }
-        return q_to_dept.get(question_id, 'Generellt')
+        return q_to_dept.get(question_id, self.env._('Generellt'))
 
     def _suggest_identity(self, answers):
         """Föreslå mission/values från intervjusvaren.
@@ -304,11 +316,11 @@ class AIOnboarding(models.Model):
         """
         # Avsiktlig standardtext (fallback, inte en tyst nolla).
         fallback_mission = (
-            f'{self.company_id.name or "Our company"} delivers value '
-            'by combining expertise with smart AI solutions.'
+            self.env._('%(company)s delivers value by combining expertise with smart AI solutions.',
+                       company=self.company_id.name or self.env._('Our company'))
         )
         fallback_values = (
-            'Quality and accuracy in everything we do.\nPersonal service backed by modern technology.'
+            self.env._('Quality and accuracy in everything we do.\nPersonal service backed by modern technology.')
         )
         mission, values = fallback_mission, fallback_values
         try:
@@ -331,6 +343,7 @@ class AIOnboarding(models.Model):
                 f'Svar: {json.dumps(answers, ensure_ascii=False)[:1500]}\n\n'
                 'Generera mission (1 mening) och values (3 korta punkter). '
                 'Svara exakt i JSON: {"mission": "...", "values": "..."}'
+                f'\nWrite the mission and values in the user language: {self.env.lang or "en_US"}.'
             )
             provider, model_rec = get_default_provider(self.env)
             if not provider:

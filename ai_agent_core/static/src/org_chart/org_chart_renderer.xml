@@ -22,7 +22,7 @@
                                 <div class="d-flex align-items-center gap-2 mt-1">
                                     <span class="badge bg-warning text-dark">🤖 <t t-esc="node.ai_staff"/> AI</span>
                                     <span t-if="node.health" t-att-class="'badge ' + healthClass(node.health)">
-                                        <t t-esc="node.health"/>
+                                        <t t-esc="healthLabel(node.health)"/>
                                     </span>
                                 </div>
                                 <div class="d-flex gap-2 mt-1">

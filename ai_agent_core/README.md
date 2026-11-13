@@ -1589,3 +1589,13 @@ metod som anropar `_execute_tool`/`_execute_tools_parallel` också anropar
 `_gate_tool_calls`. Det fångar en ny körväg innan den hunnit få ett eget
 test. Felklassen är dokumenterad i `docs/failures.md` §10 ("Grind i en väg,
 inte i exekveringen").
+
+
+## 简体中文界面与预置助手
+
+- 菜单、视图、字段、提示和动态说明使用 `i18n/zh_CN.po`；Python 文案保留 `odoo-python` 提取标记，前端文案保留 `odoo-javascript` 标记。
+- `data/builtin_coworkers_zh.json` 提供 5 个预置 AI 员工的中文名称、用途及完整系统说明。配置助手通过稳定 XML ID 查找，同时兼容历史名称，避免显示名称变化影响入口或重复创建。
+- `data/builtin_skill_descriptions_zh.json` 提供 20 项预置技能的中文用途说明；技能标识和工具名称保留原值，以兼容调用与关联。
+- 安装钩子只替换与已知原始内容摘要一致的默认描述，保留用户自行修改的内容；重复执行不会重复写入。存量数据库可在本地 Odoo shell 中调用 `localize_builtin_coworkers(env)` 和 `localize_skill_descriptions(env)`；执行前应备份目标记录。
+- 触发方式显示名按当前语言动态计算。首次配置向导显示中文问题与选项，但保存原始选项值，以保持方案匹配规则稳定。
+- 动态文案回归测试：`python -m unittest discover -s ai_agent_core/tests -p test_ui_chinese.py -v`。

@@ -391,8 +391,8 @@ class AICoworkerSessionLine(models.Model):
         if blocked:
             from odoo.exceptions import UserError
             raise UserError(
-                'Session lines are append-only; cannot modify %s. '
-                'Create a new line instead.' % sorted(blocked))
+                self.env._('Session lines are append-only; cannot modify %s. '
+                'Create a new line instead.') % sorted(blocked))
         return super().write(
             self._strip_nul(self._normalize_informative(vals)))
 

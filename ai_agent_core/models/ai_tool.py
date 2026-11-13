@@ -56,7 +56,7 @@ class AITool(models.Model):
     def action_open_session_lines(self):
         """Open coworker session lines that used this tool (stat button)."""
         return {
-            'name': 'Agenter', 'type': 'ir.actions.act_window',
+            'name': self.env._('Agenter'), 'type': 'ir.actions.act_window',
             'res_model': 'ai.coworker.session.line', 'view_mode': 'list,form',
             'views': [[False, 'list'], [False, 'form']],
             'domain': [('tool_id', '=', self.id)],

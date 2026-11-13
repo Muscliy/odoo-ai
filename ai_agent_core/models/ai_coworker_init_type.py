@@ -32,13 +32,14 @@ class AICoworkerInitType(models.Model):
     sequence = fields.Integer(default=10)
 
     # Display name shows the function, not the quest name
-    display_name = fields.Char(compute='_compute_display_name', store=True)
+    display_name = fields.Char(compute='_compute_display_name')
 
-    @api.depends('init_type', 'coworker_id.name')
+    @api.depends('init_type', 'enabled', 'coworker_id.name')
+    @api.depends_context('lang')
     def _compute_display_name(self):
         for r in self:
-            label = dict(INIT_TYPE_SELECTION).get(r.init_type, r.init_type)
-            status = ' (aktiv)' if r.enabled else ''
+            label = dict(r._fields['init_type']._description_selection(self.env)).get(r.init_type, r.init_type)
+            status = self.env._(' (aktiv)') if r.enabled else ''
             r.display_name = label + status
 
     # ── web_ui specific ──

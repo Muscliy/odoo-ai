@@ -1,3 +1,4 @@
+import { _t } from "@web/core/l10n/translation";
 import { Component, useState, onWillStart } from "@odoo/owl";
 import { useService } from "@web/core/utils/hooks";
 
@@ -34,7 +35,7 @@ export class OrgChartRenderer extends Component {
                 walk(data.roots || [], 0);
                 this.state.flat = flat;
             } catch (err) {
-                this.state.error = err.message || "Kunde inte ladda organisationen";
+                this.state.error = err.message || _t("Kunde inte ladda organisationen");
             } finally {
                 this.state.loading = false;
             }
@@ -43,6 +44,10 @@ export class OrgChartRenderer extends Component {
 
     healthClass(health) {
         return HEALTH_CLASS[health] || "text-bg-secondary";
+    }
+
+    healthLabel(health) {
+        return { green: _t("Healthy"), yellow: _t("Needs attention"), red: _t("Unhealthy") }[health] || _t("Unknown");
     }
 
     openDepartment(node) {
